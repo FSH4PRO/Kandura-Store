@@ -9,40 +9,27 @@ use Symfony\Component\HttpFoundation\Response;
 
 class CheckRole
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
     public function handle(Request $request, Closure $next, string ...$roles): Response
     {
-        // نفترض إنو CheckAuthenticated مر قبله
-        $user = Auth::user(); // أو $request->user()
+        // التأكد من أنّ المستخدم داخل عبر admin guard
+        $user = Auth::guard('admin')->user();
 
-        // لو صار أي خلل وما في يوزر، منعتبرها forbidden
         if (! $user) {
-            // API
-            if ($request->expectsJson()) {
-                return response()->json([
-                    'success'   => false,
-                    'message'   => 'forbidden. unauthorized access.', 
-                    'data'      => null,
-                    'timestamp' => now()->toIso8601String(),
-                ], 403);
-            }
-
-            // Web
-            abort(403, 'Unauthorized action.');
+            return $this->unauthorized($request);
         }
 
-        // هون بس منشيك على الأدوار (مسؤولية هاد الميدلواير)
-        if (method_exists($user, 'hasAnyRole') && ! $user->hasAnyRole($roles)) {
+        // super admin عنده كامل الصلاحيات
+        if ($user->hasRole('super_admin')) {
+            return $next($request);
+        }
+
+        // التحقق من باقي الأدوار
+        if (! $user->hasAnyRole($roles)) {
+
             if ($request->expectsJson()) {
                 return response()->json([
-                    'success'   => false,
-                    'message'   => 'forbidden. insufficient role permissions.',
-                    'data'      => null,
-                    'timestamp' => now()->toIso8601String(),
+                    'success' => false,
+                    'message' => "Forbidden. You don't have enough permissions.",
                 ], 403);
             }
 
@@ -50,5 +37,17 @@ class CheckRole
         }
 
         return $next($request);
+    }
+
+    private function unauthorized(Request $request)
+    {
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized. Please log in.',
+            ], 401);
+        }
+
+        return redirect()->route('admin.login');
     }
 }

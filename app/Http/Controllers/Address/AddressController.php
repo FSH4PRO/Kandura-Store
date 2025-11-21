@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Address;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Address\AddressIndexRequest;
 use App\Http\Requests\Address\StoreAddressRequest;
 use App\Http\Requests\Address\UpdateAddressRequest;
 use App\Http\Resources\AddressResource;
@@ -19,13 +20,11 @@ class AddressController extends Controller
         $this->service = $service;
     }
 
-    public function index(Request $request)
+    public function index(AddressIndexRequest $request)
     {
         $filters = [
             'search'          => $request->query('search'),
-            'city'            => $request->query('city'),
-            'area'            => $request->query('area'),
-            'is_default'      => $request->query('is_default'),
+            'city_id'         => $request->query('city_id'),
             'has_coordinates' => $request->query('has_coordinates'),
             'per_page'        => $request->query('per_page'),
             'sort_by'         => $request->query('sort_by'),
@@ -37,15 +36,18 @@ class AddressController extends Controller
             $filters
         );
 
-        return $this->success(AddressResource::collection($addresses), 'addresses retrieved successfully');
+        // نخلي الـ pagination كما هو (data, meta, links) داخل data تبع success
+        return $this->success(
+            AddressResource::collection($addresses)->response()->getData(),
+            'addresses retrieved successfully'
+        );
     }
-
 
     public function store(StoreAddressRequest $request)
     {
         $address = $this->service->create(
             $request->validated(),
-            $request->user()->id
+            auth()->user()->id
         );
 
         return $this->success(new AddressResource($address), 'address created successfully', 201);
@@ -60,7 +62,7 @@ class AddressController extends Controller
         return $this->success(new AddressResource($address), 'address updated successfully');
     }
 
-    public function destroy(Request $request, Address $address)
+    public function destroy(Address $address)
     {
         $this->authorize('delete', $address);
 

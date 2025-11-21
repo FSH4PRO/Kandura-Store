@@ -2,7 +2,7 @@
   "menu": [
     {
       "url": "/",
-      "name": "Dashboard",
+     "name" :" Dashboard " ,
       "icon": "menu-icon icon-base bx bx-home-smile",
       "slug": "dashboard-analytics",
       "badge": [
@@ -10,39 +10,8 @@
         "5"
       ]
     },
-    {
-      "name": "Layouts",
-      "icon": "menu-icon icon-base bx bx-layout",
-      "slug": "layouts",
-      "submenu": [
-        {
-          "url": "layouts/without-menu",
-          "name": "Without menu",
-          "slug": "layouts-without-menu"
-        },
-        {
-          "url": "layouts/without-navbar",
-          "name": "Without navbar",
-          "slug": "layouts-without-navbar"
-        },
-        {
-          "url": "layouts/container",
-          "name": "Container",
-          "slug": "layouts-container"
-        },
-        {
-          "url": "layouts/fluid",
-          "name": "Fluid",
-          "slug": "layouts-fluid"
-        },
-        {
-          "url": "layouts/blank",
-          "name": "Blank",
-          "slug": "layouts-blank",
-          "target": "_blank"
-        }
-      ]
-    },
+    
+     
     {
       "menuHeader": "Apps & Pages"
     },

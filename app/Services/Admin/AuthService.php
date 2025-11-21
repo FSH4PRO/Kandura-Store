@@ -2,54 +2,41 @@
 
 namespace App\Services\Admin;
 
-use App\Services\Global\AuthService as GlobalAuthService;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Admin;
 
 class AuthService
 {
-    protected $service;
-    public function __construct(GlobalAuthService $service)
+   
+   
+    public function login(array $credentials, bool $remember = false): ?Admin
     {
-        $this->service = $service;
-    }
+       
+        $ok = Auth::guard('admin')->attempt([
+            'email'    => $credentials['email'] ?? null,
+            'password' => $credentials['password'] ?? null,
+        ], $remember);
 
-    /**
-     * Login admin user via session (web).
-     *
-     * @param array $credentials
-     * @param bool $remember
-     * @return \App\Models\User|null
-     */
-    public function login(array $credentials, bool $remember = false)
-    {
-        $user = $this->service->login($credentials);
-
-        if (!$user) {
+        if (! $ok) {
             return null;
         }
 
-        // If the app uses roles (spatie), ensure the user is an admin
-        if (method_exists($user, 'hasRole')) {
-            if (! $user->hasAnyRole(['admin', 'super_admin'])) {
-                return null;
-            }
+        $admin = Auth::guard('admin')->user();
+
+        if (method_exists($admin, 'hasAnyRole')&& ! $admin->hasAnyRole(['admin', 'super_admin'])) {
+
+            Auth::guard('admin')->logout();
+            return null;
         }
 
-
-        // Log the user into the session for web access
-        Auth::login($user, $remember);
-
-        return $user;
+        return $admin;
     }
 
     /**
-     * Logout the admin user.
-     *
-     * @return void
+     * Logout admin.
      */
-    public function logout()
+    public function logout(): void
     {
-        $this->service->logout();
-        Auth::logout();
+        Auth::guard('admin')->logout();
     }
 }

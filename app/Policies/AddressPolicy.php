@@ -3,22 +3,22 @@
 namespace App\Policies;
 
 use App\Models\Address;
-use App\Models\User;
+use App\Models\Customer;
 
 class AddressPolicy
 {
-    public function view(User $user, Address $address): bool
+    public function view(Customer $customer, Address $address): bool
     {
-        return $address->user_id === $user->id;
+        return $address->customer_id === $customer->id;
     }
 
-    public function update(User $user, Address $address): bool
+    public function update(Customer $customer, Address $address): bool
     {
-        return $address->user_id === $user->id;
+        return $address->customer_id === $customer->id;
     }
 
-    public function delete(User $user, Address $address): bool
+    public function delete(Customer $customer, Address $address): bool
     {
-        return $address->user_id === $user->id;
+        return $address->customer_id === $customer->id;
     }
 }

@@ -1,52 +1,53 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\layouts\Blank;
+use App\Http\Controllers\layouts\Fluid;
+use App\Http\Controllers\icons\Boxicons;
+use App\Http\Controllers\cards\CardBasic;
+use App\Http\Controllers\pages\MiscError;
+use App\Http\Controllers\layouts\Container;
 use App\Http\Controllers\dashboard\Analytics;
 use App\Http\Controllers\layouts\WithoutMenu;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\layouts\WithoutNavbar;
-use App\Http\Controllers\layouts\Fluid;
-use App\Http\Controllers\layouts\Container;
-use App\Http\Controllers\layouts\Blank;
-use App\Http\Controllers\pages\AccountSettingsAccount;
-use App\Http\Controllers\pages\AccountSettingsNotifications;
-use App\Http\Controllers\pages\AccountSettingsConnections;
-use App\Http\Controllers\pages\MiscError;
-use App\Http\Controllers\pages\MiscUnderMaintenance;
-use App\Http\Controllers\authentications\LoginBasic;
-use App\Http\Controllers\authentications\RegisterBasic;
-use App\Http\Controllers\authentications\ForgotPasswordBasic;
-use App\Http\Controllers\Admin\AuthController as AdminAuthController;
-use App\Http\Controllers\cards\CardBasic;
-use App\Http\Controllers\user_interface\Accordion;
 use App\Http\Controllers\user_interface\Alerts;
 use App\Http\Controllers\user_interface\Badges;
-use App\Http\Controllers\user_interface\Buttons;
-use App\Http\Controllers\user_interface\Carousel;
-use App\Http\Controllers\user_interface\Collapse;
-use App\Http\Controllers\user_interface\Dropdowns;
 use App\Http\Controllers\user_interface\Footer;
-use App\Http\Controllers\user_interface\ListGroups;
 use App\Http\Controllers\user_interface\Modals;
 use App\Http\Controllers\user_interface\Navbar;
-use App\Http\Controllers\user_interface\Offcanvas;
-use App\Http\Controllers\user_interface\PaginationBreadcrumbs;
+use App\Http\Controllers\user_interface\Toasts;
+use App\Http\Controllers\user_interface\Buttons;
+use App\Http\Controllers\extended_ui\TextDivider;
+use App\Http\Controllers\user_interface\Carousel;
+use App\Http\Controllers\user_interface\Collapse;
 use App\Http\Controllers\user_interface\Progress;
 use App\Http\Controllers\user_interface\Spinners;
-use App\Http\Controllers\user_interface\TabsPills;
-use App\Http\Controllers\user_interface\Toasts;
-use App\Http\Controllers\user_interface\TooltipsPopovers;
-use App\Http\Controllers\user_interface\Typography;
-use App\Http\Controllers\extended_ui\PerfectScrollbar;
-use App\Http\Controllers\extended_ui\TextDivider;
-use App\Http\Controllers\icons\Boxicons;
 use App\Http\Controllers\form_elements\BasicInput;
+use App\Http\Controllers\user_interface\Accordion;
+use App\Http\Controllers\user_interface\Dropdowns;
+use App\Http\Controllers\user_interface\Offcanvas;
+use App\Http\Controllers\user_interface\TabsPills;
 use App\Http\Controllers\form_elements\InputGroups;
 use App\Http\Controllers\form_layouts\VerticalForm;
+use App\Http\Controllers\user_interface\ListGroups;
+use App\Http\Controllers\user_interface\Typography;
+use App\Http\Controllers\authentications\LoginBasic;
+use App\Http\Controllers\pages\MiscUnderMaintenance;
 use App\Http\Controllers\form_layouts\HorizontalForm;
 use App\Http\Controllers\tables\Basic as TablesBasic;
+use App\Http\Controllers\extended_ui\PerfectScrollbar;
+use App\Http\Controllers\pages\AccountSettingsAccount;
+use App\Http\Controllers\authentications\RegisterBasic;
+use App\Http\Controllers\user_interface\TooltipsPopovers;
+use App\Http\Controllers\pages\AccountSettingsConnections;
+use App\Http\Controllers\pages\AccountSettingsNotifications;
+use App\Http\Controllers\authentications\ForgotPasswordBasic;
+use App\Http\Controllers\user_interface\PaginationBreadcrumbs;
+use App\Http\Controllers\Admin\AuthController as AdminAuthController;
+use Illuminate\Http\Request;
 
-// Main Page Route
-Route::get('/', [Analytics::class, 'index'])->name('dashboard-analytics')->middleware(['check.authenticated', 'check.role:admin,super_admin']);
+
 
 // layout
 Route::get('/layouts/without-menu', [WithoutMenu::class, 'index'])->name('layouts-without-menu');
@@ -67,15 +68,7 @@ Route::get('/auth/login-basic', [LoginBasic::class, 'index'])->name('auth-login-
 Route::get('/auth/register-basic', [RegisterBasic::class, 'index'])->name('auth-register-basic');
 Route::get('/auth/forgot-password-basic', [ForgotPasswordBasic::class, 'index'])->name('auth-reset-password-basic');
 
-// Admin authentication routes
-Route::get('/admin/login', [AdminAuthController::class, 'showLogin'])
-  ->middleware('guest')
-  ->name('admin.login');
 
-Route::post('/admin/login', [AdminAuthController::class, 'login'])->name('admin.login.post');
-Route::post('/admin/logout', [AdminAuthController::class, 'logout'])
-  ->middleware('auth')
-  ->name('admin.logout');
 
 
 // cards
@@ -119,3 +112,60 @@ Route::get('/form/layouts-horizontal', [HorizontalForm::class, 'index'])->name('
 
 // tables
 Route::get('/tables/basic', [TablesBasic::class, 'index'])->name('tables-basic');
+
+
+
+
+
+
+
+
+
+
+
+
+
+Route::get('/', [Analytics::class, 'index'])->middleware(['auth:admin', 'check.role:admin,super_admin'])->name('dashboard-analytics');
+
+
+Route::middleware('guest:admin')->group(function () {
+    Route::get('/admin/login', [AdminAuthController::class, 'showLogin'])
+        ->name('admin.login');
+
+    Route::post('/admin/login', [AdminAuthController::class, 'login'])
+        ->name('admin.login.post');
+});
+Route::post('/admin/logout', [AdminAuthController::class, 'logout'])
+    ->middleware('auth:admin')
+    ->name('admin.logout');
+
+
+
+Route::get('/admin/users', [UserController::class, 'index'])
+  ->middleware(['check.authenticated', 'check.role:admin,super_admin'])
+  ->name('users.index');
+
+Route::delete('/admin/users/{user}', [UserController::class, 'destroy'])
+  ->middleware(['check.authenticated', 'check.role:super_admin'])
+  ->name('users.destroy');
+
+
+Route::get('/admin/users/create-admin', [UserController::class, 'createAdmin'])
+  ->middleware(['check.authenticated', 'check.role:super_admin'])
+  ->name('users.create-admin');
+
+Route::post('/admin/users/store-admin', [UserController::class, 'storeAdmin'])
+  ->middleware(['check.authenticated', 'check.role:super_admin'])
+  ->name('users.store-admin');
+
+
+Route::get('/lang/{locale}', function (Request $request, $locale) {
+  if (! in_array($locale, ['ar', 'en'])) {
+    abort(400);
+  }
+
+  $request->session()->put('app_locale', $locale);
+
+
+  return redirect()->back();
+})->name('lang.switch');

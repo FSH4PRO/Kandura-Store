@@ -18,26 +18,21 @@ class UserController extends Controller
         $this->service = $service;
     }
 
-    
     public function profile(Request $request)
     {
-        $user = $this->service->getProfile($request->user('api'));
+       
+        $user = $this->service->getProfile($request->user());
 
         return $this->success(new UserResource($user), 'User profile');
     }
 
-    /**
-     * PUT /api/users/{id}
-     * تحديث بيانات المستخدم (self) + صورة
-     */
-
-
+  
     public function update(UpdateUserRequest $request, User $user)
     {
+      
         $this->authorize('update', $user);
 
-
-        $data = $request->validated();
+        $data         = $request->validated();
         $profileImage = $request->file('profile_image');
 
         $updatedUser = $this->service->updateProfile($user, $data, $profileImage);

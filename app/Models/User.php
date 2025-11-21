@@ -2,69 +2,49 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Spatie\MediaLibrary\HasMedia;
 use Laravel\Passport\HasApiTokens;
-use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Translatable\HasTranslations;
+use Illuminate\Database\Eloquent\Builder;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-
 class User extends Authenticatable implements HasMedia
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, HasApiTokens, InteractsWithMedia, SoftDeletes, HasTranslations, HasRoles;
+    use HasFactory,
+        Notifiable,        
+        InteractsWithMedia,
+        SoftDeletes,
+        HasTranslations,
+        
+    
+     protected $translatable = ['name'];
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
-
-    public $translatable = ['name'];
-
+    
     protected $fillable = [
         'name',
-        'email',
-        'phone',
-        'password',
         'is_active',
+        'usable_id',
+        'usable_type',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
+    
     protected $hidden = [
-        'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
+    
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
             'is_active' => 'boolean',
         ];
     }
 
-    public function getDefaultGuardName(): string
-    {
-        // دايمًا خلّي Spatie يستخدم guard 'web' للأدوار والصلاحيات
-        return 'web';
-    }
-
+    /* ===================== Media ===================== */
 
     public function registerMediaCollections(): void
     {
@@ -86,13 +66,73 @@ class User extends Authenticatable implements HasMedia
         return $this->getFirstMediaUrl('profile_image') ?: asset('images/default-avatar.png');
     }
 
-    public function scopeHasRoleName($query, $role)
+    /* ===================== Scopes ===================== */
+
+   
+    public function scopeHasRoleName(Builder $query, string $role): Builder
     {
-        return $query->whereHas('roles', fn($q) => $q->where('name', $role));
+        return $query->whereHas('roles', fn ($q) => $q->where('name', $role));
+
     }
 
-    public function address()
+
+
+    
+    public function scopeSearch(Builder $query, ?string $search): Builder
+    {
+        if (empty($search)) {
+            return $query;
+        }
+
+        return $query->where(function ($q) use ($search) {
+            $q->where('name->en', 'like', "%{$search}%")
+              ->orWhere('name->ar', 'like', "%{$search}%");
+        });
+    }
+
+    
+    public function scopeStatus(Builder $query, ?string $status): Builder
+    {
+        if (empty($status) || ! in_array($status, ['active', 'inactive'])) {
+            return $query;
+        }
+
+        $isActive = $status === 'active';
+
+        return $query->where('is_active', $isActive);
+    }
+
+   
+    public function scopeSort(Builder $query, ?string $sortBy, ?string $sortDir): Builder
+    {
+        $allowedSorts = ['id', 'name', 'created_at'];
+
+        $sortBy  = $sortBy ?: 'created_at';
+        $sortDir = strtolower($sortDir ?: 'desc');
+
+        if (! in_array($sortBy, $allowedSorts)) {
+            $sortBy = 'created_at';
+        }
+
+        if (! in_array($sortDir, ['asc', 'desc'])) {
+            $sortDir = 'desc';
+        }
+
+        return $query->orderBy($sortBy, $sortDir);
+    }
+
+    /* ===================== relations ===================== */
+
+      public function address()
     {
         return $this->hasOne(Address::class);
     }
+
+    
+    public function usable()
+    {
+        return $this->morphTo();
+    }
+
+
 }

@@ -7,60 +7,66 @@ use Illuminate\Support\Facades\DB;
 
 class AuthService
 {
-    protected $service;
+    protected GlobalAuthService $service;
+
     public function __construct(GlobalAuthService $service)
     {
         $this->service = $service;
     }
 
+   
     public function register(array $data)
     {
         return DB::transaction(function () use ($data) {
-            // Create user using global service
-            $user = $this->service->register($data);
 
-            // Generate API token for Passport
-            $token = $user->createToken('API Token')->accessToken;
+            $customer = $this->service->register($data);
 
-            // Attach token data to user object
+            $token = $customer->createToken('API Token')->accessToken;
+
+            $user = $customer->user;
             $user->access_token = $token;
-            $user->token_type = 'Bearer';
+            $user->token_type   = 'Bearer';
 
             return $user;
         });
     }
 
+    
     public function login(array $credentials)
     {
         return DB::transaction(function () use ($credentials) {
-            $user = $this->service->login($credentials);
 
-            if (!$user) {
+            $customer = $this->service->login($credentials);
+
+            if (! $customer) {
                 return null;
             }
 
-            // Generate API token for Passport
-            $token = $user->createToken('API Token')->accessToken;
+            $token = $customer->createToken('API Token')->accessToken;
 
-            // Attach token data to user object
+            $user = $customer->user;
             $user->access_token = $token;
-            $user->token_type = 'Bearer';
+            $user->token_type   = 'Bearer';
 
             return $user;
         });
     }
 
-    /**
-     * Logout the user by revoking all API tokens.
-     *
-     * @return void
-     */
-    public function logout()
+    
+    public function logout(): void
     {
-        auth()->user()->tokens()->delete();
+        $customer = auth('customer')->user();
+
+        if ($customer && method_exists($customer, 'tokens')) {
+            $customer->tokens()->delete();
+        }
     }
 
-    public function profile(){
-        return auth()->user();
+    
+    public function profile()
+    {
+        $customer = auth('customer')->user();
+
+        return $customer?->user;
     }
 }

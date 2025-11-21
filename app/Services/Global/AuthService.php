@@ -3,62 +3,71 @@
 namespace App\Services\Global;
 
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
+use App\Models\Customer;
 use Illuminate\Support\Facades\DB;
+use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Hash;
 
 class AuthService
 {
-    /**
-     * Create a new class instance.
-     */
-    public function __construct()
-    {
-        //
-    }
-
-    public function register(array $data)
+    
+    public function register(array $data): Customer
     {
         return DB::transaction(function () use ($data) {
-            // Create a new user with the provided data
-            $user = User::create([
-                'name' => $data['name'],
-                'email' => $data['email'],
-                'phone' => $data['phone'] ?? null,
+
+
+            $customer = Customer::create([
+                'phone'    => $data['phone'],
                 'password' => bcrypt($data['password']),
-                'is_active' => true,
             ]);
 
-            if (class_exists(\Spatie\Permission\Models\Role::class)) {
-                $user->assignRole('user');
+
+            $user = User::create([
+                'name'        => $data['name'],
+                'is_active'   => true,
+                'usable_id'   => $customer->id,
+                'usable_type' => Customer::class,
+            ]);
+
+
+            if (class_exists(Role::class) && method_exists($customer, 'assignRole')) {
+                $customer->assignRole('user');
             }
 
-            return $user;
+            $customer->setRelation('user', $user);
+
+            return $customer;
         });
     }
 
-    public function login(array $credentials)
+   
+    public function login(array $credentials): ?Customer
     {
         return DB::transaction(function () use ($credentials) {
-            // Find user by email
-            $user = User::where('email', $credentials['email'])->first();
 
-            // Check if user exists and password is correct
-            if (!$user || !Hash::check($credentials['password'], $user->password)) {
+            $phone    = $credentials['phone'] ?? null;
+            $password = $credentials['password'] ?? null;
+
+            if (! $phone || ! $password) {
                 return null;
             }
 
-            // Check if user is active
-            if (!$user->is_active) {
+            $customer = Customer::where('phone', $phone)->first();
+
+            if (! $customer || ! Hash::check($password, $customer->password)) {
                 return null;
             }
 
-            return $user;
+            $user = $customer->user;
+
+           
+            if ($user && ! $user->is_active) {
+                return null;
+            }
+
+            $customer->setRelation('user', $user);
+
+            return $customer;
         });
-    }
-
-    public function logout()
-    {
-        // Core logout logic
-        return true;
     }
 }

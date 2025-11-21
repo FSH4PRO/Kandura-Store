@@ -6,19 +6,62 @@ use App\Models\User;
 
 class UserPolicy
 {
+    
+    protected function getAuthUserId($authUser): ?int
+    {
+        if ($authUser instanceof User) {
+            return $authUser->id;
+        }
+
+        if (method_exists($authUser, 'user') && $authUser->user) {
+            return $authUser->user->id;
+        }
+
+        return null;
+    }
+
+    
+    public function view($authUser, User $user): bool
+    {
+        $authUserId = $this->getAuthUserId($authUser);
+
+        return $authUserId !== null && $authUserId === $user->id;
+    }
+
+       public function update($authUser, User $user): bool
+    {
+        $authUserId = $this->getAuthUserId($authUser);
+
+        return $authUserId !== null && $authUserId === $user->id;
+    }
+
    
-    public function view(User $authUser, User $user): bool
+    public function delete($authUser, User $targetUser): bool
     {
-        return $authUser->id === $user->id;
+        $authUserId = $this->getAuthUserId($authUser);
+
+        
+        if ($authUserId === null || $authUserId === $targetUser->id) {
+            return false;
+        }
+
+        
+        if (!method_exists($authUser, 'hasRole') || ! $authUser->hasRole('super_admin')) {
+            return false;
+        }
+
+        
+        if ($targetUser->hasRole('super_admin')) {
+            return false;
+        }
+
+        return true;
     }
 
-    /**
-     * المستخدم يحدّث نفسه بس
-     * (لو حاب تسمح للـ admin يعدّل غيره كمان، منضيف && hasRole)
-     */
-    public function update(User $authUser, User $user): bool
+   
+    public function createAdmin($authUser): bool
     {
-        return $authUser->id === $user->id;
+        return method_exists($authUser, 'hasRole')
+            && $authUser->hasRole('super_admin');
     }
-
 }

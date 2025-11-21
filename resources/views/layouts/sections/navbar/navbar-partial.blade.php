@@ -41,12 +41,7 @@
   </div>
   <!-- /Search -->
   <ul class="navbar-nav flex-row align-items-center ms-auto">
-    <!-- Place this tag where you want the button to render. -->
-    <li class="nav-item lh-1 me-4">
-      <a class="github-button" href="{{ config('variables.repository') }}" data-icon="octicon-star" data-size="large"
-        data-show-count="true"
-        aria-label="Star themeselection/sneat-html-laravel-admin-template-free on GitHub">Star</a>
-    </li>
+
 
     <!-- User -->
     <li class="nav-item navbar-dropdown dropdown-user dropdown">
@@ -117,5 +112,18 @@
       </ul>
     </li>
     <!--/ User -->
+    <li class="nav-item dropdown">
+
+    <li class="nav-item">
+      <a class="nav-link" href="{{ route('lang.switch', app()->getLocale() === 'ar' ? 'en' : 'ar') }}">
+        @if (app()->getLocale() === 'ar')
+          EN
+        @else
+          ع
+        @endif
+      </a>
+    </li>
+    </li>
+
   </ul>
 </div>

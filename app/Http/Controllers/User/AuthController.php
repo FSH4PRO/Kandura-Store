@@ -11,7 +11,8 @@ use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
-    protected $service;
+    protected AuthService $service;
+
     public function __construct(AuthService $service)
     {
         $this->service = $service;
@@ -19,9 +20,14 @@ class AuthController extends Controller
 
     public function register(RegisterRequest $request)
     {
+        
         $user = $this->service->register($request->validated());
 
-        return $this->success(new UserResource($user), 'User registered successfully', 201);
+        return $this->success(
+            new UserResource($user),
+            'User registered successfully',
+            201
+        );
     }
 
     public function login(LoginRequest $request)
@@ -32,12 +38,13 @@ class AuthController extends Controller
             return $this->failed('Invalid credentials', null, 401);
         }
 
-        return $this->success(new UserResource($user), 'User logged in successfully', 200);
+        return $this->success(
+            new UserResource($user),
+            'User logged in successfully',
+            200
+        );
     }
 
-    /**
-     * Logout the user.
-     */
     public function logout(Request $request)
     {
         $this->service->logout();
@@ -45,8 +52,18 @@ class AuthController extends Controller
         return $this->success(null, 'User logged out successfully', 200);
     }
 
-    public function profile(){
+    public function profile()
+    {
         $user = $this->service->profile();
-        return $this->success(new UserResource($user), 'User profile', 200);
+
+        if (! $user) {
+            return $this->failed('Unauthenticated', null, 401);
+        }
+
+        return $this->success(
+            new UserResource($user),
+            'User profile',
+            200
+        );
     }
 }

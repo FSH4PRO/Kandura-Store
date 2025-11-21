@@ -9,55 +9,41 @@ use Illuminate\Support\Facades\Hash;
 
 class UserService
 {
-    public function __construct()
-    {
-        //
-    }
-
-   
     public function getProfile(User $user): User
     {
-        return $user;
+        return $user->load('usable');
     }
 
-    
     public function updateProfile(User $user, array $data, ?UploadedFile $profileImage = null): User
     {
         return DB::transaction(function () use ($user, $data, $profileImage) {
+            $owner = $user->usable; // Admin أو Customer
 
-            if (! empty($data['password'])) {
-                $data['password'] = Hash::make($data['password']);
-            } else {
-                unset($data['password']);
+            if (!empty($data['password'])) {
+                $owner->password = Hash::make($data['password']);
             }
+            unset($data['password']);
 
-            
-            unset($data['is_active'], $data['role']);
+            unset($data['role'], $data['is_active'], $data['usable_id'], $data['usable_type']);
 
-            
             if (isset($data['name'])) {
-                // يا إمّا تعتمد اللغة الحالية:
-                // $user->setTranslation('name', app()->getLocale(), $data['name']);
-                // أو لو مكتفي بـ string عادية:
                 $user->name = $data['name'];
                 unset($data['name']);
             }
 
-           
-            if (! empty($data)) {
-                $user->fill($data);
+            if (isset($data['phone'])) {
+                $owner->phone = $data['phone'];
             }
 
+            $owner->save();
             $user->save();
 
-         
             if ($profileImage) {
-                $user
-                    ->addMedia($profileImage)
+                $user->addMedia($profileImage)
                     ->toMediaCollection('profile_image');
             }
 
-            return $user->fresh();
+            return $user->fresh()->load('usable');
         });
     }
 }
