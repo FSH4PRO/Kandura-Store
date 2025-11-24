@@ -20,23 +20,24 @@ class UserController extends Controller
 
     public function profile(Request $request)
     {
-       
-        $user = $this->service->getProfile($request->user());
+        $customer = auth('customer')->user();
+        $user = $this->service->getProfile($customer->user);
 
-        return $this->success(new UserResource($user), 'User profile');
+        return $this->success(new UserResource($user), __('messages.user_profile'));
     }
 
-  
-    public function update(UpdateUserRequest $request, User $user)
+    public function update(UpdateUserRequest $request)
     {
-      
+        $customer = auth('customer')->user();
+        $user = $customer->user;
+
         $this->authorize('update', $user);
 
-        $data         = $request->validated();
+        $data = $request->validated();
         $profileImage = $request->file('profile_image');
 
         $updatedUser = $this->service->updateProfile($user, $data, $profileImage);
 
-        return $this->success(new UserResource($updatedUser), 'User updated successfully');
+        return $this->success(new UserResource($updatedUser), __('messages.user_update'));
     }
 }

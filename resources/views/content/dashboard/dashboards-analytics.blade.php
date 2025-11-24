@@ -108,104 +108,38 @@
       </div>
     </div>
   </div>
+  {{-- Quick System Info --}}
+  <div class="col-lg-4 mb-6">
+    <div class="card h-100">
+      <div class="card-header">
+        <h5 class="mb-0">{{ __('dashboard.system_info.title') }}</h5>
+      </div>
+      <div class="card-body">
+        <ul class="list-unstyled mb-0">
+          <li class="mb-3 d-flex justify-content-between align-items-center">
+            <span>{{ __('dashboard.system_info.laravel') }}</span>
+            <span class="fw-medium">{{ app()->version() }}</span>
+          </li>
+          <li class="mb-3 d-flex justify-content-between align-items-center">
+            <span>{{ __('dashboard.system_info.locale') }}</span>
+            <span class="fw-medium">{{ app()->getLocale() }}</span>
+          </li>
+          @php
+            $currentOwner = auth()->user()->usable;
+          @endphp
 
-  {{-- /****************** Latest Users & Quick Info ******************/ --}}
-  <div class="row">
-    {{-- Latest Users Table --}}
-    <div class="col-lg-8 mb-6">
-      <div class="card h-100">
-        <div class="card-header d-flex justify-content-between align-items-center">
-          <h5 class="mb-0">{{ __('dashboard.latest_users.title') }}</h5>
-          <a href="{{ route('users.index') ?? '#' }}" class="btn btn-sm btn-outline-primary">
-            {{ __('dashboard.latest_users.show_all') }}
-          </a>
-        </div>
-        <div class="table-responsive text-nowrap">
-          <table class="table mb-0">
-            <thead>
-              <tr>
-                <th>{{ __('dashboard.latest_users.table.user') }}</th>
-                <th>{{ __('dashboard.latest_users.table.email') }}</th>
-                <th>{{ __('dashboard.latest_users.table.role') }}</th>
-                <th>{{ __('dashboard.latest_users.table.created_at') }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              @forelse($latestUsers as $user)
-                @php
-                  $owner = $user->usable; // Admin أو Customer
-                @endphp
-                <tr>
-                  {{-- الاسم --}}
-                  <td>
-                    {{ is_array($user->name) ? $user->name['ar'] ?? ($user->name['en'] ?? '') : $user->name }}
-                  </td>
+          <li class="mb-3 d-flex justify-content-between align-items-center">
+            <span>{{ __('dashboard.system_info.current_user') }}</span>
+            <span class="fw-medium">{{ $currentOwner->email ?? '-' }}</span>
+          </li>
 
-                  {{-- الإيميل من الـ Admin/Customer --}}
-                  <td>{{ $owner->email ?? '-' }}</td>
-
-                  {{-- النوع (Admin / Customer) حسب الـ usable_type --}}
-                  <td>
-                    <span class="badge bg-label-info">
-                      @if ($owner instanceof \App\Models\Admin)
-                        {{ __('dashboard.roles.admin') }}
-                      @elseif ($owner instanceof \App\Models\Customer)
-                        {{ __('dashboard.roles.customer') }}
-                      @else
-                        {{ __('dashboard.roles.unknown') }}
-                      @endif
-                    </span>
-                  </td>
-
-                  {{-- تاريخ الإنشاء من users table --}}
-                  <td>{{ $user->created_at?->format('Y-m-d') }}</td>
-                </tr>
-              @empty
-                <tr>
-                  <td colspan="4" class="text-center text-muted">
-                    {{ __('dashboard.latest_users.empty') }}
-                  </td>
-                </tr>
-              @endforelse
-            </tbody>
-
-          </table>
-        </div>
+          <li class="mb-1 d-flex justify-content-between align-items-center">
+            <span>{{ __('dashboard.system_info.today') }}</span>
+            <span class="fw-medium">{{ now()->format('Y-m-d') }}</span>
+          </li>
+        </ul>
       </div>
     </div>
-
-    {{-- Quick System Info --}}
-    <div class="col-lg-4 mb-6">
-      <div class="card h-100">
-        <div class="card-header">
-          <h5 class="mb-0">{{ __('dashboard.system_info.title') }}</h5>
-        </div>
-        <div class="card-body">
-          <ul class="list-unstyled mb-0">
-            <li class="mb-3 d-flex justify-content-between align-items-center">
-              <span>{{ __('dashboard.system_info.laravel') }}</span>
-              <span class="fw-medium">{{ app()->version() }}</span>
-            </li>
-            <li class="mb-3 d-flex justify-content-between align-items-center">
-              <span>{{ __('dashboard.system_info.locale') }}</span>
-              <span class="fw-medium">{{ app()->getLocale() }}</span>
-            </li>
-            @php
-              $currentOwner = auth()->user()->usable;
-            @endphp
-
-            <li class="mb-3 d-flex justify-content-between align-items-center">
-              <span>{{ __('dashboard.system_info.current_user') }}</span>
-              <span class="fw-medium">{{ $currentOwner->email ?? '-' }}</span>
-            </li>
-
-            <li class="mb-1 d-flex justify-content-between align-items-center">
-              <span>{{ __('dashboard.system_info.today') }}</span>
-              <span class="fw-medium">{{ now()->format('Y-m-d') }}</span>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </div>
+  </div>
   </div>
 @endsection

@@ -16,8 +16,6 @@ class UserResource extends JsonResource
       'id'         => $this->id,
       'name'       => $this->name,
 
-      // جايين من Admin أو Customer
-      'email'      => $owner?->email,
       'phone'      => $owner?->phone,
       'type'       => $owner ? class_basename($owner) : null, 
 

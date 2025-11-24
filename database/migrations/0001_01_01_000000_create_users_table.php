@@ -13,11 +13,10 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->json('name');
+            $table->json('name')->nullable();
             $table->boolean('is_active')->default(true);
             $table->unsignedBigInteger('usable_id')->nullable();
             $table->string('usable_type')->nullable();
-            $table->string('profile_image')->nullable();
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();

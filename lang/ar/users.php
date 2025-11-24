@@ -1,52 +1,52 @@
 <?php
 
 return [
-
-    'title'       => 'المستخدمون - Kandura Store',
-    'heading'     => 'المستخدمون',
-    'subheading'  => 'إدارة مستخدمي النظام (Users / Admins / Super Admins)',
+    'title'      => 'المستخدمون',
+    'heading'    => 'إدارة المستخدمين',
+    'subheading' => 'يمكنك البحث وتصفيه المستخدمين من هنا.',
 
     'filters' => [
-        'search_label'  => 'بحث',
-        'search_placeholder' => 'الاسم، البريد، رقم الهاتف...',
-        'status_label'  => 'الحالة',
-        'status_all'    => 'الكل',
-        'status_active' => 'فعّال',
-        'status_inactive' => 'موقوف',
-        'role_label'    => 'الدور',
-        'submit'        => 'تصفية',
-        'reset'         => 'تصفير',
+        'search_label'       => 'بحث',
+        'search_placeholder' => 'ابحث بالاسم أو البريد أو الهاتف...',
+        'status_label'       => 'الحالة',
+        'status_all'         => 'كل الحالات',
+        'status_active'      => 'نشط',
+        'status_inactive'    => 'غير نشط',
+        'role_label'         => 'الدور',
+        'role_all'           => 'كل الأدوار',
+        'submit'             => 'تصفية',
+        'reset'              => 'إعادة تعيين',
     ],
 
     'table' => [
-        'id'        => '#',
-        'name'      => 'الاسم',
-        'email'     => 'البريد الإلكتروني',
-        'phone'     => 'رقم الهاتف',
-        'role'      => 'الدور',
-        'status'    => 'الحالة',
-        'created_at'=> 'تاريخ الإنشاء',
-        'actions'   => 'إجراءات',
-        'empty'     => 'لا يوجد مستخدمون مطابِقون لخيارات البحث الحالية.',
+        'id'         => 'ID',
+        'name'       => 'الاسم',
+        'email'      => 'البريد',
+        'phone'      => 'الهاتف',
+        'role'       => 'الدور',
+        'status'     => 'الحالة',
+        'created_at' => 'تاريخ الإنشاء',
+        'actions'    => 'إجراءات',
+        'empty'      => 'لا يوجد مستخدمون حتى الآن.',
     ],
 
     'status_badge' => [
-        'active'   => 'فعّال',
-        'inactive' => 'موقوف',
+        'active'   => 'نشط',
+        'inactive' => 'غير نشط',
+    ],
+
+    'roles' => [
+        'super_admin'     => 'Super Admin',
+        'manage_users'    => 'إدارة المستخدمين',
+        'manage_admins'   => 'إدارة الأدمنز',
+        'manage_orders'   => 'إدارة الطلبات',
+        'manage_addresses' => 'إدارة العناوين',
+        'user'            => 'مستخدم',
     ],
 
     'actions' => [
-        'no_actions'  => 'لا توجد إجراءات متاحة',
-        'delete'      => 'حذف المستخدم',
-        'confirm_del' => 'هل أنت متأكد من حذف هذا المستخدم؟',
+        'delete'         => 'حذف',
+        'confirm_delete' => 'هل أنت متأكد من حذف هذا المستخدم؟',
+        'no_actions'     => 'لا توجد إجراءات متاحة',
     ],
-
-    'create_admin' => [
-        'button'   => 'إضافة أدمن',
-        'title'    => 'إضافة أدمن جديد',
-        'subtitle' => 'إنشاء حساب مسؤول جديد للنظام.',
-        'back'     => 'رجوع لقائمة المستخدمين',
-        'success'  => 'تم إنشاء حساب الأدمن بنجاح.',
-    ],
-
 ];

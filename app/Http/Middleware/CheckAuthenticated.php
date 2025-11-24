@@ -11,7 +11,6 @@ class CheckAuthenticated
 {
     public function handle(Request $request, Closure $next): Response
     {
-        // نستخدم guard admin حصراً
         if (! Auth::guard('admin')->check()) {
 
             if ($request->expectsJson()) {

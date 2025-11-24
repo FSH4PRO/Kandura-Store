@@ -36,7 +36,7 @@ class Address extends Model
      * SCOPES
      */
 
-    // 🔍 بحث
+
     public function scopeSearch($query, $term)
     {
         if (!$term) return $query;
@@ -50,7 +50,7 @@ class Address extends Model
             ->orWhere('details', 'like', "%{$term}%");
     }
 
-    // 📍 فلترة
+
     public function scopeFilter($query, array $filters)
     {
         if (!empty($filters['city_id'])) {
@@ -64,7 +64,7 @@ class Address extends Model
         return $query;
     }
 
-    // ↕ ترتيب
+
     public function scopeSort($query, $sortBy = null, $direction = 'desc')
     {
         $allowed = ['street', 'latitude', 'longitude', 'created_at'];
@@ -81,9 +81,10 @@ class Address extends Model
         return $query->orderBy($sortBy, $direction);
     }
 
-    // 🧑‍💼 خاص بالمستخدم
-    public function scopeOwnedBy($query, $userId)
+
+    public function scopeOwnedBy($query, $customerId)
     {
-        return $query->where('customer_id', $userId);
+        return $query->where('customer_id', $customerId);
     }
+
 }

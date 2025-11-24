@@ -20,12 +20,12 @@ class AuthController extends Controller
 
     public function register(RegisterRequest $request)
     {
-        
+
         $user = $this->service->register($request->validated());
 
         return $this->success(
             new UserResource($user),
-            'User registered successfully',
+             __('messages.user_registered'),
             201
         );
     }
@@ -40,7 +40,7 @@ class AuthController extends Controller
 
         return $this->success(
             new UserResource($user),
-            'User logged in successfully',
+             __('messages.user_logged_in'),
             200
         );
     }
@@ -49,21 +49,8 @@ class AuthController extends Controller
     {
         $this->service->logout();
 
-        return $this->success(null, 'User logged out successfully', 200);
+        return $this->success(null,  __('messages.user_logged_out'), 200);
     }
 
-    public function profile()
-    {
-        $user = $this->service->profile();
-
-        if (! $user) {
-            return $this->failed('Unauthenticated', null, 401);
-        }
-
-        return $this->success(
-            new UserResource($user),
-            'User profile',
-            200
-        );
-    }
+   
 }

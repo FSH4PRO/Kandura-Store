@@ -63,10 +63,4 @@ class AuthService
     }
 
     
-    public function profile()
-    {
-        $customer = auth('customer')->user();
-
-        return $customer?->user;
-    }
 }

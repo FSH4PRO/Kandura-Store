@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Laravel\Passport\HasApiTokens;
-use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -11,9 +10,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class Customer extends Authenticatable
 {
-    use HasFactory, Notifiable , HasApiTokens ,SoftDeletes ,HasRoles;
+    use HasFactory, Notifiable, HasApiTokens, SoftDeletes;
 
-   
     protected $guard = 'customer';
 
     protected $fillable = [
@@ -33,7 +31,6 @@ class Customer extends Authenticatable
         ];
     }
 
-    
     public function user()
     {
         return $this->morphOne(User::class, 'usable');

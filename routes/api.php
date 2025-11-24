@@ -22,8 +22,9 @@ Route::prefix('auth')->group(function () {
 
 
 Route::middleware('auth:customer')->group(function () {
+    
+    Route::put('/user/profile', [UserController::class, 'update']);
     Route::get('/user/profile', [UserController::class, 'profile']);
-    Route::put('/user/{user}', [UserController::class, 'update']);
 });
 
 

@@ -7,10 +7,10 @@ use Illuminate\Support\Facades\DB;
 
 class AddressService
 {
-    public function listForUser($userId, array $filters = [])
+    public function listForUser($customerId, array $filters = [])
     {
         return Address::query()
-            ->ownedBy($userId)
+            ->ownedBy($customerId)
             ->search($filters['search'] ?? null)
             ->filter($filters)
             ->sort($filters['sort_by'] ?? null, $filters['sort_dir'] ?? null)
@@ -18,11 +18,11 @@ class AddressService
             ->withQueryString();
     }
 
-    public function create(array $data, $userId)
+    public function create(array $data, $customerId)
     {
-        return DB::transaction(function () use ($data, $userId) {
+        return DB::transaction(function () use ($data, $customerId) {
             return Address::create(array_merge($data, [
-                'customer_id' => $userId,
+                'customer_id' => $customerId,
             ]));
         });
     }

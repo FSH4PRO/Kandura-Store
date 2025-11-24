@@ -11,29 +11,31 @@ class CheckRole
 {
     public function handle(Request $request, Closure $next, string ...$roles): Response
     {
-        // التأكد من أنّ المستخدم داخل عبر admin guard
-        $user = Auth::guard('admin')->user();
+        $admin = Auth::guard('admin')->user(); 
 
-        if (! $user) {
+        if (! $admin) {
             return $this->unauthorized($request);
         }
 
-        // super admin عنده كامل الصلاحيات
-        if ($user->hasRole('super_admin')) {
+        $actor = $admin->user;
+
+        if (! $actor) {
+            return $this->forbidden($request, 'No linked user found for this admin.');
+        }
+
+       
+        if ($actor->hasRole('super_admin')) {
             return $next($request);
         }
 
-        // التحقق من باقي الأدوار
-        if (! $user->hasAnyRole($roles)) {
+       
+        if (empty($roles)) {
+            return $next($request);
+        }
 
-            if ($request->expectsJson()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => "Forbidden. You don't have enough permissions.",
-                ], 403);
-            }
-
-            abort(403, 'Unauthorized action.');
+       
+        if (! $actor->hasAnyRole($roles)) {
+            return $this->forbidden($request);
         }
 
         return $next($request);
@@ -49,5 +51,17 @@ class CheckRole
         }
 
         return redirect()->route('admin.login');
+    }
+
+    private function forbidden(Request $request, string $msg = null)
+    {
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => false,
+                'message' => $msg ?: "Forbidden. You don't have enough permissions.",
+            ], 403);
+        }
+
+        abort(403, $msg ?: 'Unauthorized action.');
     }
 }

@@ -11,144 +11,179 @@ class PermissionSeeder extends Seeder
 {
     public function run(): void
     {
-        // امسح الكاش القديم
+        // احذف الكاش
         app(PermissionRegistrar::class)->forgetCachedPermissions();
 
-        // -----------------------------
-        // 1) تعريف الصلاحيات
-        // -----------------------------
+        // ---------------------------------------------------
+        // 1) Permissions
+        // ---------------------------------------------------
 
-        // صلاحيات المستخدم (الزبون / customer)
-        $userPermissions = [
-            'create_profiles',
-            'edit_profiles',
-            'delete_profiles',
-
-            'create_addresses',
-            'edit_addresses',
-            'delete_addresses',
-
-            'create_measurements',
-            'edit_measurements',
-            'delete_measurements',
-
-            'create_designs',
-            'edit_designs',
-            'delete_designs',
-            'view_designs',
-
-            'create_orders',
-            'view_orders',
-
-            'view_wallets_balances',
-            'view_wallets_transactions',
-
-            'create_reviews',
-            'view_notifications',
+        // Users management
+        $permissions_users = [
+            'users.view',
+            'users.create',
+            'users.edit',
+            'users.delete',
         ];
 
-        // صلاحيات الأدمن (لوحة التحكم)
-        $adminPermissions = [
-            'view_users',
-            'disable_users',
-            'delete_users',
-
-            'change_order_status',
-
-            'create_coupons',
-            'edit_coupons',
-            'delete_coupons',
-
-            'create_design_options',
-            'edit_design_options',
-            'delete_design_options',
-
-            'view_reviews',
-            'control_reviews',
-
-            'send_notifications',
-            'add_wallets',
-            'withdraw_balances',
+        $permissions_admins = [
+            'admins.view',
+            'admins.create',
+            'admins.edit',
+            'admins.delete',
         ];
 
-        // صلاحيات السيستم / سوبر أدمن
-        $systemPermissions = [
-            'create_admins',
-            'edit_admins',
-            'delete_admins',
-            'manage_system_settings',
-            'view_reports',
-            'add_roles',
-            'edit_roles',
-            'delete_roles',
+        // Addresses management
+        $permissions_addresses = [
+            'addresses.view',
+            'addresses.create',
+            'addresses.edit',
+            'addresses.delete',
         ];
 
-        // -----------------------------
-        // 2) إنشاء الـ Permissions حسب الـ guard
-        // -----------------------------
+        // Designs management
+        $permissions_designs = [
+            'designs.view',
+            'designs.create',
+            'designs.edit',
+            'designs.delete',
+        ];
 
-        // صلاحيات الزبون على guard customer
-        foreach ($userPermissions as $permName) {
+        // Orders management
+        $permissions_orders = [
+            'orders.view',
+            'orders.create',
+            'orders.edit',
+            'orders.delete',
+            'orders.change_status',
+        ];
+
+        // Wallets
+        $permissions_wallets = [
+            'wallets.view',
+            'wallets.add',
+            'wallets.withdraw',
+        ];
+
+        // Notifications
+        $permissions_notifications = [
+            'notifications.view',
+            'notifications.send',
+        ];
+
+        // System settings
+        $permissions_system = [
+            'system.view_reports',
+            'system.manage_settings',
+            'system.manage_roles',
+        ];
+
+        $permissions_dashboard = [
+            'dashboard.access',
+        ];
+
+        // دمج جميع البيرمشنز
+        $allPermissions = array_merge(
+            $permissions_users,
+            $permissions_addresses,
+            $permissions_designs,
+            $permissions_orders,
+            $permissions_wallets,
+            $permissions_notifications,
+            $permissions_system,
+            $permissions_dashboard,
+        );
+
+        // ---------------------------------------------------
+        // 2) إنشاء الـ Permissions (guard = user)
+        // ---------------------------------------------------
+
+        foreach ($allPermissions as $perm) {
             Permission::firstOrCreate([
-                'name'       => $permName,
-                'guard_name' => 'customer',
+                'name'       => $perm,
+                'guard_name' => 'user',
             ]);
         }
 
-        // صلاحيات الأدمن على guard admin
-        foreach (array_merge($adminPermissions, $systemPermissions) as $permName) {
-            Permission::firstOrCreate([
-                'name'       => $permName,
-                'guard_name' => 'admin',
-            ]);
-        }
+        // ---------------------------------------------------
+        // 3) إنشاء Micro Roles
+        // ---------------------------------------------------
 
-        // -----------------------------
-        // 3) إنشاء الـ Roles
-        // -----------------------------
-
-        // دور user للزبون (customer guard)
-        $userRole = Role::firstOrCreate([
-            'name'       => 'user',
-            'guard_name' => 'customer',
+        // manage_users
+        $role_manage_users = Role::firstOrCreate([
+            'name'       => 'manage_users',
+            'guard_name' => 'user',
         ]);
+        $role_manage_users->syncPermissions($permissions_users);
 
-        // دور admin للوحة التحكم (admin guard)
-        $adminRole = Role::firstOrCreate([
-            'name'       => 'admin',
-            'guard_name' => 'admin',
+        // manage_admins
+        $role_manage_admins = Role::firstOrCreate([
+            'name'       => 'manage_admins',
+            'guard_name' => 'user',
         ]);
+        $role_manage_admins->syncPermissions($permissions_admins);
+        
+        // manage_addresses
+        $role_manage_addresses = Role::firstOrCreate([
+            'name'       => 'manage_addresses',
+            'guard_name' => 'user',
+        ]);
+        $role_manage_addresses->syncPermissions($permissions_addresses);
 
-        // دور super_admin للوحة التحكم (admin guard)
+        // manage_designs
+        $role_manage_designs = Role::firstOrCreate([
+            'name'       => 'manage_designs',
+            'guard_name' => 'user',
+        ]);
+        $role_manage_designs->syncPermissions($permissions_designs);
+
+        // manage_orders
+        $role_manage_orders = Role::firstOrCreate([
+            'name'       => 'manage_orders',
+            'guard_name' => 'user',
+        ]);
+        $role_manage_orders->syncPermissions($permissions_orders);
+
+        // manage_wallets
+        $role_manage_wallets = Role::firstOrCreate([
+            'name'       => 'manage_wallets',
+            'guard_name' => 'user',
+        ]);
+        $role_manage_wallets->syncPermissions($permissions_wallets);
+
+        // manage_notifications
+        $role_manage_notifications = Role::firstOrCreate([
+            'name'       => 'manage_notifications',
+            'guard_name' => 'user',
+        ]);
+        $role_manage_notifications->syncPermissions($permissions_notifications);
+
+        // manage_system
+        $role_manage_system = Role::firstOrCreate([
+            'name'       => 'manage_system',
+            'guard_name' => 'user',
+        ]);
+        $role_manage_system->syncPermissions($permissions_system);
+
+        $role_mange_dashboard = Role::firstOrCreate([
+            'name'       => 'dashboard_access',
+            'guard_name' => 'user',
+        ]);
+        $role_mange_dashboard->syncPermissions($permissions_dashboard);
+
+        // ---------------------------------------------------
+        // 4) SUPER ADMIN ROLE (يجمع كل شيء)
+        // ---------------------------------------------------
+
         $superAdminRole = Role::firstOrCreate([
             'name'       => 'super_admin',
-            'guard_name' => 'admin',
+            'guard_name' => 'user',
         ]);
 
-        // -----------------------------
-        // 4) ربط الصلاحيات بالأدوار
-        // -----------------------------
+        // كل الصلاحيات
+        $superAdminRole->syncPermissions($allPermissions);
 
-        // user (الزبون) → كل صلاحيات customer
-        $userRole->syncPermissions(
-            Permission::whereIn('name', $userPermissions)
-                ->where('guard_name', 'customer')
-                ->get()
-        );
-
-        // admin → صلاحيات الأدمن فقط
-        $adminRole->syncPermissions(
-            Permission::whereIn('name', $adminPermissions)
-                ->where('guard_name', 'admin')
-                ->get()
-        );
-
-        // super_admin → كل صلاحيات admin (أدمن + سيستم)
-        $superAdminRole->syncPermissions(
-            Permission::where('guard_name', 'admin')->get()
-        );
-
-        // ريفرش للكاش بعد ما خلصنا
+        // ---------------------------------------------------
         app(PermissionRegistrar::class)->forgetCachedPermissions();
     }
 }

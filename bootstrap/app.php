@@ -15,8 +15,12 @@ return Application::configure(basePath: dirname(__DIR__))
     $middleware->alias([
       'check.authenticated' => \App\Http\Middleware\CheckAuthenticated::class,
       'check.role' => \App\Http\Middleware\CheckRole::class,
-      'set.locale' => \App\Http\Middleware\SetLocale::class,
+      'check.permission' => \App\Http\Middleware\CheckPermission::class,
     ]);
+    //web middleware group
+    // $middleware->group('web', [
+    //   'set.locale' => \App\Http\Middleware\SetLocale::class,
+    // ]);
   })
   ->withExceptions(function (Exceptions $exceptions) {
     //

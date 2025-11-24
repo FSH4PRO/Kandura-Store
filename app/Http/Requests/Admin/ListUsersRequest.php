@@ -8,27 +8,18 @@ class ListUsersRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true; // سيتم التحقق عبر Policies لاحقًا
+        // التحكم مين مسموح يوصل لهالراوت
+        // عم نعمله بالميدل وير (check.role / check.permission)
+        return true;
     }
 
     public function rules(): array
     {
         return [
-
-           
             'search'   => ['nullable', 'string', 'max:255'],
-
-           
             'status'   => ['nullable', 'in:active,inactive'],
-
-            
-            'role'     => ['nullable', 'string', 'max:50'],
-
-            
-            'sort_by'  => ['nullable', 'in:id,name,email,created_at'],
+            'sort_by'  => ['nullable', 'in:id,name,created_at'],
             'sort_dir' => ['nullable', 'in:asc,desc'],
-
-           
             'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
         ];
     }

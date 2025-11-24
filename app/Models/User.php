@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Spatie\MediaLibrary\HasMedia;
-use Laravel\Passport\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Translatable\HasTranslations;
 use Illuminate\Database\Eloquent\Builder;
@@ -15,15 +15,16 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 class User extends Authenticatable implements HasMedia
 {
     use HasFactory,
-        Notifiable,        
+        Notifiable,
         InteractsWithMedia,
         SoftDeletes,
         HasTranslations,
-        
-    
-     protected $translatable = ['name'];
+        HasRoles;
 
-    
+    protected $guard_name = 'user';
+
+    protected $translatable = ['name'];
+
     protected $fillable = [
         'name',
         'is_active',
@@ -31,12 +32,10 @@ class User extends Authenticatable implements HasMedia
         'usable_type',
     ];
 
-    
     protected $hidden = [
         'remember_token',
     ];
 
-    
     protected function casts(): array
     {
         return [
@@ -68,16 +67,11 @@ class User extends Authenticatable implements HasMedia
 
     /* ===================== Scopes ===================== */
 
-   
     public function scopeHasRoleName(Builder $query, string $role): Builder
     {
         return $query->whereHas('roles', fn ($q) => $q->where('name', $role));
-
     }
 
-
-
-    
     public function scopeSearch(Builder $query, ?string $search): Builder
     {
         if (empty($search)) {
@@ -90,7 +84,6 @@ class User extends Authenticatable implements HasMedia
         });
     }
 
-    
     public function scopeStatus(Builder $query, ?string $status): Builder
     {
         if (empty($status) || ! in_array($status, ['active', 'inactive'])) {
@@ -102,7 +95,6 @@ class User extends Authenticatable implements HasMedia
         return $query->where('is_active', $isActive);
     }
 
-   
     public function scopeSort(Builder $query, ?string $sortBy, ?string $sortDir): Builder
     {
         $allowedSorts = ['id', 'name', 'created_at'];
@@ -123,16 +115,14 @@ class User extends Authenticatable implements HasMedia
 
     /* ===================== relations ===================== */
 
-      public function address()
+    public function address()
     {
         return $this->hasOne(Address::class);
     }
 
-    
+   
     public function usable()
     {
         return $this->morphTo();
     }
-
-
 }

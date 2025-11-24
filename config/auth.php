@@ -3,15 +3,9 @@
 return [
 
     'defaults' => [
-        'guard' => 'admin', // default dashboard guard
+        'guard' => 'admin', 
         'passwords' => 'admins',
     ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Authentication Guards
-    |--------------------------------------------------------------------------
-    */
 
     'guards' => [
         'admin' => [
@@ -23,22 +17,19 @@ return [
             'driver' => 'passport',
             'provider' => 'customers',
         ],
+
+        'user' => [
+            'driver' => 'session',
+            'provider' => 'users',
+        ],
     ],
 
-    /*
-    |--------------------------------------------------------------------------
-    | User Providers
-    |--------------------------------------------------------------------------
-    */
-
     'providers' => [
-        // ADMIN PROVIDER
         'admins' => [
             'driver' => 'eloquent',
             'model' => App\Models\Admin::class,
         ],
 
-        // CUSTOMER PROVIDER
         'customers' => [
             'driver' => 'eloquent',
             'model' => App\Models\Customer::class,
@@ -48,15 +39,7 @@ return [
             'driver' => 'eloquent',
             'model'  => App\Models\User::class,
         ],
-
-
     ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Reset Password Configuration
-    |--------------------------------------------------------------------------
-    */
 
     'passwords' => [
         'admins' => [

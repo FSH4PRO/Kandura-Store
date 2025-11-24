@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\User;
-use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use App\Services\Admin\UserService;
 use App\Http\Controllers\Controller;
@@ -19,34 +18,45 @@ class UserController extends Controller
         $this->service = $service;
     }
 
+
     public function index(ListUsersRequest $request)
     {
-        $currentUser = auth('admin')->user()->user; // الـ User الصحيح
+        $admin      = auth('admin')->user();
+        $currentUser = $admin->user;
 
         $filters = $request->validated();
 
         $users = $this->service->listUsers($currentUser, $filters);
 
+        $roles = collect();
 
-        $roleQuery = Role::query();
-
-        if ($request->user()->hasRole('super_admin')) {
-
-            $roleQuery->whereIn('name', ['admin', 'user']);
-        } elseif ($request->user()->hasRole('admin')) {
-
-            $roleQuery->where('name', 'user');
-        } else {
-
-            $roleQuery->whereRaw('1 = 0');
-        }
-
-        $roles = $roleQuery->pluck('name');
-
-        return view('content.users.index', compact('users', 'roles', 'filters'));
+        return view('content.users.index', [
+            'users'   => $users,
+            'roles'   => $roles,
+            'filters' => $filters,
+        ]);
     }
 
 
+    public function adminsIndex(ListUsersRequest $request)
+    {
+
+        $filters = $request->validated();
+
+
+        $admins = $this->service->listAdmins($filters);
+
+
+        $roles = \Spatie\Permission\Models\Role::query()
+            ->where('guard_name', 'user')
+            ->pluck('name');
+
+        return view('content.users.admin', [
+            'admins'  => $admins,
+            'filters' => $filters,
+            'roles'   => $roles,
+        ]);
+    }
 
     public function destroy(User $user)
     {
@@ -54,15 +64,24 @@ class UserController extends Controller
 
         $this->service->deleteUser($user);
 
-        return back()->with('success', 'user deleted successfully.');
+        return back()->with('success', __('messages.user_deleted') ?? 'User deleted successfully.');
     }
 
     public function createAdmin()
     {
         $this->authorize('createAdmin', User::class);
 
-        return view('content.users.create-admin');
+
+        $roles = Role::query()
+            ->where('guard_name', 'user')
+            ->where('name', '!=', 'super_admin')
+            ->pluck('name');
+
+        return view('content.users.create-admin', [
+            'roles' => $roles,
+        ]);
     }
+
 
     public function storeAdmin(StoreAdminRequest $request)
     {
@@ -71,7 +90,17 @@ class UserController extends Controller
         $admin = $this->service->createAdmin($request->validated());
 
         return redirect()
-            ->route('users.index')
-            ->with('success', 'Admin user created successfully.');
+            ->route('admins.index')
+            ->with('success', __('messages.admin_created'));
+    }
+
+
+    public function destroyAdmin(User $user)
+    {
+        $this->authorize('delete', $user);
+
+        $this->service->deleteAdmin($user);
+
+        return back()->with('success', __('messages.admin_deleted') ?? 'Admin user deleted successfully.');
     }
 }

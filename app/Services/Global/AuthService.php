@@ -10,17 +10,15 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthService
 {
-    
+
     public function register(array $data): Customer
     {
         return DB::transaction(function () use ($data) {
-
 
             $customer = Customer::create([
                 'phone'    => $data['phone'],
                 'password' => bcrypt($data['password']),
             ]);
-
 
             $user = User::create([
                 'name'        => $data['name'],
@@ -29,18 +27,13 @@ class AuthService
                 'usable_type' => Customer::class,
             ]);
 
-
-            if (class_exists(Role::class) && method_exists($customer, 'assignRole')) {
-                $customer->assignRole('user');
-            }
-
             $customer->setRelation('user', $user);
 
             return $customer;
         });
     }
 
-   
+
     public function login(array $credentials): ?Customer
     {
         return DB::transaction(function () use ($credentials) {
@@ -60,7 +53,7 @@ class AuthService
 
             $user = $customer->user;
 
-           
+
             if ($user && ! $user->is_active) {
                 return null;
             }

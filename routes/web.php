@@ -125,47 +125,81 @@ Route::get('/tables/basic', [TablesBasic::class, 'index'])->name('tables-basic')
 
 
 
-Route::get('/', [Analytics::class, 'index'])->middleware(['auth:admin', 'check.role:admin,super_admin'])->name('dashboard-analytics');
+// ========================
+// Dashboard Home
+// ========================
+Route::get('/', [Analytics::class, 'index'])
+  ->middleware(['check.authenticated', 'check.role:dashboard_access,super_admin'])
+  ->name('dashboard-analytics');
 
 
-Route::middleware('guest:admin')->group(function () {
-    Route::get('/admin/login', [AdminAuthController::class, 'showLogin'])
-        ->name('admin.login');
+// ========================
+// Admin Auth Routes
+// ========================
+Route::get('/admin/login', [AdminAuthController::class, 'showLogin'])
+  ->middleware('guest:admin')
+  ->name('admin.login');
 
-    Route::post('/admin/login', [AdminAuthController::class, 'login'])
-        ->name('admin.login.post');
-});
+Route::post('/admin/login', [AdminAuthController::class, 'login'])
+  ->middleware('guest:admin')
+  ->name('admin.login.post');
+
 Route::post('/admin/logout', [AdminAuthController::class, 'logout'])
-    ->middleware('auth:admin')
-    ->name('admin.logout');
+  ->middleware('auth:admin')
+  ->name('admin.logout');
+
+
+// ========================
+// Admin Panel (protected)
+// ========================
+Route::prefix('admin')
+  ->middleware(['check.authenticated'])
+  ->group(function () {
+
+    // 1) صفحة المستخدمين (Customers) → role: manage_users أو super_admin
+    Route::get('/users', [UserController::class, 'index'])
+      ->middleware('check.role:manage_users,super_admin')
+      ->name('users.index');
+
+    // 2) صفحة الأدمنز → role: manage_admins أو super_admin
+    Route::get('/admins', [UserController::class, 'adminsIndex'])
+      ->middleware('check.role:manage_admins,super_admin')
+      ->name('admins.index');
+
+    // 3) إنشاء أدمن جديد → نفس الشي: manage_admins أو super_admin
+    Route::get('/admins/create', [UserController::class, 'createAdmin'])
+      ->middleware('check.role:manage_admins,super_admin')
+      ->name('admins.create');
+
+    Route::post('/admins', [UserController::class, 'storeAdmin'])
+      ->middleware('check.role:manage_admins,super_admin')
+      ->name('admins.store');
+
+    // 4) حذف أدمن (User مربوط بـ Admin) → خليه برضو لنفس الرولات
+    Route::delete('/admins/{user}', [UserController::class, 'destroy'])
+      ->middleware('check.role:manage_admins,super_admin')
+      ->name('admins.destroy');
+
+    Route::delete('/users/{user}', [UserController::class, 'destroy'])
+      ->middleware('check.role:manage_users|super_admin')
+      ->name('users.destroy');
+  });
 
 
 
-Route::get('/admin/users', [UserController::class, 'index'])
-  ->middleware(['check.authenticated', 'check.role:admin,super_admin'])
-  ->name('users.index');
-
-Route::delete('/admin/users/{user}', [UserController::class, 'destroy'])
-  ->middleware(['check.authenticated', 'check.role:super_admin'])
-  ->name('users.destroy');
 
 
-Route::get('/admin/users/create-admin', [UserController::class, 'createAdmin'])
-  ->middleware(['check.authenticated', 'check.role:super_admin'])
-  ->name('users.create-admin');
-
-Route::post('/admin/users/store-admin', [UserController::class, 'storeAdmin'])
-  ->middleware(['check.authenticated', 'check.role:super_admin'])
-  ->name('users.store-admin');
+// ========================
+// Locale Switch 
+// ========================
 
 
 Route::get('/lang/{locale}', function (Request $request, $locale) {
-  if (! in_array($locale, ['ar', 'en'])) {
-    abort(400);
-  }
+    if (! in_array($locale, ['ar', 'en'])) {
+        abort(400);
+    }
 
-  $request->session()->put('app_locale', $locale);
+    $request->session()->put('app_locale', $locale);
 
-
-  return redirect()->back();
+    return redirect()->back();
 })->name('lang.switch');

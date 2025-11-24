@@ -2,65 +2,80 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
+use Illuminate\Database\Seeder;
 use App\Models\Admin;
 use App\Models\Customer;
-use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Role;
 
 class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        // 🟦 1) SUPER ADMIN
+        /*
+        |--------------------------------------------------------------------------
+        | 1) SUPER ADMIN  (Full System Rights)
+        |--------------------------------------------------------------------------
+        */
+
         $super = Admin::create([
-            'email'     => 'superadmin@gmail.com',
-            'password'  => bcrypt('12345678'),
-            
+            'email'    => 'superadmin@gmail.com',
+            'password' => bcrypt('12345678'),
+            'super_admin' => true,
         ]);
 
-        $superUser = User::create([
-            'name'      => ['en' => 'Super Admin', 'ar' => 'المشرف العام'],
+        // User مرتبط عبر polymorph
+        $superUser = $super->user()->create([
+            'name'      => ['en' => 'Super Admin', 'ar' => 'مشرف عام'],
             'is_active' => true,
-            'usable_id'   => $super->id,
-            'usable_type' => Admin::class,
         ]);
 
-        // 🟥 تعيين دور سوبر أدمن
-        $super->assignRole('super_admin');
+        // يعطى كل الأدوار
+        $superUser->assignRole('super_admin');
 
 
-        // 🟧 2) ADMIN
+
+        /*
+        |--------------------------------------------------------------------------
+        | 2) ADMIN with selective micro-roles
+        |--------------------------------------------------------------------------
+        */
+
         $admin = Admin::create([
-            'email'     => 'admin@gmail.com',
-            'password'  => bcrypt('12345678'),
+            'email'    => 'admin@gmail.com',
+            'password' => bcrypt('12345678'),
+            'super_admin' => false,
         ]);
 
-        $adminUser = User::create([
-            'name'      => ['en' => 'Admin', 'ar' => 'المسؤول'],
+        $adminUser = $admin->user()->create([
+            'name'      => ['en' => 'Main Admin', 'ar' => 'مسؤول النظام'],
             'is_active' => true,
-            'usable_id'   => $admin->id,
-            'usable_type' => Admin::class,
         ]);
 
-        // 🟨 تعيين دور أدمن
-        $admin->assignRole('admin');
+        // تعطيه micro-roles حسب رغبتك
+        $adminUser->assignRole([
+            'manage_users',
+            'manage_addresses',
+            'manage_orders',
+            'dashboard_access',
+        ]);
 
 
-        // 🟩 3) CUSTOMER
+
+        /*
+        |--------------------------------------------------------------------------
+        | 3) CUSTOMER (NO ROLES / PERMISSIONS)
+        |--------------------------------------------------------------------------
+        */
+
         $customer = Customer::create([
-             'phone'     => '0911111111',
-             'password'  => bcrypt('12345678'),
+            'phone'    => '0911111111',
+            'password' => bcrypt('12345678'),
         ]);
 
-        $customerUser = User::create([
-            'name'      => ['en' => 'User', 'ar' => 'المستخدم'],
+        $customerUser = $customer->user()->create([
+            'name'      => ['en' => 'Customer User', 'ar' => 'مستخدم زبون'],
             'is_active' => true,
-            'usable_id'   => $customer->id,
-            'usable_type' => Customer::class,
         ]);
 
-        // 🟩 تعيين دور User (على customer guard)
-        $customer->assignRole('user');
+        // لا نعطيه أي role أو permission نهائيًا
     }
 }

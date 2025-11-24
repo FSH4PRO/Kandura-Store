@@ -3,65 +3,67 @@
 namespace App\Policies;
 
 use App\Models\User;
+use App\Models\Admin;
 
 class UserPolicy
 {
     
-    protected function getAuthUserId($authUser): ?int
+    protected function actor($authUser): ?User
     {
-        if ($authUser instanceof User) {
-            return $authUser->id;
+      
+        if ($authUser instanceof Admin) {
+            return $authUser->user; 
         }
 
-        if (method_exists($authUser, 'user') && $authUser->user) {
-            return $authUser->user->id;
+        
+        if ($authUser instanceof User) {
+            return $authUser;
         }
 
         return null;
     }
 
+      public function createAdmin($authUser): bool
+    {
+        $actor = $this->actor($authUser);
+
+        if (! $actor) {
+            return false;
+        }
+
+        return $actor->hasRole('super_admin');
+    }
+
+
+    public function delete($authUser, User $target): bool
+    {
+        $actor = $this->actor($authUser);
+
+        if (! $actor) {
+            return false;
+        }
+
+        
+        if ($actor->id === $target->id) {
+            return false;
+        }
+
+        
+        return $actor->can('users.delete');
+    }
+
+    public function viewAny($authUser): bool
+    {
+        $actor = $this->actor($authUser);
+
+        if (! $actor) {
+            return false;
+        }
+
+        return $actor->can('users.view');
+    }
+
+
+
     
-    public function view($authUser, User $user): bool
-    {
-        $authUserId = $this->getAuthUserId($authUser);
-
-        return $authUserId !== null && $authUserId === $user->id;
-    }
-
-       public function update($authUser, User $user): bool
-    {
-        $authUserId = $this->getAuthUserId($authUser);
-
-        return $authUserId !== null && $authUserId === $user->id;
-    }
-
-   
-    public function delete($authUser, User $targetUser): bool
-    {
-        $authUserId = $this->getAuthUserId($authUser);
-
-        
-        if ($authUserId === null || $authUserId === $targetUser->id) {
-            return false;
-        }
-
-        
-        if (!method_exists($authUser, 'hasRole') || ! $authUser->hasRole('super_admin')) {
-            return false;
-        }
-
-        
-        if ($targetUser->hasRole('super_admin')) {
-            return false;
-        }
-
-        return true;
-    }
-
-   
-    public function createAdmin($authUser): bool
-    {
-        return method_exists($authUser, 'hasRole')
-            && $authUser->hasRole('super_admin');
-    }
 }

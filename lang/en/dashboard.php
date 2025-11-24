@@ -41,4 +41,11 @@ return [
     'today'        => 'Today',
   ],
 
+  'roles'=>[
+    'admin' => 'Admin',
+    'customer' => 'User',
+    'super_admin' => 'Super Admin',
+    
+  ]
+
 ];

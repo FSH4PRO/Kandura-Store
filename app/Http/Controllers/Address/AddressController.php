@@ -22,35 +22,32 @@ class AddressController extends Controller
 
     public function index(AddressIndexRequest $request)
     {
-        $filters = [
-            'search'          => $request->query('search'),
-            'city_id'         => $request->query('city_id'),
-            'has_coordinates' => $request->query('has_coordinates'),
-            'per_page'        => $request->query('per_page'),
-            'sort_by'         => $request->query('sort_by'),
-            'sort_dir'        => $request->query('sort_dir'),
-        ];
+        
+        $filters = $request->filters();
+
+        $customer = auth('customer')->user();
 
         $addresses = $this->service->listForUser(
-            $request->user()->id,
+            $customer->id,
             $filters
         );
 
-        // نخلي الـ pagination كما هو (data, meta, links) داخل data تبع success
         return $this->success(
             AddressResource::collection($addresses)->response()->getData(),
-            'addresses retrieved successfully'
+             __('messages.address_list')
         );
     }
 
     public function store(StoreAddressRequest $request)
     {
+        $customer = auth('customer')->user();
+
         $address = $this->service->create(
             $request->validated(),
-            auth()->user()->id
+            $customer->id
         );
 
-        return $this->success(new AddressResource($address), 'address created successfully', 201);
+        return $this->success(new AddressResource($address),  __('messages.address_created'), 201);
     }
 
     public function update(UpdateAddressRequest $request, Address $address)
@@ -59,7 +56,7 @@ class AddressController extends Controller
 
         $address = $this->service->update($address, $request->validated());
 
-        return $this->success(new AddressResource($address), 'address updated successfully');
+        return $this->success(new AddressResource($address), __('messages.address_updated'));
     }
 
     public function destroy(Address $address)
@@ -68,6 +65,6 @@ class AddressController extends Controller
 
         $this->service->delete($address);
 
-        return $this->success(null, 'address deleted successfully');
+        return $this->success(null, __('messages.address_deleted'));
     }
 }

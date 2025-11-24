@@ -1,16 +1,30 @@
 @extends('layouts.contentNavbarLayout')
 
-@section('title', __('users.title'))
+@section('title', __('admins.title'))
 
 @section('content')
   <div class="row">
     <div class="col-12 mb-4">
       <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
         <div>
-          <h4 class="mb-1">{{ __('users.heading') }}</h4>
-          <p class="mb-0 text-muted">{{ __('users.subheading') }}</p>
+          <h4 class="mb-1">{{ __('admins.heading') }}</h4>
+          <p class="mb-0 text-muted">{{ __('admins.subheading') }}</p>
         </div>
+        <div>
+          {{-- زر إنشاء أدمن جديد --}}
 
+          @php
+            $actor = auth('admin')->user()?->user; // User اللي عليه الرولات
+          @endphp
+
+          @if ($actor && $actor->hasRole('super_admin'))
+            <a href="{{ route('admins.create') }}" class="btn btn-primary btn-sm">
+              {{ __('admins.create_button') }}
+            </a>
+          @endif
+
+
+        </div>
       </div>
     </div>
   </div>
@@ -20,49 +34,49 @@
     <div class="col-12">
       <div class="card">
         <div class="card-body">
-          <form method="GET" action="{{ route('users.index') }}" class="row g-3 align-items-end">
+          <form method="GET" action="{{ route('admins.index') }}" class="row g-3 align-items-end">
 
             {{-- Search --}}
             <div class="col-md-4">
-              <label class="form-label">{{ __('users.filters.search_label') }}</label>
+              <label class="form-label">{{ __('admins.filters.search_label') }}</label>
               <input type="text" name="search" class="form-control"
-                placeholder="{{ __('users.filters.search_placeholder') }}" value="{{ $filters['search'] ?? '' }}">
+                placeholder="{{ __('admins.filters.search_placeholder') }}" value="{{ $filters['search'] ?? '' }}">
             </div>
 
             {{-- Status --}}
             <div class="col-md-3">
-              <label class="form-label">{{ __('users.filters.status_label') }}</label>
+              <label class="form-label">{{ __('admins.filters.status_label') }}</label>
               <select name="status" class="form-select">
-                <option value="">{{ __('users.filters.status_all') }}</option>
+                <option value="">{{ __('admins.filters.status_all') }}</option>
                 <option value="active" {{ ($filters['status'] ?? '') === 'active' ? 'selected' : '' }}>
-                  {{ __('users.filters.status_active') }}
+                  {{ __('admins.filters.status_active') }}
                 </option>
                 <option value="inactive" {{ ($filters['status'] ?? '') === 'inactive' ? 'selected' : '' }}>
-                  {{ __('users.filters.status_inactive') }}
+                  {{ __('admins.filters.status_inactive') }}
                 </option>
               </select>
             </div>
 
             {{-- Role --}}
             <div class="col-md-3">
-              <label class="form-label">{{ __('users.filters.role_label') }}</label>
+              <label class="form-label">{{ __('admins.filters.role_label') }}</label>
               <select name="role" class="form-select">
-                <option value="">{{ __('users.filters.role_all') }}</option>
+                <option value="">{{ __('admins.filters.role_all') }}</option>
                 @foreach ($roles as $role)
                   <option value="{{ $role }}" {{ ($filters['role'] ?? '') === $role ? 'selected' : '' }}>
-                    {{ __('users.roles.' . $role) }}
+                    {{ __('admins.roles.' . $role) !== 'admins.roles.' . $role ? __('admins.roles.' . $role) : $role }}
                   </option>
                 @endforeach
               </select>
             </div>
 
-            {{-- Submit --}}
+            {{-- Submit / Reset --}}
             <div class="col-md-2 d-flex gap-2">
               <button type="submit" class="btn btn-primary flex-grow-1">
-                {{ __('users.filters.submit') }}
+                {{ __('admins.filters.submit') }}
               </button>
-              <a href="{{ route('users.index') }}" class="btn btn-outline-secondary">
-                {{ __('users.filters.reset') }}
+              <a href="{{ route('admins.index') }}" class="btn btn-outline-secondary">
+                {{ __('admins.filters.reset') }}
               </a>
             </div>
 
@@ -72,7 +86,7 @@
     </div>
   </div>
 
-  {{-- Users Table --}}
+
   <div class="row">
     <div class="col-12">
       <div class="card">
@@ -80,64 +94,65 @@
           <table class="table table-hover mb-0">
             <thead>
               <tr>
-                <th>{{ __('users.table.id') }}</th>
-                <th>{{ __('users.table.name') }}</th>
-                <th>{{ __('users.table.email') }}</th>
-                <th>{{ __('users.table.phone') }}</th>
-                <th>{{ __('users.table.role') }}</th>
-                <th>{{ __('users.table.status') }}</th>
-                <th>{{ __('users.table.created_at') }}</th>
-                <th class="text-center">{{ __('users.table.actions') }}</th>
+                <th>{{ __('admins.table.id') }}</th>
+                <th>{{ __('admins.table.name') }}</th>
+                <th>{{ __('admins.table.email') }}</th>
+                <th>{{ __('admins.table.roles') }}</th>
+                <th>{{ __('admins.table.status') }}</th>
+                <th>{{ __('admins.table.created_at') }}</th>
+                <th class="text-center">{{ __('admins.table.actions') }}</th>
               </tr>
             </thead>
             <tbody>
-              @forelse($users as $user)
+              @forelse($admins as $user)
                 @php
-                  // Admin أو Customer أو شيء آخر
-                  $owner = $user->usable;
-                  $email = $owner->email ?? null;
-                  $phone = $owner->phone ?? null;
+                  /** @var \App\Models\User $user */
+                  $adminModel = $user->usable; // Admin المرتبط
 
                   // أسماء الأدوار من Spatie
                   $roleNames = method_exists($user, 'getRoleNames') ? $user->getRoleNames() : collect();
 
-                  // تحويل الأدوار لنصوص مترجمة
+                  // ترجمة أسماء الأدوار لو في keys في admins.roles.*
                   $rolesLabel = $roleNames
                       ->map(function ($role) {
-                          $key = 'users.roles.' . $role;
+                          $key = 'admins.roles.' . $role;
                           return __($key) !== $key ? __($key) : $role;
                       })
                       ->implode(', ');
+
+                  // السوبر أدمن الحالي (الممثل)
+                  $actor = auth('admin')->user()?->user;
                 @endphp
 
                 <tr>
                   {{-- ID --}}
                   <td>{{ $user->id }}</td>
 
-                  {{-- Name (من users.name كـ JSON قابل للترجمة) --}}
+                  {{-- Name --}}
                   <td>
                     {{ is_array($user->name) ? $user->name['ar'] ?? ($user->name['en'] ?? '') : $user->name }}
                   </td>
 
-                  {{-- Email من Admin/Customer --}}
-                  <td>{{ $email ?? '-' }}</td>
+                  {{-- Email --}}
+                  <td>{{ $adminModel->email ?? '-' }}</td>
 
-                  {{-- Phone من Admin/Customer --}}
-                  <td>{{ $phone ?? '-' }}</td>
-
-                  {{-- Role(s) من Spatie Roles --}}
+                  {{-- Roles --}}
                   <td>
                     <span class="badge bg-label-info">
-                      {{ $rolesLabel ?: __('users.roles.user') }}
+                      {{ $rolesLabel ?: __('admins.roles.none') }}
                     </span>
                   </td>
 
                   {{-- Status --}}
                   <td>
                     @if ($user->is_active)
-                      <span class="badge bg-label-success">{{ __('users.status_badge.active') }}</span>
+                      <span class="badge bg-label-success">
+                        {{ __('admins.status_badge.active') }}
+                      </span>
                     @else
-                      <span class="badge bg-label-danger">{{ __('users.status_badge.inactive') }}</span>
+                      <span class="badge bg-label-danger">
+                        {{ __('admins.status_badge.inactive') }}
+                      </span>
                     @endif
                   </td>
 
@@ -151,35 +166,30 @@
                         type="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="bx bx-dots-vertical-rounded"></i>
                       </button>
-
                       <div class="dropdown-menu dropdown-menu-end">
-                        @php
-                          $actor = auth('admin')->user()->user; // الـ User المرتبط بالأدمن
-                        @endphp
-
                         @if ($actor && $actor->hasRole('super_admin'))
-                          <form action="{{ route('users.destroy', $user->id) }}" method="POST"
-                            onsubmit="return confirm('{{ __('users.actions.confirm_delete') }}');">
+                          {{-- فقط السوبر أدمن يشوف زر الحذف --}}
+                          <form action="{{ route('admins.destroy', $user->id) }}" method="POST"
+                            onsubmit="return confirm('{{ __('admins.actions.confirm_delete') }}');">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="dropdown-item text-danger">
-                              {{ __('users.actions.delete') }}
+                              {{ __('admins.actions.delete') }}
                             </button>
                           </form>
                         @else
                           <span class="dropdown-item text-muted">
-                            {{ __('users.actions.no_actions') }}
+                            {{ __('admins.actions.no_actions') }}
                           </span>
                         @endif
                       </div>
                     </div>
                   </td>
-
                 </tr>
               @empty
                 <tr>
-                  <td colspan="8" class="text-center text-muted py-4">
-                    {{ __('users.table.empty') }}
+                  <td colspan="7" class="text-center text-muted py-4">
+                    {{ __('admins.table.empty') }}
                   </td>
                 </tr>
               @endforelse
@@ -187,9 +197,9 @@
           </table>
         </div>
 
-        @if ($users instanceof \Illuminate\Contracts\Pagination\Paginator)
+        @if ($admins instanceof \Illuminate\Contracts\Pagination\Paginator)
           <div class="card-footer">
-            {{ $users->links() }}
+            {{ $admins->links() }}
           </div>
         @endif
       </div>

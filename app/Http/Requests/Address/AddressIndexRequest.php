@@ -8,7 +8,7 @@ class AddressIndexRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true; // API => كل المستخدمين مسموح يستعلموا عن عناوينهم
+        return true; 
     }
 
     public function rules(): array
@@ -26,7 +26,7 @@ class AddressIndexRequest extends FormRequest
 
     public function filters(): array
     {
-        // تنظيف القيم من null الفارغ
+       
         return array_filter($this->validated(), function ($value) {
             return $value !== null && $value !== '';
         });
