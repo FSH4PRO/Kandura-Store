@@ -2,68 +2,48 @@
 
 namespace App\Policies;
 
-use App\Models\User;
 use App\Models\Admin;
+use App\Models\User;
 
 class UserPolicy
 {
     
-    protected function actor($authUser): ?User
+    public function viewAny(Admin $admin): bool
     {
-      
-        if ($authUser instanceof Admin) {
-            return $authUser->user; 
+        if ($admin->hasRole(['super_admin', 'manage_users'])) {
+            return true;
         }
 
-        
-        if ($authUser instanceof User) {
-            return $authUser;
-        }
-
-        return null;
+        return $admin->can('users.view');
     }
 
-      public function createAdmin($authUser): bool
+   
+   public function viewAdmin(Admin $admin, User $target): bool
     {
-        $actor = $this->actor($authUser);
+        if($admin->hasAnyRole(['super_admin','manage_admins'])) {
+            return true;
+        }
+        return $admin->can('admins.view');
+    }
 
-        if (! $actor) {
+       public function createAdmin(Admin $admin): bool
+    {
+       
+        return $admin->hasRole('super_admin');
+    }
+
+   
+    public function delete(Admin $admin, User $target): bool
+    {
+       
+        if ($target->usable_type === Admin::class && $target->usable_id === $admin->id) {
             return false;
         }
 
-        return $actor->hasRole('super_admin');
-    }
-
-
-    public function delete($authUser, User $target): bool
-    {
-        $actor = $this->actor($authUser);
-
-        if (! $actor) {
-            return false;
+        if ($admin->hasRole('super_admin')) {
+            return true;
         }
 
-        
-        if ($actor->id === $target->id) {
-            return false;
-        }
-
-        
-        return $actor->can('users.delete');
+        return $admin->can('users.delete');
     }
-
-    public function viewAny($authUser): bool
-    {
-        $actor = $this->actor($authUser);
-
-        if (! $actor) {
-            return false;
-        }
-
-        return $actor->can('users.view');
-    }
-
-
-
-    
 }

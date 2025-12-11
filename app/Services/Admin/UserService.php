@@ -20,12 +20,10 @@ class UserService
             }])
             ->where('usable_type', Customer::class);
 
-
         $query
             ->search($filters['search'] ?? null)
             ->status($filters['status'] ?? null)
             ->sort($filters['sort_by'] ?? null, $filters['sort_dir'] ?? null);
-
 
         $perPage = isset($filters['per_page']) ? (int) $filters['per_page'] : 15;
         if ($perPage <= 0 || $perPage > 100) {
@@ -39,22 +37,28 @@ class UserService
     public function listAdmins(array $filters = []): LengthAwarePaginator
     {
         $perPage = isset($filters['per_page']) ? (int) $filters['per_page'] : 15;
-
         if ($perPage <= 0 || $perPage > 100) {
             $perPage = 15;
         }
 
         $query = User::query()
-            ->with(['roles', 'usable'])
-            ->where('usable_type', Admin::class);
+            ->with([
+                'usable' => function ($q) {
+                    $q->with('roles');
+                },
+            ])
+            ->where('usable_type', Admin::class)->whereNot('id', 1);
 
 
-        if (!empty($filters['role'])) {
-            $query->whereHas('roles', function ($q) use ($filters) {
-                $q->where('name', $filters['role']);
+        if (! empty($filters['role'])) {
+            $roleName = $filters['role'];
+
+            $query->whereHas('usable', function ($q) use ($roleName) {
+                $q->whereHas('roles', function ($qr) use ($roleName) {
+                    $qr->where('name', $roleName);
+                });
             });
         }
-
 
         $query
             ->search($filters['search'] ?? null)
@@ -69,15 +73,11 @@ class UserService
     {
         return DB::transaction(function () use ($data) {
 
-            // إنشاء admin record
             $admin = Admin::create([
                 'email'    => $data['email'],
                 'password' => Hash::make($data['password']),
-                // لو عندك عمود phone في جدول admins اضيفه هون:
-                // 'phone'    => $data['phone'] ?? null,
             ]);
 
-            // تجهيز الاسم المترجم
             $name = $data['name'] ?? [];
 
             $user = User::create([
@@ -90,14 +90,38 @@ class UserService
                 'usable_type' => Admin::class,
             ]);
 
-            // ربط الرولات المختارة (micro-roles)
-            if (! empty($data['roles']) && method_exists($user, 'syncRoles')) {
-                $user->syncRoles($data['roles']);
+
+            if (! empty($data['roles']) && method_exists($admin, 'syncRoles')) {
+                $admin->syncRoles($data['roles']);
             }
 
-            return $user->load('usable', 'roles');
+            return $user->load('usable');
         });
     }
+
+
+    public function updateAdminRoles(User $user, array $roles): User
+    {
+        return DB::transaction(function () use ($user, $roles) {
+
+            $admin = $user->usable;
+
+            if (! $admin instanceof Admin) {
+                throw new \RuntimeException('This user is not an admin.');
+            }
+
+
+            $roles = array_filter($roles);
+
+
+            if (method_exists($admin, 'syncRoles')) {
+                $admin->syncRoles($roles);
+            }
+
+            return $user->fresh()->load('usable');
+        });
+    }
+
 
     public function deleteUser(User $user): void
     {
@@ -116,7 +140,12 @@ class UserService
     public function deleteAdmin(User $user): void
     {
         DB::transaction(function () use ($user) {
-            $user->usable->delete();
+            $admin = $user->usable;
+
+            if ($admin instanceof Admin) {
+                $admin->delete();
+            }
+
             $user->delete();
         });
     }

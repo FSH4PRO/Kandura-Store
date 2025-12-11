@@ -43,18 +43,7 @@
               </select>
             </div>
 
-            {{-- Role --}}
-            <div class="col-md-3">
-              <label class="form-label">{{ __('users.filters.role_label') }}</label>
-              <select name="role" class="form-select">
-                <option value="">{{ __('users.filters.role_all') }}</option>
-                @foreach ($roles as $role)
-                  <option value="{{ $role }}" {{ ($filters['role'] ?? '') === $role ? 'selected' : '' }}>
-                    {{ __('users.roles.' . $role) }}
-                  </option>
-                @endforeach
-              </select>
-            </div>
+            
 
             {{-- Submit --}}
             <div class="col-md-2 d-flex gap-2">
@@ -82,9 +71,7 @@
               <tr>
                 <th>{{ __('users.table.id') }}</th>
                 <th>{{ __('users.table.name') }}</th>
-                <th>{{ __('users.table.email') }}</th>
                 <th>{{ __('users.table.phone') }}</th>
-                <th>{{ __('users.table.role') }}</th>
                 <th>{{ __('users.table.status') }}</th>
                 <th>{{ __('users.table.created_at') }}</th>
                 <th class="text-center">{{ __('users.table.actions') }}</th>
@@ -95,7 +82,6 @@
                 @php
                   // Admin أو Customer أو شيء آخر
                   $owner = $user->usable;
-                  $email = $owner->email ?? null;
                   $phone = $owner->phone ?? null;
 
                   // أسماء الأدوار من Spatie
@@ -119,19 +105,10 @@
                     {{ is_array($user->name) ? $user->name['ar'] ?? ($user->name['en'] ?? '') : $user->name }}
                   </td>
 
-                  {{-- Email من Admin/Customer --}}
-                  <td>{{ $email ?? '-' }}</td>
-
                   {{-- Phone من Admin/Customer --}}
                   <td>{{ $phone ?? '-' }}</td>
 
-                  {{-- Role(s) من Spatie Roles --}}
-                  <td>
-                    <span class="badge bg-label-info">
-                      {{ $rolesLabel ?: __('users.roles.user') }}
-                    </span>
-                  </td>
-
+                 
                   {{-- Status --}}
                   <td>
                     @if ($user->is_active)
@@ -153,11 +130,9 @@
                       </button>
 
                       <div class="dropdown-menu dropdown-menu-end">
-                        @php
-                          $actor = auth('admin')->user()->user; // الـ User المرتبط بالأدمن
-                        @endphp
+                      
 
-                        @if ($actor && $actor->hasRole('super_admin'))
+                        @can('users.delete')
                           <form action="{{ route('users.destroy', $user->id) }}" method="POST"
                             onsubmit="return confirm('{{ __('users.actions.confirm_delete') }}');">
                             @csrf
@@ -166,11 +141,7 @@
                               {{ __('users.actions.delete') }}
                             </button>
                           </form>
-                        @else
-                          <span class="dropdown-item text-muted">
-                            {{ __('users.actions.no_actions') }}
-                          </span>
-                        @endif
+                        @endcan
                       </div>
                     </div>
                   </td>

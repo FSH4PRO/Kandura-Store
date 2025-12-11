@@ -8,6 +8,7 @@ use App\Services\Admin\UserService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ListUsersRequest;
 use App\Http\Requests\Admin\StoreAdminRequest;
+use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
@@ -21,12 +22,13 @@ class UserController extends Controller
 
     public function index(ListUsersRequest $request)
     {
-        $admin      = auth('admin')->user();
-        $currentUser = $admin->user;
+        $admin = auth('admin')->user();
+        $currentUser = $admin->user ?? null;
 
         $filters = $request->validated();
 
-        $users = $this->service->listUsers($currentUser, $filters);
+
+        $users = $this->service->listUsers($currentUser ?? new User(), $filters);
 
         $roles = collect();
 
@@ -40,15 +42,14 @@ class UserController extends Controller
 
     public function adminsIndex(ListUsersRequest $request)
     {
-
         $filters = $request->validated();
-
 
         $admins = $this->service->listAdmins($filters);
 
 
-        $roles = \Spatie\Permission\Models\Role::query()
-            ->where('guard_name', 'user')
+        $roles = Role::query()
+            ->where('guard_name', 'admin')
+            ->orderBy('name')
             ->pluck('name');
 
         return view('content.users.admin', [
@@ -58,14 +59,16 @@ class UserController extends Controller
         ]);
     }
 
+
     public function destroy(User $user)
     {
         $this->authorize('delete', $user);
 
         $this->service->deleteUser($user);
 
-        return back()->with('success', __('messages.user_deleted') ?? 'User deleted successfully.');
+        return back()->with('success', __('messages.user_deleted'));
     }
+
 
     public function createAdmin()
     {
@@ -73,13 +76,12 @@ class UserController extends Controller
 
 
         $roles = Role::query()
-            ->where('guard_name', 'user')
+            ->where('guard_name', 'admin')
             ->where('name', '!=', 'super_admin')
+            ->orderBy('name')
             ->pluck('name');
 
-        return view('content.users.create-admin', [
-            'roles' => $roles,
-        ]);
+        return view('content.users.create-admin', compact('roles'));
     }
 
 
@@ -87,11 +89,64 @@ class UserController extends Controller
     {
         $this->authorize('createAdmin', User::class);
 
-        $admin = $this->service->createAdmin($request->validated());
+        $adminUser = $this->service->createAdmin($request->validated());
 
         return redirect()
             ->route('admins.index')
             ->with('success', __('messages.admin_created'));
+    }
+
+
+    public function editAdmin(User $user)
+    {
+        $this->authorize('createAdmin', User::class); 
+
+
+        if (! $user->usable instanceof \App\Models\Admin) {
+            abort(404);
+        }
+
+
+        $adminModel = $user->usable;
+
+        $roles = Role::query()
+            ->where('guard_name', 'admin')
+            ->where('name', '!=', 'super_admin')
+            ->orderBy('name')
+            ->pluck('name');
+
+        $currentRoleNames = $adminModel->getRoleNames()->toArray();
+
+        return view('content.users.edit-admin', [
+            'user'             => $user,
+            'adminModel'       => $adminModel,
+            'roles'            => $roles,
+            'currentRoleNames' => $currentRoleNames,
+        ]);
+    }
+
+
+    public function updateAdmin(Request $request, User $user)
+    {
+
+        $this->authorize('createAdmin', User::class);
+
+        if (! $user->usable instanceof \App\Models\Admin) {
+            abort(404);
+        }
+
+        $data = $request->validate([
+            'roles'   => ['nullable', 'array'],
+            'roles.*' => ['string', 'exists:roles,name'],
+        ]);
+
+        $roles = $data['roles'] ?? [];
+
+        $this->service->updateAdminRoles($user, $roles);
+
+        return redirect()
+            ->route('admins.index')
+            ->with('success', __('messages.admin_updated'));
     }
 
 
@@ -101,6 +156,6 @@ class UserController extends Controller
 
         $this->service->deleteAdmin($user);
 
-        return back()->with('success', __('messages.admin_deleted') ?? 'Admin user deleted successfully.');
+        return back()->with('success', __('messages.admin_deleted'));
     }
 }

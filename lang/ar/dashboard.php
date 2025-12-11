@@ -14,6 +14,15 @@ return [
     'active_users'     => 'المستخدمين الفعالين',
     'total_admins'     => 'مدراء / مشرفين',
     'total_addresses'  => 'إجمالي العناوين',
+    'total_users_help' => 'عدد المستخدمين المسجلين في النظام.',
+    'total_addresses_help' => 'عدد العناوين المسجلة في النظام.',
+    'total_customers' => 'إجمالي العملاء',
+    'total_customers_help' => 'عدد العملاء المسجلين في النظام.',
+    'total_designs' => 'إجمالي التصاميم',
+    'total_designs_help' => 'عدد التصاميم المسجلة في النظام.',
+    'designs_today' => 'التصاميم المضافة اليوم',
+    'designs_today_help' => 'عدد التصاميم المضافة اليوم.',
+
   ],
 
   'charts' => [
@@ -39,6 +48,9 @@ return [
     'locale'       => 'اللغة الحالية',
     'current_user' => 'المستخدم الحالي',
     'today'        => 'تاريخ اليوم',
+    'total_admins' => 'إجمالي المدراء',
+    'total_design_options' => 'إجمالي خيارات التصميم',
+    
   ],
 
   'roles' => [

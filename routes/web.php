@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\layouts\Blank;
 use App\Http\Controllers\layouts\Fluid;
@@ -9,7 +11,9 @@ use App\Http\Controllers\pages\MiscError;
 use App\Http\Controllers\layouts\Container;
 use App\Http\Controllers\dashboard\Analytics;
 use App\Http\Controllers\layouts\WithoutMenu;
+use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\layouts\WithoutNavbar;
 use App\Http\Controllers\user_interface\Alerts;
 use App\Http\Controllers\user_interface\Badges;
@@ -36,6 +40,7 @@ use App\Http\Controllers\authentications\LoginBasic;
 use App\Http\Controllers\pages\MiscUnderMaintenance;
 use App\Http\Controllers\form_layouts\HorizontalForm;
 use App\Http\Controllers\tables\Basic as TablesBasic;
+use App\Http\Controllers\Admin\DesignOptionController;
 use App\Http\Controllers\extended_ui\PerfectScrollbar;
 use App\Http\Controllers\pages\AccountSettingsAccount;
 use App\Http\Controllers\authentications\RegisterBasic;
@@ -45,7 +50,7 @@ use App\Http\Controllers\pages\AccountSettingsNotifications;
 use App\Http\Controllers\authentications\ForgotPasswordBasic;
 use App\Http\Controllers\user_interface\PaginationBreadcrumbs;
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
-use Illuminate\Http\Request;
+use App\Http\Controllers\Admin\DesignController as AdminDesignController;
 
 
 
@@ -129,7 +134,7 @@ Route::get('/tables/basic', [TablesBasic::class, 'index'])->name('tables-basic')
 // Dashboard Home
 // ========================
 Route::get('/', [Analytics::class, 'index'])
-  ->middleware(['check.authenticated', 'check.role:dashboard_access,super_admin'])
+  ->middleware(['check.authenticated', 'permission:dashboard.access'])
   ->name('dashboard-analytics');
 
 
@@ -158,31 +163,90 @@ Route::prefix('admin')
 
     // 1) صفحة المستخدمين (Customers) → role: manage_users أو super_admin
     Route::get('/users', [UserController::class, 'index'])
-      ->middleware('check.role:manage_users,super_admin')
+      ->middleware('permission:users.view')
       ->name('users.index');
 
     // 2) صفحة الأدمنز → role: manage_admins أو super_admin
     Route::get('/admins', [UserController::class, 'adminsIndex'])
-      ->middleware('check.role:manage_admins,super_admin')
+      ->middleware('permission:admins.view')
       ->name('admins.index');
 
     // 3) إنشاء أدمن جديد → نفس الشي: manage_admins أو super_admin
     Route::get('/admins/create', [UserController::class, 'createAdmin'])
-      ->middleware('check.role:manage_admins,super_admin')
+      ->middleware('permission:admins.create')
       ->name('admins.create');
 
     Route::post('/admins', [UserController::class, 'storeAdmin'])
-      ->middleware('check.role:manage_admins,super_admin')
+      ->middleware('permission:admins.create')
       ->name('admins.store');
 
-    // 4) حذف أدمن (User مربوط بـ Admin) → خليه برضو لنفس الرولات
+    Route::get('/admins/{user}/edit', [UserController::class, 'editAdmin'])->middleware('permission:admins.edit')->name('admins.edit');
+
+
+    Route::put('/admins/{user}', [UserController::class, 'updateAdmin'])->middleware('permission:admins.edit')->name('admins.update');
+
+
     Route::delete('/admins/{user}', [UserController::class, 'destroy'])
-      ->middleware('check.role:manage_admins,super_admin')
+      ->middleware('permission:admins.delete')
       ->name('admins.destroy');
 
     Route::delete('/users/{user}', [UserController::class, 'destroy'])
-      ->middleware('check.role:manage_users|super_admin')
+      ->middleware('permission:users.delete')
       ->name('users.destroy');
+  });
+
+Route::middleware(['check.authenticated', 'permission:roles.view'])
+  ->prefix('admin')
+  ->group(function () {
+    Route::resource('roles', RoleController::class)
+      ->except(['show']);
+  })->name('roles.index');
+
+
+
+
+
+
+Route::prefix('admin')
+  ->middleware(['check.authenticated'])
+  ->group(function () {
+    Route::middleware('permission:design_options.view')->group(function () {
+      Route::get('/design-options', [DesignOptionController::class, 'index'])
+        ->name('admin.design-options.index');
+
+      Route::get('/design-options/create', [DesignOptionController::class, 'create'])
+        ->middleware('permission:design_options.create')->name('admin.design-options.create');
+
+      Route::post('/design-options', [DesignOptionController::class, 'store'])
+        ->middleware('permission:design_options.create')->name('admin.design-options.store');
+
+      Route::get('/design-options/{designOption}/edit', [DesignOptionController::class, 'edit'])
+        ->middleware('permission:design_options.edit')->name('admin.design-options.edit');
+
+      Route::put('/design-options/{designOption}', [DesignOptionController::class, 'update'])
+        ->middleware('permission:design_options.edit')->name('admin.design-options.update');
+
+      Route::delete('/design-options/{designOption}', [DesignOptionController::class, 'destroy'])
+        ->middleware('permission:design_options.delete')->name('admin.design-options.destroy');
+    });
+
+    // Admin designs listing
+    Route::middleware('permission:designs.view')->group(function () {
+      Route::get('/designs', [AdminDesignController::class, 'index'])
+        ->name('admin.designs.index');
+
+      Route::get('/designs/{design}', [AdminDesignController::class, 'show'])
+        ->name('admin.designs.show');
+    });
+  });
+
+//orders 
+Route::prefix('admin')
+  ->middleware(['check.authenticated', 'permission:orders.view'])
+  ->group(function () {
+    Route::get('/orders', [OrderController::class, 'index'])->name('admin.orders.index');
+    Route::get('/orders/{order}', [OrderController::class, 'show'])->name('admin.orders.show');
+    Route::put('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('admin.orders.updateStatus');
   });
 
 
@@ -194,12 +258,15 @@ Route::prefix('admin')
 // ========================
 
 
-Route::get('/lang/{locale}', function (Request $request, $locale) {
-    if (! in_array($locale, ['ar', 'en'])) {
-        abort(400);
-    }
 
-    $request->session()->put('app_locale', $locale);
-
-    return redirect()->back();
-})->name('lang.switch');
+Route::get("change_lang", function () {
+  $lang = App::getLocale();
+  if ($lang == "ar") {
+    App::setLocale("en");
+    session(['locale' => 'en']);
+  } else {
+    App::setLocale("ar");
+    session(['locale' => 'ar']);
+  }
+  return redirect()->back();
+})->name('switch.lang');

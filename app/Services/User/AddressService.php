@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Address;
+namespace App\Services\User;
 
 use App\Models\Address;
 use Illuminate\Support\Facades\DB;

@@ -1,8 +1,12 @@
 <?php
 
+
+use App\Http\Middleware\SetLocale;
 use Illuminate\Foundation\Application;
+use App\Http\Middleware\CheckAuthenticated;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Spatie\Permission\Middleware\PermissionMiddleware;
 
 return Application::configure(basePath: dirname(__DIR__))
   ->withRouting(
@@ -13,14 +17,13 @@ return Application::configure(basePath: dirname(__DIR__))
   )
   ->withMiddleware(function (Middleware $middleware) {
     $middleware->alias([
-      'check.authenticated' => \App\Http\Middleware\CheckAuthenticated::class,
-      'check.role' => \App\Http\Middleware\CheckRole::class,
-      'check.permission' => \App\Http\Middleware\CheckPermission::class,
+      'check.authenticated' => CheckAuthenticated::class,
+      'permission' => PermissionMiddleware::class,
+
     ]);
-    //web middleware group
-    // $middleware->group('web', [
-    //   'set.locale' => \App\Http\Middleware\SetLocale::class,
-    // ]);
+    $middleware->web(append: [
+      SetLocale::class,
+    ]);
   })
   ->withExceptions(function (Exceptions $exceptions) {
     //

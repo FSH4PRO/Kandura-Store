@@ -18,10 +18,6 @@ return [
             'provider' => 'customers',
         ],
 
-        'user' => [
-            'driver' => 'session',
-            'provider' => 'users',
-        ],
     ],
 
     'providers' => [
@@ -35,10 +31,6 @@ return [
             'model' => App\Models\Customer::class,
         ],
 
-        'users' => [
-            'driver' => 'eloquent',
-            'model'  => App\Models\User::class,
-        ],
     ],
 
     'passwords' => [

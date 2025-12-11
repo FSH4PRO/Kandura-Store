@@ -14,6 +14,14 @@ return [
     'active_users'     => 'Active users',
     'total_admins'     => 'Admins / Supervisors',
     'total_addresses'  => 'Total addresses',
+    'total_users_help' => 'Number of registered users in the system.',
+    'total_addresses_help' => 'Number of addresses registered in the system.',
+    'total_customers' => 'Total customers',
+    'total_customers_help' => 'Number of customers registered in the system.',
+    'total_designs' => 'Total designs',
+    'total_designs_help' => 'Number of designs registered in the system.',
+    'designs_today' => 'Designs added today',
+    'designs_today_help' => 'Number of designs added today.',
   ],
 
   'charts' => [
@@ -39,6 +47,8 @@ return [
     'locale'       => 'Current locale',
     'current_user' => 'Current user',
     'today'        => 'Today',
+    'total_admins' => 'Total admins',
+    'total_design_options' => 'Total design options',
   ],
 
   'roles'=>[

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Address;
+namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Address\AddressIndexRequest;
@@ -8,8 +8,7 @@ use App\Http\Requests\Address\StoreAddressRequest;
 use App\Http\Requests\Address\UpdateAddressRequest;
 use App\Http\Resources\AddressResource;
 use App\Models\Address;
-use App\Services\Address\AddressService;
-use Illuminate\Http\Request;
+use App\Services\User\AddressService;
 
 class AddressController extends Controller
 {

@@ -3,25 +3,22 @@
 namespace App\Models;
 
 use Spatie\MediaLibrary\HasMedia;
-use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Translatable\HasTranslations;
 use Illuminate\Database\Eloquent\Builder;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class User extends Authenticatable implements HasMedia
+class User extends Model implements HasMedia
 {
     use HasFactory,
         Notifiable,
         InteractsWithMedia,
         SoftDeletes,
-        HasTranslations,
-        HasRoles;
-
-    protected $guard_name = 'user';
+        HasTranslations;
 
     protected $translatable = ['name'];
 
@@ -67,10 +64,7 @@ class User extends Authenticatable implements HasMedia
 
     /* ===================== Scopes ===================== */
 
-    public function scopeHasRoleName(Builder $query, string $role): Builder
-    {
-        return $query->whereHas('roles', fn ($q) => $q->where('name', $role));
-    }
+   
 
     public function scopeSearch(Builder $query, ?string $search): Builder
     {
@@ -80,7 +74,7 @@ class User extends Authenticatable implements HasMedia
 
         return $query->where(function ($q) use ($search) {
             $q->where('name->en', 'like', "%{$search}%")
-              ->orWhere('name->ar', 'like', "%{$search}%");
+                ->orWhere('name->ar', 'like', "%{$search}%");
         });
     }
 
@@ -115,12 +109,7 @@ class User extends Authenticatable implements HasMedia
 
     /* ===================== relations ===================== */
 
-    public function address()
-    {
-        return $this->hasOne(Address::class);
-    }
 
-   
     public function usable()
     {
         return $this->morphTo();

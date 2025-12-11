@@ -1,15 +1,17 @@
 @php
   use Illuminate\Support\Facades\Auth;
-  use Illuminate\Support\Facades\Route;
 
-  // admin من جدول admins
+  // Admin من جدول admins
+  /** @var \App\Models\Admin|null $admin */
   $admin = Auth::guard('admin')->user();
 
-  // user من جدول users (اللي عليه الاسم والرولات)
-  $currentUser = $admin?->user?->fresh();
+  // User المرتبط (morphOne) عليه الاسم و الصورة الخ...
+  /** @var \App\Models\User|null $currentUser */
+  $currentUser = $admin?->user;
+
   $locale = app()->getLocale();
 
-  // تجهيز الاسم المعروض
+  // الاسم المعروض
   $displayName = config('variables.templateName');
 
   if ($currentUser) {
@@ -22,17 +24,23 @@
       }
   }
 
-  // الرول الأساسي
+  // الرول الأساسي (من موديل Admin نفسه لأن عليه HasRoles)
   $primaryRole = null;
-  if ($currentUser && method_exists($currentUser, 'getRoleNames')) {
-      $primaryRole = $currentUser->getRoleNames()->first();
+  if ($admin && method_exists($admin, 'getRoleNames')) {
+      $primaryRole = $admin->getRoleNames()->first();
   }
 
   // الإيميل من جدول admins
-  $adminEmail = $admin->email ?? null;
+  $adminEmail = $admin?->email;
+
+  // الصورة من MediaLibrary على موديل User (profile_image collection)
+  $avatarUrl = $currentUser?->avatar_url ?? asset('assets/img/avatars/1.png');
+
+  // اللغة التالية اللي رح نبدّل إلها
+  $switchTo = $locale === 'ar' ? 'en' : 'ar';
 @endphp
 
-{{--  Brand demo (display only for navbar-full and hide on below xl) --}}
+{{-- Brand (يظهر فقط في navbar-full وفوق xl) --}}
 @if (isset($navbarFull))
   <div class="navbar-brand app-brand demo d-none d-xl-flex py-0 me-4">
     <a href="{{ url('/') }}" class="app-brand-link gap-2">
@@ -44,7 +52,7 @@
   </div>
 @endif
 
-{{-- ! Not required for layout-without-menu --}}
+{{-- زر إظهار/إخفاء المينيو في الشاشات الصغيرة --}}
 @if (!isset($navbarHideToggle))
   <div
     class="layout-menu-toggle navbar-nav align-items-xl-center me-4 me-xl-0 {{ isset($contentNavbar) ? ' d-xl-none ' : '' }}">
@@ -60,7 +68,7 @@
     <div class="nav-item d-flex align-items-center">
       <i class="icon-base bx bx-search icon-md"></i>
       <input type="text" class="form-control border-0 shadow-none ps-1 ps-sm-2"
-        placeholder="{{ __('navbar.search_placeholder', [], $locale) ?? 'Search...' }}" aria-label="Search...">
+        placeholder="{{ __('navbar.search_placeholder') }}" aria-label="{{ __('navbar.search_placeholder') }}">
     </div>
   </div>
   {{-- /Search --}}
@@ -70,7 +78,7 @@
     <li class="nav-item navbar-dropdown dropdown-user dropdown">
       <a class="nav-link dropdown-toggle hide-arrow p-0" href="javascript:void(0);" data-bs-toggle="dropdown">
         <div class="avatar avatar-online">
-          <img src="{{ asset('assets/img/avatars/1.png') }}" alt class="w-px-40 h-auto rounded-circle">
+          <img src="{{ $avatarUrl }}" alt="avatar" class="w-px-40 h-auto rounded-circle">
         </div>
       </a>
       <ul class="dropdown-menu dropdown-menu-end">
@@ -79,7 +87,7 @@
             <div class="d-flex">
               <div class="flex-shrink-0 me-3">
                 <div class="avatar avatar-online">
-                  <img src="{{ asset('assets/img/avatars/1.png') }}" alt class="w-px-40 h-auto rounded-circle">
+                  <img src="{{ $avatarUrl }}" alt="avatar" class="w-px-40 h-auto rounded-circle">
                 </div>
               </div>
               <div class="flex-grow-1">
@@ -88,7 +96,7 @@
                   @if ($primaryRole)
                     {{ $primaryRole }}
                   @else
-                    {{ __('navbar.default_role', [], $locale) ?? 'User' }}
+                    {{ __('navbar.default_role') }}
                   @endif
                 </small>
                 @if ($adminEmail)
@@ -107,7 +115,7 @@
         <li>
           <a class="dropdown-item" href="javascript:void(0);">
             <i class="icon-base bx bx-cog icon-md me-3"></i>
-            <span>{{ __('navbar.settings', [], $locale) ?? 'Settings' }}</span>
+            <span>{{ __('navbar.settings') }}</span>
           </a>
         </li>
 
@@ -117,7 +125,7 @@
             <span class="d-flex align-items-center align-middle">
               <i class="flex-shrink-0 icon-base bx bx-credit-card icon-md me-3"></i>
               <span class="flex-grow-1 align-middle">
-                {{ __('navbar.billing', [], $locale) ?? 'Billing Plan' }}
+                {{ __('navbar.billing') }}
               </span>
               <span class="flex-shrink-0 badge rounded-pill bg-danger">4</span>
             </span>
@@ -135,7 +143,7 @@
             <button type="submit" class="dropdown-item"
               style="border: none; background: none; cursor: pointer; width: 100%; text-align: left;">
               <i class="icon-base bx bx-power-off icon-md me-3"></i>
-              <span>{{ __('navbar.logout', [], $locale) ?? 'Log Out' }}</span>
+              <span>{{ __('navbar.logout') }}</span>
             </button>
           </form>
         </li>
@@ -143,14 +151,8 @@
     </li>
 
     {{-- Language switch --}}
-    <li class="nav-item ms-3">
-      <a class="nav-link" href="{{ route('lang.switch', app()->getLocale() === 'ar' ? 'en' : 'ar') }}">
-        @if (app()->getLocale() === 'ar')
-          EN
-        @else
-          ع
-        @endif
-      </a>
+    <li class="nav-item">
+      <a class="nav-link" href="{{ route('switch.lang') }}">{{ ($locale === 'ar') ? 'EN' : 'AR' }}</a>
     </li>
   </ul>
 </div>

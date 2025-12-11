@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\Admin;
 use App\Models\Customer;
+use Spatie\Permission\Models\Role;
 
 class UserSeeder extends Seeder
 {
@@ -28,8 +29,12 @@ class UserSeeder extends Seeder
             'is_active' => true,
         ]);
 
+        $superAdminRole = Role::where("name", 'super_admin')
+            ->where("guard_name", 'admin')
+            ->first();
+
         // يعطى كل الأدوار
-        $superUser->assignRole('super_admin');
+        $super->assignRole($superAdminRole);
 
 
 
@@ -51,11 +56,14 @@ class UserSeeder extends Seeder
         ]);
 
         // تعطيه micro-roles حسب رغبتك
-        $adminUser->assignRole([
+        $admin->assignRole([
             'manage_users',
             'manage_addresses',
             'manage_orders',
+            'manage_designs',
+            'manage_design_options',
             'dashboard_access',
+
         ]);
 
 

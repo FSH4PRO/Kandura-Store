@@ -38,6 +38,7 @@ return [
 
   'actions' => [
     'delete'         => 'Delete',
+    'edit'           => 'Edit',
     'confirm_delete' => 'Are you sure you want to delete this admin?',
     'no_actions'     => 'No actions available',
   ],
@@ -53,6 +54,7 @@ return [
     'role_all'           => 'All roles',
     'submit'             => 'Filter',
     'reset'              => 'Reset',
+    'per_page'           => 'Admins per page',
   ],
   'create' => [
     'title'        => 'Create Admin - Kandura Store',
@@ -79,6 +81,13 @@ return [
 
   'messages' => [
     'created' => 'Admin created successfully.',
+  ],
+
+  'edit' => [
+    'title'        => 'Edit Admin - Kandura Store',
+    'heading'      => 'Edit Admin',
+    'subheading'   => 'Update the administrator account information.',
+    'back_to_list' => 'Back to admins list',
   ],
 
 ];
