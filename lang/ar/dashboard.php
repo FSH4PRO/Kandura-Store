@@ -1,0 +1,65 @@
+<?php
+
+return [
+
+  'title' => 'لوحة التحكم - Kandura Store',
+
+  'hero' => [
+    'hello'    => 'مرحباً :name 👋',
+    'subtitle' => 'لوحة التحكم – نظرة عامة على نظام :app.',
+  ],
+
+  'stats' => [
+    'total_users'      => 'إجمالي المستخدمين',
+    'active_users'     => 'المستخدمين الفعالين',
+    'total_admins'     => 'مدراء / مشرفين',
+    'total_addresses'  => 'إجمالي العناوين',
+    'total_users_help' => 'عدد المستخدمين المسجلين في النظام.',
+    'total_addresses_help' => 'عدد العناوين المسجلة في النظام.',
+    'total_customers' => 'إجمالي العملاء',
+    'total_customers_help' => 'عدد العملاء المسجلين في النظام.',
+    'total_designs' => 'إجمالي التصاميم',
+    'total_designs_help' => 'عدد التصاميم المسجلة في النظام.',
+    'designs_today' => 'التصاميم المضافة اليوم',
+    'designs_today_help' => 'عدد التصاميم المضافة اليوم.',
+
+  ],
+
+  'charts' => [
+    'users_growth_title'    => 'نمو المستخدمين',
+    'users_growth_subtitle' => 'عرض توضيحي',
+  ],
+
+  'latest_users' => [
+    'title'    => 'أحدث المستخدمين',
+    'show_all' => 'عرض الكل',
+    'empty'    => 'لا يوجد مستخدمون حتى الآن.',
+    'table'    => [
+      'user'       => 'المستخدم',
+      'email'      => 'البريد الإلكتروني',
+      'role'       => 'الدور',
+      'created_at' => 'تاريخ الإنشاء',
+    ],
+  ],
+
+  'system_info' => [
+    'title'        => 'معلومات سريعة عن النظام',
+    'laravel'      => 'إصدار Laravel',
+    'locale'       => 'اللغة الحالية',
+    'current_user' => 'المستخدم الحالي',
+    'today'        => 'تاريخ اليوم',
+    'total_admins' => 'إجمالي المدراء',
+    'total_design_options' => 'إجمالي خيارات التصميم',
+    
+  ],
+
+  'roles' => [
+        'customer' => 'مستخدم',
+        'admin' => 'مدير',
+        'super_admin' => 'مدير عام',
+
+
+
+  ],
+
+];
