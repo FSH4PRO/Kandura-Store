@@ -104,7 +104,6 @@
           <table class="table table-hover mb-0">
             <thead>
               <tr>
-                <th>#</th>
                 <th>{{ __('wallets.table.customer') }}</th>
                 <th>{{ __('wallets.table.balance') }}</th>
                 <th>{{ __('wallets.table.status') }}</th>
@@ -119,7 +118,6 @@
                   $user = $customer?->user;
                 @endphp
                 <tr>
-                  <td>#{{ $wallet->id }}</td>
                   <td>
                     {{ $user?->name ?? ($customer?->phone ?? '-') }}
                     @if ($customer?->phone)
@@ -180,7 +178,7 @@
                 </tr>
               @empty
                 <tr>
-                  <td colspan="6" class="text-center text-muted py-4">
+                  <td colspan="5" class="text-center text-muted py-4">
                     {{ __('wallets.table.empty') }}
                   </td>
                 </tr>

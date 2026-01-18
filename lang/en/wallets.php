@@ -29,7 +29,7 @@ return [
 
   'filters' => [
     'search_label'       => 'Search',
-    'search_placeholder' => 'Search by customer name or phone',
+    'search_placeholder' => 'Search all columns...',
     'status_label'       => 'Status',
     'status_all'         => 'All statuses',
     'status_active'      => 'Active',

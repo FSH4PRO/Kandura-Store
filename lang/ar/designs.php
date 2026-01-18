@@ -15,7 +15,7 @@ return [
   // الفلاتر
   'filters' => [
     'search_label'        => 'بحث',
-    'search_placeholder'  => 'ابحث بالاسم أو الوصف...',
+    'search_placeholder'  => 'البحث في جميع الأعمدة...',
     'size_label'          => 'المقاس',
     'size_all'            => 'كل المقاسات',
     'price_min'           => 'أقل سعر',
@@ -125,7 +125,7 @@ return [
     'description' => 'الوصف',
     'no_sizes' => 'لم يتم تحديد مقاسات لهذا التصميم.',
 
-    'customer_info' =>[
+    'customer_info' => [
       'title' => 'معلومات المصمم',
       'type_customer' => 'نوع المصمم',
       'customer_id' => 'معرف المصمم',

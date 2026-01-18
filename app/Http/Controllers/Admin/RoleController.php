@@ -5,8 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Services\Admin\RoleService;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 use Spatie\Permission\Models\Role;
+use App\Http\Requests\Admin\StoreRoleRequest;
+use App\Http\Requests\Admin\UpdateRoleRequest;
 
 class RoleController extends Controller
 {
@@ -17,7 +18,7 @@ class RoleController extends Controller
         $this->service = $service;
     }
 
-    
+
     public function index(Request $request)
     {
         $filters = [
@@ -29,7 +30,7 @@ class RoleController extends Controller
         return view('content.roles.index', compact('roles', 'filters'));
     }
 
-   
+
     public function create()
     {
         $groupedPermissions = $this->service->getGroupedPermissions();
@@ -37,22 +38,10 @@ class RoleController extends Controller
         return view('content.roles.create', compact('groupedPermissions'));
     }
 
-    
-    public function store(Request $request)
+
+    public function store(StoreRoleRequest $request)
     {
-        $data = $request->validate([
-            'name'          => [
-                'required',
-                'string',
-                'max:255',
-                Rule::unique('roles', 'name')->where('guard_name', 'admin'),
-            ],
-            'permissions'   => ['nullable', 'array'],
-            'permissions.*' => ['string', 'exists:permissions,name'],
-
-        ]);
-
-
+        $data = $request->validated();
 
         $this->service->create($data);
 
@@ -61,7 +50,7 @@ class RoleController extends Controller
             ->with('success', __('roles.messages.created'));
     }
 
-    
+
     public function edit(Role $role)
     {
         if ($role->guard_name !== 'admin') {
@@ -78,25 +67,14 @@ class RoleController extends Controller
         ));
     }
 
-    
-    public function update(Request $request, Role $role)
+
+    public function update(UpdateRoleRequest $request, Role $role)
     {
         if ($role->guard_name !== 'admin') {
             abort(404);
         }
 
-        $data = $request->validate([
-            'name'          => [
-                'required',
-                'string',
-                'max:255',
-                Rule::unique('roles', 'name')
-                    ->where('guard_name', 'admin')
-                    ->ignore($role->id),
-            ],
-            'permissions'   => ['nullable', 'array'],
-            'permissions.*' => ['string', 'exists:permissions,name'],
-        ],);
+        $data = $request->validated();
 
         $this->service->update($role, $data);
 
@@ -105,14 +83,14 @@ class RoleController extends Controller
             ->with('success', __('roles.messages.updated'));
     }
 
-    
+
     public function destroy(Role $role)
     {
         if ($role->guard_name !== 'admin') {
             abort(404);
         }
 
-        
+
         if (in_array($role->name, ['super_admin'])) {
             return redirect()
                 ->route('roles.index')

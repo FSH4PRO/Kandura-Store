@@ -15,15 +15,11 @@
 @endsection
 
 @php
-  
   $admin = auth('admin')->user();
-
   $currentUser = $admin?->user;
-
   $locale = app()->getLocale();
 
- 
-  $displayName = 'مشرف';
+  $displayName = __('dashboard.hero.default_admin_name');
   if ($currentUser) {
       $rawName = $currentUser->name;
       if (is_array($rawName)) {
@@ -32,212 +28,297 @@
           $displayName = $rawName;
       }
   }
-
-  $adminEmail = $admin?->email ?? '-';
-
-  
-  $totalUsers = $totalUsers ?? 0;
-  $totalActiveUsers = $totalActiveUsers ?? 0;
-  $totalAdmins = $totalAdmins ?? 0;
-  $totalAddresses = $totalAddresses ?? 0;
-
-  $totalCustomers = $totalCustomers ?? 0;
-  $totalDesigns = $totalDesigns ?? 0;
-  $totalDesignsToday = $totalDesignsToday ?? 0;
-  $totalDesignOptions = $totalDesignOptions ?? 0;
 @endphp
 
 @section('content')
-  <div class="row">
-  
-    <div class="col-12 mb-6">
-      <div class="card">
-        <div class="d-flex align-items-center justify-content-between flex-wrap gap-4">
-          <div class="card-body">
-            <h5 class="card-title text-primary mb-2">
-              {{ __('dashboard.hero.hello', ['name' => $displayName]) }}
-            </h5>
-            <p class="mb-3">
-              {!! __('dashboard.hero.subtitle', ['app' => 'Kandura Store']) !!}
-            </p>
-
-            <div class="d-flex flex-wrap gap-4">
-              <div>
-                <small class="text-muted d-block mb-1">{{ __('dashboard.stats.total_users') }}</small>
-                <h4 class="mb-0">{{ $totalUsers }}</h4>
-              </div>
-              <div>
-                <small class="text-muted d-block mb-1">{{ __('dashboard.stats.active_users') }}</small>
-                <h4 class="mb-0">{{ $totalActiveUsers }}</h4>
-              </div>
-              <div>
-                <small class="text-muted d-block mb-1">{{ __('dashboard.stats.total_admins') }}</small>
-                <h4 class="mb-0">{{ $totalAdmins }}</h4>
-              </div>
+  <!-- Welcome Section -->
+  <div class="row mb-6">
+    <div class="col-12">
+      <div class="card bg-primary text-white">
+        <div class="card-body">
+          <div class="row align-items-center">
+            <div class="col-md-8">
+              <h4 class="card-title text-white mb-2">
+                {{ __('dashboard.hero.hello', ['name' => $displayName]) }}
+              </h4>
+              <p class="mb-0 opacity-75">
+                {{ __('dashboard.hero.subtitle') }}
+              </p>
             </div>
-          </div>
-          <div class="card-body text-center">
-            <img src="{{ asset('assets/img/illustrations/man-with-laptop.png') }}" height="140"
-              alt="Kandura Store Admin" />
+            <div class="col-md-4 text-center">
+              <img src="{{ asset('assets/img/illustrations/man-with-laptop.png') }}" height="120" alt="Dashboard"
+                class="img-fluid">
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  
-  <div class="row">
-    {{-- Users & Addresses --}}
-    <div class="col-12 col-xl-8 mb-6">
-      <div class="row">
-        <div class="col-md-6 mb-6">
-          <div class="card h-100">
-            <div class="card-body">
-              <div class="d-flex align-items-start justify-content-between mb-4">
-                <div class="avatar flex-shrink-0">
-                  <span class="avatar-initial rounded bg-label-primary">
-                    <i class="bx bx-user icon-lg text-primary"></i>
-                  </span>
-                </div>
+  <!-- Key Metrics Cards -->
+  <div class="row mb-6">
+    <!-- Orders Metrics -->
+    <div class="col-xl-3 col-md-6 col-12 mb-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start">
+            <div class="avatar flex-shrink-0">
+              <div class="avatar-initial bg-label-success rounded">
+                <i class="bx bx-shopping-bag bx-sm"></i>
               </div>
-              <p class="mb-1">{{ __('dashboard.stats.total_users') }}</p>
-              <h4 class="card-title mb-2">{{ $totalUsers }}</h4>
-              <small class="text-muted">{{ __('dashboard.stats.total_users_help') }}</small>
+            </div>
+            <div class="dropdown">
+              <button class="btn p-0" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown">
+                <i class="bx bx-dots-vertical-rounded"></i>
+              </button>
+              <div class="dropdown-menu dropdown-menu-end">
+                <a class="dropdown-item"
+                  href="{{ route('admin.orders.index') }}">{{ __('dashboard.actions.view_all') }}</a>
+              </div>
             </div>
           </div>
-        </div>
-
-        <div class="col-md-6 mb-6">
-          <div class="card h-100">
-            <div class="card-body">
-              <div class="d-flex align-items-start justify-content-between mb-4">
-                <div class="avatar flex-shrink-0">
-                  <span class="avatar-initial rounded bg-label-success">
-                    <i class="bx bx-home-alt icon-lg text-success"></i>
-                  </span>
-                </div>
-              </div>
-              <p class="mb-1">{{ __('dashboard.stats.total_addresses') }}</p>
-              <h4 class="card-title mb-2">{{ $totalAddresses }}</h4>
-              <small class="text-muted">{{ __('dashboard.stats.total_addresses_help') }}</small>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {{-- Extra stats: Customers / Designs --}}
-      <div class="row">
-        <div class="col-md-4 mb-6">
-          <div class="card h-100">
-            <div class="card-body">
-              <div class="d-flex align-items-start justify-content-between mb-4">
-                <div class="avatar flex-shrink-0">
-                  <span class="avatar-initial rounded bg-label-info">
-                    <i class="bx bx-user-circle icon-lg"></i>
-                  </span>
-                </div>
-              </div>
-              <p class="mb-1">{{ __('dashboard.stats.total_customers') }}</p>
-              <h4 class="card-title mb-2">{{ $totalCustomers }}</h4>
-              <small class="text-muted">{{ __('dashboard.stats.total_customers_help') }}</small>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-4 mb-6">
-          <div class="card h-100">
-            <div class="card-body">
-              <div class="d-flex align-items-start justify-content-between mb-4">
-                <div class="avatar flex-shrink-0">
-                  <span class="avatar-initial rounded bg-label-warning">
-                    <i class="bx bx-layer icon-lg"></i>
-                  </span>
-                </div>
-              </div>
-              <p class="mb-1">{{ __('dashboard.stats.total_designs') }}</p>
-              <h4 class="card-title mb-2">{{ $totalDesigns }}</h4>
-              <small class="text-muted">{{ __('dashboard.stats.total_designs_help') }}</small>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-4 mb-6">
-          <div class="card h-100">
-            <div class="card-body">
-              <div class="d-flex align-items-start justify-content-between mb-4">
-                <div class="avatar flex-shrink-0">
-                  <span class="avatar-initial rounded bg-label-danger">
-                    <i class="bx bx-trending-up icon-lg"></i>
-                  </span>
-                </div>
-              </div>
-              <p class="mb-1">{{ __('dashboard.stats.designs_today') }}</p>
-              <h4 class="card-title mb-2">{{ $totalDesignsToday }}</h4>
-              <small class="text-muted">{{ __('dashboard.stats.designs_today_help') }}</small>
-            </div>
+          <div class="card-info mt-3">
+            <h6 class="mb-1">{{ __('dashboard.metrics.total_orders') }}</h6>
+            <h4 class="mb-0">{{ number_format($totalOrders) }}</h4>
+            <small class="text-success fw-medium">
+              <i class="bx bx-up-arrow-alt"></i> {{ __('dashboard.metrics.this_month', ['count' => $ordersThisMonth]) }}
+            </small>
           </div>
         </div>
       </div>
     </div>
 
-    {{-- /**** Simple Chart Placeholder ****/ --}}
-    <div class="col-12 col-xl-4 mb-6">
+    <!-- Completed Orders -->
+    <div class="col-xl-3 col-md-6 col-12 mb-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start">
+            <div class="avatar flex-shrink-0">
+              <div class="avatar-initial bg-label-info rounded">
+                <i class="bx bx-check-circle bx-sm"></i>
+              </div>
+            </div>
+          </div>
+          <div class="card-info mt-3">
+            <h6 class="mb-1">{{ __('dashboard.metrics.completed_orders') }}</h6>
+            <h4 class="mb-0">{{ number_format($completedOrders) }}</h4>
+            <small class="text-info fw-medium">
+              {{ $totalOrders > 0 ? round(($completedOrders / $totalOrders) * 100, 1) : 0 }}%
+              {{ __('dashboard.metrics.of_total') }}
+            </small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Users -->
+    <div class="col-xl-3 col-md-6 col-12 mb-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start">
+            <div class="avatar flex-shrink-0">
+              <div class="avatar-initial bg-label-primary rounded">
+                <i class="bx bx-user bx-sm"></i>
+              </div>
+            </div>
+            <div class="dropdown">
+              <button class="btn p-0" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown">
+                <i class="bx bx-dots-vertical-rounded"></i>
+              </button>
+              <div class="dropdown-menu dropdown-menu-end">
+                <a class="dropdown-item"
+                  href="{{ route('users.index') }}">{{ __('dashboard.actions.view_all') }}</a>
+              </div>
+            </div>
+          </div>
+          <div class="card-info mt-3">
+            <h6 class="mb-1">{{ __('dashboard.metrics.total_users') }}</h6>
+            <h4 class="mb-0">{{ number_format($totalUsers) }}</h4>
+            <small class="text-primary fw-medium">
+              {{ $totalActiveUsers }} {{ __('dashboard.metrics.active') }}
+            </small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Wallets -->
+    <div class="col-xl-3 col-md-6 col-12 mb-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start">
+            <div class="avatar flex-shrink-0">
+              <div class="avatar-initial bg-label-warning rounded">
+                <i class="bx bx-wallet bx-sm"></i>
+              </div>
+            </div>
+            <div class="dropdown">
+              <button class="btn p-0" type="button" id="dropdownMenuButton3" data-bs-toggle="dropdown">
+                <i class="bx bx-dots-vertical-rounded"></i>
+              </button>
+              <div class="dropdown-menu dropdown-menu-end">
+                <a class="dropdown-item"
+                  href="{{ route('admin.wallets.index') }}">{{ __('dashboard.actions.view_all') }}</a>
+                <a class="dropdown-item"
+                  href="{{ route('dashboard.transactions.index') }}">{{ __('dashboard.actions.view_transactions') }}</a>
+              </div>
+            </div>
+          </div>
+          <div class="card-info mt-3">
+            <h6 class="mb-1">{{ __('dashboard.metrics.total_wallet_balance') }}</h6>
+            <h4 class="mb-0">{{ number_format($totalWalletBalance, 2) }} <small
+                class="text-muted">{{ __('currency.sar') }}</small></h4>
+            <small class="text-warning fw-medium">
+              {{ $activeWallets }} {{ __('dashboard.metrics.active_wallets') }}
+            </small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Row -->
+  <div class="row mb-6">
+    <!-- User Growth Chart -->
+    <div class="col-xl-6 mb-4">
       <div class="card h-100">
         <div class="card-header d-flex justify-content-between align-items-center">
-          <h5 class="mb-0">{{ __('dashboard.charts.users_growth_title') }}</h5>
-          <small class="text-muted">{{ __('dashboard.charts.users_growth_subtitle') }}</small>
+          <div>
+            <h5 class="card-title mb-1">{{ __('dashboard.charts.user_growth') }}</h5>
+            <p class="card-subtitle mb-0">{{ __('dashboard.charts.last_12_months') }}</p>
+          </div>
         </div>
         <div class="card-body">
-          {{-- JS يرسم عليها مخطط نمو المستخدمين --}}
-          <div id="usersGrowthChart"></div>
+          <div id="userGrowthChart" data-user-growth="{{ json_encode($userGrowth) }}"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Order Growth Chart -->
+    <div class="col-xl-6 mb-4">
+      <div class="card h-100">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <div>
+            <h5 class="card-title mb-1">{{ __('dashboard.charts.order_growth') }}</h5>
+            <p class="card-subtitle mb-0">{{ __('dashboard.charts.last_12_months') }}</p>
+          </div>
+        </div>
+        <div class="card-body">
+          <div id="orderGrowthChart" data-order-growth="{{ json_encode($orderGrowth) }}"></div>
         </div>
       </div>
     </div>
   </div>
 
-  {{-- /**** System Info & Quick Stats ****/ --}}
+  <!-- Bottom Row -->
   <div class="row">
-    <div class="col-lg-4 mb-6">
+    <!-- Recent Transactions -->
+    <div class="col-xl-6 mb-4">
       <div class="card h-100">
-        <div class="card-header">
-          <h5 class="mb-0">{{ __('dashboard.system_info.title') }}</h5>
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="card-title mb-0">{{ __('dashboard.recent_transactions.title') }}</h5>
+          <a href="{{ route('dashboard.transactions.index') }}" class="btn btn-sm btn-outline-primary">
+            {{ __('dashboard.actions.view_all') }}
+          </a>
         </div>
-        <div class="card-body">
-          <ul class="list-unstyled mb-0">
-            <li class="mb-3 d-flex justify-content-between align-items-center">
-              <span>{{ __('dashboard.system_info.laravel') }}</span>
-              <span class="fw-medium">{{ app()->version() }}</span>
-            </li>
-
-            <li class="mb-3 d-flex justify-content-between align-items-center">
-              <span>{{ __('dashboard.system_info.locale') }}</span>
-              <span class="fw-medium">{{ app()->getLocale() }}</span>
-            </li>
-
-            <li class="mb-3 d-flex justify-content-between align-items-center">
-              <span>{{ __('dashboard.system_info.current_user') }}</span>
-              <span class="fw-medium">{{ $adminEmail }}</span>
-            </li>
-
-            <li class="mb-3 d-flex justify-content-between align-items-center">
-              <span>{{ __('dashboard.system_info.total_admins') }}</span>
-              <span class="fw-medium">{{ $totalAdmins }}</span>
-            </li>
-
-            <li class="mb-3 d-flex justify-content-between align-items-center">
-              <span>{{ __('dashboard.system_info.total_design_options') }}</span>
-              <span class="fw-medium">{{ $totalDesignOptions }}</span>
-            </li>
-
-            <li class="mb-1 d-flex justify-content-between align-items-center">
-              <span>{{ __('dashboard.system_info.today') }}</span>
-              <span class="fw-medium">{{ now()->format('Y-m-d') }}</span>
-            </li>
-          </ul>
+        <div class="card-body pb-0">
+          @if ($recentTransactions->count() > 0)
+            @foreach ($recentTransactions as $transaction)
+              <div class="d-flex align-items-center mb-3">
+                @if ($transaction->wallet->customer->user->getFirstMediaUrl('profile'))
+                  <img src="{{ $transaction->wallet->customer->user->getFirstMediaUrl('profile') }}" alt="Avatar"
+                    class="rounded-circle me-3" width="40" height="40">
+                @else
+                  <div class="avatar avatar-sm me-3">
+                    <span
+                      class="avatar-initial rounded-circle bg-label-primary">{{ substr($transaction->wallet->customer->user->name, 0, 1) }}</span>
+                  </div>
+                @endif
+                <div class="flex-grow-1">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">{{ $transaction->wallet->customer->user->name }}</h6>
+                    <small class="text-{{ $transaction->type === 'credit' ? 'success' : 'danger' }} fw-medium">
+                      {{ $transaction->type === 'credit' ? '+' : '-' }}{{ number_format($transaction->amount, 2) }}
+                      {{ __('currency.sar') }}
+                    </small>
+                  </div>
+                  <small class="text-muted">{{ $transaction->created_at->diffForHumans() }}</small>
+                </div>
+              </div>
+            @endforeach
+          @else
+            <div class="text-center py-4">
+              <i class="bx bx-receipt bx-lg text-muted mb-2"></i>
+              <p class="text-muted mb-0">{{ __('dashboard.recent_transactions.no_transactions') }}</p>
+            </div>
+          @endif
         </div>
       </div>
     </div>
 
-    {{-- ممكن تضيف مثلاً آخر التصاميم / آخر المستخدمين لاحقاً --}}
+    <!-- Today's Summary -->
+    <div class="col-xl-6 mb-4">
+      <div class="card h-100">
+        <div class="card-header">
+          <h5 class="card-title mb-0">{{ __('dashboard.today_summary.title') }}</h5>
+        </div>
+        <div class="card-body">
+          <div class="row g-4">
+            <div class="col-6">
+              <div class="d-flex align-items-center">
+                <div class="avatar avatar-sm me-3">
+                  <div class="avatar-initial bg-label-primary rounded">
+                    <i class="bx bx-shopping-bag bx-sm"></i>
+                  </div>
+                </div>
+                <div>
+                  <h4 class="mb-0">{{ $todayOrders }}</h4>
+                  <small class="text-muted">{{ __('dashboard.today_summary.orders') }}</small>
+                </div>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="d-flex align-items-center">
+                <div class="avatar avatar-sm me-3">
+                  <div class="avatar-initial bg-label-success rounded">
+                    <i class="bx bx-user bx-sm"></i>
+                  </div>
+                </div>
+                <div>
+                  <h4 class="mb-0">{{ $todayUsers }}</h4>
+                  <small class="text-muted">{{ __('dashboard.today_summary.new_users') }}</small>
+                </div>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="d-flex align-items-center">
+                <div class="avatar avatar-sm me-3">
+                  <div class="avatar-initial bg-label-info rounded">
+                    <i class="bx bx-transfer bx-sm"></i>
+                  </div>
+                </div>
+                <div>
+                  <h4 class="mb-0">{{ $todayTransactions }}</h4>
+                  <small class="text-muted">{{ __('dashboard.today_summary.transactions') }}</small>
+                </div>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="d-flex align-items-center">
+                <div class="avatar avatar-sm me-3">
+                  <div class="avatar-initial bg-label-warning rounded">
+                    <i class="bx bx-time bx-sm"></i>
+                  </div>
+                </div>
+                <div>
+                  <h4 class="mb-0">{{ $pendingOrders }}</h4>
+                  <small class="text-muted">{{ __('dashboard.today_summary.pending_orders') }}</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 @endsection

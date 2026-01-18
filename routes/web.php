@@ -10,6 +10,7 @@ use App\Http\Controllers\cards\CardBasic;
 use App\Http\Controllers\pages\MiscError;
 use App\Http\Controllers\layouts\Container;
 use App\Http\Controllers\dashboard\Analytics;
+use App\Http\Controllers\dashboard\Transactions;
 use App\Http\Controllers\layouts\WithoutMenu;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController;
@@ -55,6 +56,7 @@ use App\Http\Controllers\authentications\ForgotPasswordBasic;
 use App\Http\Controllers\user_interface\PaginationBreadcrumbs;
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Admin\DesignController as AdminDesignController;
+use App\Http\Controllers\admin\CouponController;
 
 
 
@@ -141,6 +143,17 @@ Route::get('/', [Analytics::class, 'index'])
   ->middleware(['check.authenticated', 'permission:dashboard.access'])
   ->name('dashboard-analytics');
 
+// ========================
+// Transactions
+// ========================
+Route::get('/transactions', [Transactions::class, 'index'])
+  ->middleware(['check.authenticated', 'permission:transactions.view'])
+  ->name('dashboard.transactions.index');
+
+Route::get('/transactions/{transaction}', [Transactions::class, 'show'])
+  ->middleware(['check.authenticated', 'permission:transactions.view'])
+  ->name('dashboard.transactions.show');
+
 
 // ========================
 // Admin Auth Routes
@@ -197,6 +210,11 @@ Route::prefix('admin')
     Route::delete('/users/{user}', [UserController::class, 'destroy'])
       ->middleware('permission:users.delete')
       ->name('users.destroy');
+
+    // Get user addresses for modal
+    Route::get('/users/{user}/addresses', [UserController::class, 'getUserAddresses'])
+      ->middleware('permission:users.view')
+      ->name('users.addresses');
   });
 
 Route::middleware(['check.authenticated', 'permission:roles.view'])
@@ -248,8 +266,8 @@ Route::prefix('admin')
 Route::prefix('admin')
   ->middleware(['check.authenticated', 'permission:orders.view'])
   ->group(function () {
-    Route::get('/orders', [OrderController::class, 'index'])->name('admin.orders.index');
-    Route::get('/orders/{order}', [OrderController::class, 'show'])->name('admin.orders.show');
+    Route::get('/orders', [OrderController::class, 'index'])->middleware('permission:orders.view')->name('admin.orders.index');
+    Route::get('/orders/{order}', [OrderController::class, 'show'])->middleware('permission:orders.view')->name('admin.orders.show');
     Route::put('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('admin.orders.updateStatus');
   });
 
@@ -263,6 +281,20 @@ Route::prefix('admin')
     Route::post('/wallets/bulk-topup', [WalletController::class, 'bulkTopup'])->name('admin.wallets.bulk-topup');
     Route::patch('/wallets/{wallet}/activate', [WalletController::class, 'activate'])->name('admin.wallets.activate');
     Route::patch('/wallets/{wallet}/deactivate', [WalletController::class, 'deactivate'])->name('admin.wallets.deactivate');
+  });
+
+//coupons
+Route::prefix('admin')
+  ->middleware(['check.authenticated'])
+  ->group(function () {
+    Route::get('/coupons', [CouponController::class, 'index'])->middleware('permission:coupons.view')->name('coupons.index');
+    Route::get('/coupons/create', [CouponController::class, 'create'])->middleware('permission:coupons.create')->name('coupons.create');
+    Route::post('/coupons', [CouponController::class, 'store'])->middleware('permission:coupons.create')->name('coupons.store');
+    Route::get('/coupons/{coupon}', [CouponController::class, 'show'])->middleware('permission:coupons.view')->name('coupons.show');
+    Route::get('/coupons/{coupon}/edit', [CouponController::class, 'edit'])->middleware('permission:coupons.edit')->name('coupons.edit');
+    Route::put('/coupons/{coupon}', [CouponController::class, 'update'])->middleware('permission:coupons.edit')->name('coupons.update');
+    Route::delete('/coupons/{coupon}', [CouponController::class, 'destroy'])->middleware('permission:coupons.delete')->name('coupons.destroy');
+    Route::patch('/coupons/{coupon}/toggle', [CouponController::class, 'toggle'])->middleware('permission:coupons.edit')->name('admin.coupons.toggle');
   });
 
 //search

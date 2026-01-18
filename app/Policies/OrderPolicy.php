@@ -117,7 +117,50 @@ class OrderPolicy
     public function updateStatus(Admin $admin, Order $order): bool
     {
         // Admins with order management permissions can update order status
-        return $admin->hasRole(['super_admin', 'manage_orders'])
-            || $admin->can('orders.update');
+        return $admin->can('orders.change_status');
+    }
+
+
+
+
+
+    public function applyCoupon(Customer $customer, Order $order): bool
+    {
+        if ($customer->id !== $order->customer_id) {
+            return false;
+        }
+
+        // لا تطبق كوبون إذا الدفع pending أو paid
+        if (in_array($order->payment_status, [PaymentStatus::Pending, PaymentStatus::Paid], true)) {
+            return false;
+        }
+
+        // لا تطبق كوبون إذا الطلب canceled/rejected (حسب عندك)
+        if (in_array($order->status, [OrderStatus::Canceled, OrderStatus::Rejected], true)) {
+            return false;
+        }
+
+        // لا تطبق كوبون إذا في كوبون أصلاً
+        return $order->coupon_id === null;
+    }
+
+    public function removeCoupon(Customer $customer, Order $order): bool
+    {
+        if ($customer->id !== $order->customer_id) {
+            return false;
+        }
+
+        // لا تحذف كوبون إذا الدفع pending أو paid
+        if (in_array($order->payment_status, [PaymentStatus::Pending, PaymentStatus::Paid], true)) {
+            return false;
+        }
+
+        // لا تحذف كوبون إذا الطلب canceled/rejected
+        if (in_array($order->status, [OrderStatus::Canceled, OrderStatus::Rejected], true)) {
+            return false;
+        }
+
+        // يمكن حذف كوبون إذا في كوبون مطبق
+        return $order->coupon_id !== null;
     }
 }

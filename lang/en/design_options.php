@@ -27,7 +27,7 @@ return [
 
   'filters' => [
     'search_label'         => 'Search',
-    'search_placeholder'   => 'Search by name',
+    'search_placeholder'   => 'Search all columns...',
     'type_label'           => 'Type',
     'type_all'             => 'All types',
     'is_active_label'      => 'Status',

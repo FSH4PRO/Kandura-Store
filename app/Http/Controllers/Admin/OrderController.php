@@ -6,8 +6,9 @@ use App\Enums\OrderStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Services\Admin\OrderService;
-use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use App\Http\Requests\Admin\ListOrdersRequest;
+use App\Http\Requests\Admin\UpdateOrderStatusRequest;
 
 class OrderController extends Controller
 {
@@ -24,22 +25,14 @@ class OrderController extends Controller
     /**
      * Orders index (admin side)
      */
-    public function index(Request $request)
+    public function index(ListOrdersRequest $request)
     {
         $admin = auth('admin')->user();
 
         // Authorize using policy
         $this->authorize('viewAny', Order::class);
 
-        $filters = $request->validate([
-            'search'     => ['nullable', 'string', 'max:255'],
-            'status'     => ['nullable', Rule::in(array_column(OrderStatus::cases(), 'value'))],
-            'total_min'  => ['nullable', 'numeric', 'min:0'],
-            'total_max'  => ['nullable', 'numeric', 'min:0'],
-            'per_page'   => ['nullable', 'integer', 'min:1', 'max:100'],
-            'sort_by'    => ['nullable', 'in:id,created_at,total_amount'],
-            'sort_dir'   => ['nullable', 'in:asc,desc'],
-        ]);
+        $filters = $request->validated();
 
         $orders = $this->service->list($filters);
         $statusOptions = OrderStatus::cases();
@@ -61,7 +54,7 @@ class OrderController extends Controller
         // Authorize using policy
         $this->authorize('viewAsAdmin', $order);
 
-        $order->load(['customer.user', 'items.design', 'items.size', 'items.options.option']);
+        $order->load(['customer.user', 'items.design', 'items.size', 'items.options.option', 'coupon']);
 
         $statusOptions = OrderStatus::cases();
 
@@ -74,16 +67,14 @@ class OrderController extends Controller
     /**
      * Update order status
      */
-    public function updateStatus(Request $request, Order $order)
+    public function updateStatus(UpdateOrderStatusRequest $request, Order $order)
     {
         $admin = auth('admin')->user();
 
         // Authorize using policy
         $this->authorize('updateStatus', $order);
 
-        $data = $request->validate([
-            'status' => ['required', Rule::in(array_column(OrderStatus::cases(), 'value'))],
-        ]);
+        $data = $request->validated();
 
         $this->service->updateStatus($order, $data['status']);
 

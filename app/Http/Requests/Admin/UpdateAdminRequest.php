@@ -11,7 +11,7 @@ class UpdateAdminRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return auth('admin')->check() && auth('admin')->user()->can('admins.edit');
     }
 
     /**
@@ -22,7 +22,8 @@ class UpdateAdminRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'roles'   => ['nullable', 'array'],
+            'roles.*' => ['string', 'exists:roles,name'],
         ];
     }
 }

@@ -12,7 +12,7 @@ return [
 
     'filters' => [
       'search_label'       => 'بحث',
-      'search_placeholder' => 'ابحث باسم الدور...',
+      'search_placeholder' => 'البحث في جميع الأعمدة...',
       'submit'             => 'تطبيق الفلتر',
       'reset'              => 'إعادة تعيين',
     ],

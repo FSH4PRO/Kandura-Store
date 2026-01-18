@@ -31,7 +31,7 @@ class AuthController extends Controller
 
         if (! $admin) {
             return back()
-                ->withErrors(['email' => 'Invalid credentials or not authorized'])
+                ->withErrors(['email' => __('messages.admin_invalid_credentials')])
                 ->withInput($request->only('email', 'remember'));
         }
 
@@ -48,7 +48,7 @@ class AuthController extends Controller
 
     public function logout(Request $request): RedirectResponse
     {
-        
+
         Auth::guard('admin')->logout();
 
         $request->session()->invalidate();

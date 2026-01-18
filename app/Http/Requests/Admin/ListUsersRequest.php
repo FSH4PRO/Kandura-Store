@@ -18,6 +18,7 @@ class ListUsersRequest extends FormRequest
         return [
             'search'   => ['nullable', 'string', 'max:255'],
             'status'   => ['nullable', 'in:active,inactive'],
+            'role'     => ['nullable', 'string', 'max:255'],
             'sort_by'  => ['nullable', 'in:id,name,created_at'],
             'sort_dir' => ['nullable', 'in:asc,desc'],
             'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],

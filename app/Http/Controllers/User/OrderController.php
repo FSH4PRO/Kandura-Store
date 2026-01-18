@@ -48,8 +48,6 @@ class OrderController extends Controller
 
     public function show(Order $order)
     {
-        $customer = auth('customer')->user();
-
         $this->authorize('view', $order);
 
         $order->load([
@@ -68,8 +66,6 @@ class OrderController extends Controller
 
     public function cancel(Order $order)
     {
-        $customer = auth('customer')->user();
-
         // Authorization is handled by the policy (includes status check)
         $this->authorize('cancel', $order);
 

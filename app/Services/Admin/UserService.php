@@ -17,7 +17,7 @@ class UserService
         $query = User::query()
             ->with(['usable' => function ($morph) {
                 $morph->withTrashed();
-            }])
+            }, 'usable.addresses.city'])
             ->where('usable_type', Customer::class);
 
         $query

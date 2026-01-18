@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Services\Search\SearchService;
 use Illuminate\Http\Request;
+use App\Http\Requests\Admin\SearchRequest;
+use App\Http\Requests\Admin\SearchSuggestionsRequest;
 
 class SearchController extends Controller
 {
@@ -15,7 +17,7 @@ class SearchController extends Controller
     /**
      * Global search results page
      */
-    public function index(Request $request)
+    public function index(SearchRequest $request)
     {
         $query = $request->get('q', '');
         $types = $request->get('types', []);
@@ -35,13 +37,9 @@ class SearchController extends Controller
     /**
      * AJAX endpoint for autocomplete suggestions
      */
-    public function suggestions(Request $request)
+    public function suggestions(SearchSuggestionsRequest $request)
     {
         $query = $request->get('q', '');
-
-        if (strlen(trim($query)) < 2) {
-            return response()->json([]);
-        }
 
         $suggestions = $this->searchService->getSuggestions($query);
 

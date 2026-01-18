@@ -35,14 +35,14 @@
           <form method="GET" action="{{ route('admins.index') }}" class="row g-3 align-items-end">
 
             {{-- Search --}}
-            <div class="col-md-4">
+            <div class="col-md-3">
               <label class="form-label">{{ __('admins.filters.search_label') }}</label>
               <input type="text" name="search" class="form-control"
                 placeholder="{{ __('admins.filters.search_placeholder') }}" value="{{ $filters['search'] ?? '' }}">
             </div>
 
             {{-- Status --}}
-            <div class="col-md-3">
+            <div class="col-md-2">
               <label class="form-label">{{ __('admins.filters.status_label') }}</label>
               <select name="status" class="form-select">
                 <option value="">{{ __('admins.filters.status_all') }}</option>
@@ -55,8 +55,21 @@
               </select>
             </div>
 
+            {{-- Role --}}
+            <div class="col-md-2">
+              <label class="form-label">{{ __('admins.filters.role_label') }}</label>
+              <select name="role" class="form-select">
+                <option value="">{{ __('admins.filters.role_all') }}</option>
+                @foreach ($roles as $role)
+                  <option value="{{ $role }}" {{ ($filters['role'] ?? '') === $role ? 'selected' : '' }}>
+                    {{ __('admins.roles.' . $role) ?: $role }}
+                  </option>
+                @endforeach
+              </select>
+            </div>
+
             {{-- Per Page --}}
-            <div class="col-md-3">
+            <div class="col-md-2">
               <label class="form-label">{{ __('admins.filters.per_page') }}</label>
               <select name="per_page" class="form-select">
                 @foreach ([10, 25, 50, 100] as $num)
@@ -67,7 +80,7 @@
               </select>
             </div>
 
-            <div class="col-md-2 d-flex gap-2">
+            <div class="col-md-3 d-flex gap-2">
               <button type="submit" class="btn btn-primary flex-grow-1">
                 {{ __('admins.filters.submit') }}
               </button>
@@ -91,7 +104,7 @@
           <table class="table table-hover mb-0">
             <thead>
               <tr>
-                <th>{{ __('admins.table.id') }}</th>
+                <th>{{ __('admins.table.profile_picture') }}</th>
                 <th>{{ __('admins.table.name') }}</th>
                 <th>{{ __('admins.table.email') }}</th>
                 <th>{{ __('admins.table.roles') }}</th>
@@ -133,8 +146,11 @@
                 @endphp
 
                 <tr>
-                  {{-- ID --}}
-                  <td>{{ $user->id }}</td>
+                  {{-- Profile Picture --}}
+                  <td>
+                    <img src="{{ $user->getFirstMediaUrl('profile_image') ?: asset('images/default-avatar.png') }}"
+                      alt="Profile Picture" class="rounded-circle" width="40" height="40">
+                  </td>
 
                   {{-- Name --}}
                   <td>

@@ -137,6 +137,26 @@
       </li>
     @endcan
 
+    {{-- Transactions list --}}
+    @can('transactions.view')
+      <li class="menu-item {{ request()->routeIs('dashboard.transactions.*') ? 'active' : '' }}">
+        <a href="{{ route('dashboard.transactions.index') }}" class="menu-link">
+          <i class="menu-icon icon-base bx bx-transfer"></i>
+          <div>{{ __('menu.transactions') }}</div>
+        </a>
+      </li>
+    @endcan
+
+    {{-- Coupons list --}}
+    @can('coupons.view')
+      <li class="menu-item {{ request()->routeIs('coupons.*') ? 'active' : '' }}">
+        <a href="{{ route('coupons.index') }}" class="menu-link">
+          <i class="menu-icon icon-base bx bx-gift"></i>
+          <div>{{ __('menu.coupons') }}</div>
+        </a>
+      </li>
+    @endcan
+
   </ul>
 
 </aside>

@@ -30,4 +30,9 @@ return [
   'unauthenticated'      => 'Unauthenticated',
   'success_operation' => 'Operation completed successfully',
   'failed_operation' => 'Operation failed',
+  'coupon_applied' => 'Coupon applied successfully',
+  'coupon_removed' => 'Coupon removed successfully',
+  'wallet_transactions' => 'Wallet transactions retrieved successfully',
+  'wallet_details' => 'Wallet details retrieved successfully',
+  'admin_invalid_credentials' => 'Invalid credentials or not authorized',
 ];

@@ -17,14 +17,18 @@ class OrderService
 
             $query->where(function ($q) use ($search) {
                 if (is_numeric($search)) {
-                    $q->orWhere('id', (int) $search);
+                    $q->orWhere('id', (int) $search)
+                        ->orWhere('total', 'like', "%{$search}%");
                 }
                 $q->orWhereHas('customer', function ($q1) use ($search) {
                     $q1->whereHas('user', function ($q2) use ($search) {
                         $q2->where('name->en', 'like', "%{$search}%")
                             ->orWhere('name->ar', 'like', "%{$search}%");
                     });
-                });
+                })
+                    ->orWhere('status', 'like', "%{$search}%")
+                    ->orWhere('payment_method', 'like', "%{$search}%")
+                    ->orWhere('payment_status', 'like', "%{$search}%");
             });
         }
 

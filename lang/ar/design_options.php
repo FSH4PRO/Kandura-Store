@@ -27,7 +27,7 @@ return [
 
   'filters' => [
     'search_label'         => 'بحث',
-    'search_placeholder'   => 'ابحث بالاسم',
+    'search_placeholder'   => 'البحث في جميع الأعمدة...',
     'type_label'           => 'النوع',
     'type_all'             => 'كل الأنواع',
     'is_active_label'      => 'الحالة',

@@ -54,6 +54,35 @@
             </li>
 
             <li class="mb-3 d-flex justify-content-between">
+              <span>{{ __('orders.show.subtotal') }}</span>
+              <span class="fw-medium">
+                {{ number_format($order->subtotal, 2) }}
+                @if (!empty($order->currency))
+                  <small class="text-muted">{{ $order->currency }}</small>
+                @endif
+              </span>
+            </li>
+
+            @if ($order->discount_total > 0)
+              <li class="mb-3 d-flex justify-content-between">
+                <span>{{ __('orders.show.discount') }}</span>
+                <span class="fw-medium text-danger">
+                  -{{ number_format($order->discount_total, 2) }}
+                  @if (!empty($order->currency))
+                    <small class="text-muted">{{ $order->currency }}</small>
+                  @endif
+                </span>
+              </li>
+            @endif
+
+            @if ($order->coupon)
+              <li class="mb-3 d-flex justify-content-between">
+                <span>{{ __('orders.show.coupon') }}</span>
+                <span class="fw-medium">{{ $order->coupon->code }}</span>
+              </li>
+            @endif
+
+            <li class="mb-3 d-flex justify-content-between">
               <span>{{ __('orders.show.total') }}</span>
               <span class="fw-medium">
                 {{ number_format($order->total, 2) }}
@@ -79,32 +108,34 @@
           </ul>
 
           {{-- Change status form --}}
-          <hr class="my-4">
+          @can('orders.change_status')
+            <hr class="my-4">
 
-          <h6 class="mb-3">{{ __('orders.show.change_status_title') }}</h6>
+            <h6 class="mb-3">{{ __('orders.show.change_status_title') }}</h6>
 
-          <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST">
-            @csrf
-            @method('PUT')
+            <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST">
+              @csrf
+              @method('PUT')
 
-            <div class="mb-3">
-              <label class="form-label">{{ __('orders.show.status_field') }}</label>
-              <select name="status" class="form-select @error('status') is-invalid @enderror">
-                @foreach ($statusOptions as $status)
-                  <option value="{{ $status->value }}" {{ $statusValue === $status->value ? 'selected' : '' }}>
-                    {{ __('orders.statuses.' . $status->value) }}
-                  </option>
-                @endforeach
-              </select>
-              @error('status')
-                <div class="invalid-feedback">{{ $message }}</div>
-              @enderror
-            </div>
+              <div class="mb-3">
+                <label class="form-label">{{ __('orders.show.status_field') }}</label>
+                <select name="status" class="form-select @error('status') is-invalid @enderror">
+                  @foreach ($statusOptions as $status)
+                    <option value="{{ $status->value }}" {{ $statusValue === $status->value ? 'selected' : '' }}>
+                      {{ __('orders.statuses.' . $status->value) }}
+                    </option>
+                  @endforeach
+                </select>
+                @error('status')
+                  <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+              </div>
 
-            <button type="submit" class="btn btn-primary">
-              {{ __('orders.show.change_status_button') }}
-            </button>
-          </form>
+              <button type="submit" class="btn btn-primary">
+                {{ __('orders.show.change_status_button') }}
+              </button>
+            </form>
+          @endcan
         </div>
       </div>
     </div>

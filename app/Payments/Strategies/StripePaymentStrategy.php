@@ -18,12 +18,10 @@ class StripePaymentStrategy implements PaymentStrategy
   public function pay(Customer $customer, Order $order, PayOrderData $data): array
   {
     try {
-      // Validate order amount
-      if ((float) $order->total_amount <= 0) {
+      if ((float) $order->total <= 0) {
         throw new \RuntimeException('Invalid order amount.');
       }
 
-      // Validate customer email for Stripe
       if (empty($customer->email)) {
         throw new \RuntimeException('Customer email is required for payment.');
       }
@@ -32,7 +30,6 @@ class StripePaymentStrategy implements PaymentStrategy
 
       $session = Session::create([
         'mode' => 'payment',
-
         'customer_email' => $customer->email,
 
         'line_items' => [
@@ -42,7 +39,7 @@ class StripePaymentStrategy implements PaymentStrategy
               'product_data' => [
                 'name' => 'Order #' . $order->id,
               ],
-              'unit_amount' => (int) round($order->total_amount * 100),
+              'unit_amount' => (int) round($order->total * 100),
             ],
             'quantity' => 1,
           ],
@@ -60,7 +57,6 @@ class StripePaymentStrategy implements PaymentStrategy
           ?? route('stripe.cancel', ['order' => $order->id]),
       ]);
 
-      // تحديث الطلب
       $order->update([
         'payment_method'    => PaymentMethod::Stripe,
         'payment_status'    => PaymentStatus::Pending,
@@ -83,7 +79,6 @@ class StripePaymentStrategy implements PaymentStrategy
         'error' => $e->getMessage(),
       ]);
 
-      // Update order to failed status
       $order->update([
         'payment_status' => PaymentStatus::Failed,
         'payment_meta' => array_merge($order->payment_meta ?? [], [

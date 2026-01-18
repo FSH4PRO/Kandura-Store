@@ -6,7 +6,68 @@ return [
 
   'hero' => [
     'hello'    => 'مرحباً :name 👋',
-    'subtitle' => 'لوحة التحكم – نظرة عامة على نظام :app.',
+    'subtitle' => 'مرحباً بك في لوحة تحكم متجر الكندورة. إليك ما يحدث اليوم.',
+    'default_admin_name' => 'مشرف',
+  ],
+
+  'metrics' => [
+    'total_orders' => 'إجمالي الطلبات',
+    'completed_orders' => 'الطلبات المكتملة',
+    'total_users' => 'إجمالي المستخدمين',
+    'total_wallet_balance' => 'رصيد المحفظة',
+    'this_month' => ':count هذا الشهر',
+    'of_total' => 'من الإجمالي',
+    'active' => 'نشط',
+    'active_wallets' => 'محافظ نشطة',
+  ],
+
+  'charts' => [
+    'user_growth' => 'نمو المستخدمين',
+    'order_growth' => 'نمو الطلبات',
+    'last_12_months' => 'آخر 12 شهراً',
+  ],
+
+  'recent_transactions' => [
+    'title' => 'المعاملات الأخيرة',
+    'no_transactions' => 'لا توجد معاملات حديثة',
+  ],
+
+  'today_summary' => [
+    'title' => 'ملخص اليوم',
+    'orders' => 'الطلبات',
+    'new_users' => 'مستخدمون جدد',
+    'transactions' => 'المعاملات',
+    'pending_orders' => 'طلبات معلقة',
+  ],
+
+  'actions' => [
+    'view_all' => 'عرض الكل',
+    'view_transactions' => 'عرض المعاملات',
+  ],
+
+  'transactions' => [
+    'title' => 'المعاملات',
+    'filters' => [
+      'title' => 'التصفية',
+      'type' => 'النوع',
+      'all_types' => 'جميع الأنواع',
+      'credit' => 'إضافة',
+      'debit' => 'خصم',
+      'date_from' => 'من تاريخ',
+      'date_to' => 'إلى تاريخ',
+      'submit' => 'تطبيق التصفية',
+      'clear' => 'مسح التصفية',
+    ],
+    'table' => [
+      'customer' => 'العميل',
+      'type' => 'النوع',
+      'amount' => 'المبلغ',
+      'description' => 'الوصف',
+      'date' => 'التاريخ',
+      'actions' => 'الإجراءات',
+      'view' => 'عرض',
+    ],
+    'no_data' => 'لا توجد معاملات',
   ],
 
   'stats' => [
@@ -22,7 +83,6 @@ return [
     'total_designs_help' => 'عدد التصاميم المسجلة في النظام.',
     'designs_today' => 'التصاميم المضافة اليوم',
     'designs_today_help' => 'عدد التصاميم المضافة اليوم.',
-
   ],
 
   'charts' => [
@@ -50,16 +110,12 @@ return [
     'today'        => 'تاريخ اليوم',
     'total_admins' => 'إجمالي المدراء',
     'total_design_options' => 'إجمالي خيارات التصميم',
-    
   ],
 
   'roles' => [
-        'customer' => 'مستخدم',
-        'admin' => 'مدير',
-        'super_admin' => 'مدير عام',
-
-
-
+    'customer' => 'مستخدم',
+    'admin' => 'مدير',
+    'super_admin' => 'مدير عام',
   ],
 
 ];

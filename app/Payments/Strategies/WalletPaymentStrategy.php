@@ -3,6 +3,7 @@
 namespace App\Payments\Strategies;
 
 use App\DTO\Payments\PayOrderData;
+use App\Enums\OrderStatus;
 use App\Enums\PaymentMethod;
 use App\Enums\PaymentStatus;
 use App\Models\Customer;
@@ -33,7 +34,7 @@ class WalletPaymentStrategy implements PaymentStrategy
             ->firstOrFail();
         }
 
-        $amount = (float) $order->total_amount;
+        $amount = (float) $order->total;
 
         // Validate amount
         if ($amount <= 0) {
@@ -57,12 +58,14 @@ class WalletPaymentStrategy implements PaymentStrategy
           'type'   => 'debit',
           'amount' => $amount,
           'meta'   => ['order_id' => $order->id],
+          'description' => 'payment for Order'.' '.$order->id,
         ]);
 
         // تحديث الطلب
         $order->update([
           'payment_method'    => PaymentMethod::Wallet,
           'payment_status'    => PaymentStatus::Paid,
+          'status' => OrderStatus::Paid,
           'paid_at'           => now(),
           'payment_reference' => 'wallet:' . $wallet->id,
           'payment_meta'      => ['wallet_id' => $wallet->id],
@@ -82,7 +85,7 @@ class WalletPaymentStrategy implements PaymentStrategy
           'payment_status' => PaymentStatus::Failed,
           'payment_meta' => array_merge($order->payment_meta ?? [], [
             'failure_reason' => 'insufficient_balance',
-            'required_amount' => (float) $order->total_amount,
+            'required_amount' => (float) $order->total,
             'available_balance' => $wallet ? (float) $wallet->balance : 0,
           ]),
         ]);

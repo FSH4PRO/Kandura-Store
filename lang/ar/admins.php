@@ -12,6 +12,7 @@ return [
 
   'table' => [
     'id'         => 'ID',
+    'profile_picture' => 'الصورة الشخصية',
     'name'       => 'الاسم',
     'email'      => 'البريد الإلكتروني',
     'roles'      => 'الأدوار',
@@ -45,7 +46,7 @@ return [
 
   'filters' => [
     'search_label'       => 'بحث',
-    'search_placeholder' => 'ابحث بالاسم أو البريد...',
+    'search_placeholder' => 'البحث في جميع الأعمدة...',
     'status_label'       => 'الحالة',
     'status_all'         => 'كل الحالات',
     'status_active'      => 'نشط',

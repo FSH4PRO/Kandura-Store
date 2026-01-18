@@ -12,6 +12,7 @@ return [
 
   'table' => [
     'id'         => 'ID',
+    'profile_picture' => 'Profile Picture',
     'name'       => 'Name',
     'email'      => 'Email',
     'roles'      => 'Roles',
@@ -45,7 +46,7 @@ return [
 
   'filters' => [
     'search_label'       => 'Search',
-    'search_placeholder' => 'Search by name or email...',
+    'search_placeholder' => 'Search all columns...',
     'status_label'       => 'Status',
     'status_all'         => 'All statuses',
     'status_active'      => 'Active',

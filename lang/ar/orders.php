@@ -18,6 +18,9 @@ return [
     'summary_title'          => 'ملخص الطلب',
     'order_id'               => 'رقم الطلب',
     'customer'               => 'العميل',
+    'subtotal'               => 'المجموع الفرعي',
+    'discount'               => 'الخصم',
+    'coupon'                 => 'الكوبون',
     'total'                  => 'الإجمالي',
     'status'                 => 'الحالة',
     'created_at'             => 'تاريخ الإنشاء',
@@ -30,7 +33,7 @@ return [
 
   'filters' => [
     'search_label'           => 'بحث',
-    'search_placeholder'     => 'ابحث برقم الطلب أو اسم العميل',
+    'search_placeholder'     => 'البحث في جميع الأعمدة',
     'status_label'           => 'الحالة',
     'status_all'             => 'كل الحالات',
     'total_min'              => 'الحد الأدنى للإجمالي',
@@ -40,13 +43,17 @@ return [
   ],
 
   'table' => [
-    'customer'   => 'العميل',
-    'total'      => 'الإجمالي',
-    'status'     => 'الحالة',
-    'created_at' => 'تاريخ الإنشاء',
-    'actions'    => 'الإجراءات',
-    'view'       => 'عرض',
-    'empty'      => 'لا توجد طلبات.',
+    'customer'        => 'العميل',
+    'total'           => 'الإجمالي',
+    'discount'        => 'الخصم',
+    'status'          => 'الحالة',
+    'items_count'     => 'العناصر',
+    'payment_method'  => 'طريقة الدفع',
+    'payment_status'  => 'حالة الدفع',
+    'created_at'      => 'تاريخ الإنشاء',
+    'actions'         => 'الإجراءات',
+    'view'            => 'عرض',
+    'empty'           => 'لا توجد طلبات.',
   ],
 
   'items' => [
@@ -66,7 +73,25 @@ return [
     'paid'      => 'مكتمل (مدفوع)',
   ],
 
+  'payment_methods' => [
+    'cod'    => 'الدفع عند الاستلام',
+    'stripe' => 'بطاقة ائتمانية',
+    'wallet' => 'المحفظة',
+  ],
+
+  'payment_statuses' => [
+    'unpaid'   => 'غير مدفوع',
+    'pending'  => 'معلّق',
+    'paid'     => 'مدفوع',
+    'failed'   => 'فاشل',
+    'canceled' => 'ملغى',
+  ],
+
   'messages' => [
     'status_updated' => 'تم تحديث حالة الطلب بنجاح.',
+  ],
+
+  'payment' => [
+    'started' => 'تم بدء الدفع بنجاح.',
   ],
 ];

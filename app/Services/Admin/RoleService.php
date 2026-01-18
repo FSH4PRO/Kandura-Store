@@ -9,7 +9,7 @@ use Spatie\Permission\Models\Role;
 
 class RoleService
 {
-    
+
     public function list(array $filters = []): LengthAwarePaginator
     {
         $query = Role::query()
@@ -17,7 +17,10 @@ class RoleService
 
         if (! empty($filters['search'])) {
             $search = $filters['search'];
-            $query->where('name', 'like', "%{$search}%");
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('created_at', 'like', "%{$search}%");
+            });
         }
 
         return $query
@@ -26,7 +29,7 @@ class RoleService
             ->withQueryString();
     }
 
-    
+
     public function getAllPermissions(): Collection
     {
         return Permission::where('guard_name', 'admin')
@@ -36,18 +39,18 @@ class RoleService
 
     public function getGroupedPermissions()
     {
-       
+
         $permissions = Permission::where('guard_name', 'admin')
             ->orderBy('name')
             ->get();
 
-       
+
         return $permissions->groupBy(function ($perm) {
             return explode('.', $perm->name)[0] ?? 'other';
         });
     }
 
-    
+
     public function create(array $data): Role
     {
         $role = Role::create([
@@ -62,7 +65,7 @@ class RoleService
         return $role->load('permissions');
     }
 
-   
+
     public function update(Role $role, array $data): Role
     {
         $role->update([
@@ -74,13 +77,13 @@ class RoleService
         return $role->fresh()->load('permissions');
     }
 
-   
+
     public function delete(Role $role): void
     {
         $role->delete();
     }
 
-    
+
     public function getRolePermissionNames(Role $role): array
     {
         return $role->permissions

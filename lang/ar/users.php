@@ -7,7 +7,7 @@ return [
 
     'filters' => [
         'search_label'       => 'بحث',
-        'search_placeholder' => 'ابحث بالاسم أو البريد أو الهاتف...',
+        'search_placeholder' => 'البحث في جميع الأعمدة...',
         'status_label'       => 'الحالة',
         'status_all'         => 'كل الحالات',
         'status_active'      => 'نشط',
@@ -20,6 +20,7 @@ return [
 
     'table' => [
         'id'         => 'ID',
+        'profile_picture' => 'الصورة الشخصية',
         'name'       => 'الاسم',
         'email'      => 'البريد',
         'phone'      => 'الهاتف',
@@ -48,5 +49,17 @@ return [
         'delete'         => 'حذف',
         'confirm_delete' => 'هل أنت متأكد من حذف هذا المستخدم؟',
         'no_actions'     => 'لا توجد إجراءات متاحة',
+        'view_addresses' => 'عرض العناوين',
+    ],
+
+    'addresses' => [
+        'title'         => 'عناوين المستخدم',
+        'street'        => 'الشارع',
+        'details'       => 'التفاصيل',
+        'coordinates'   => 'الإحداثيات',
+        'default'       => 'افتراضي',
+        'unknown_city'  => 'مدينة غير معروفة',
+        'no_addresses'  => 'هذا المستخدم ليس لديه عناوين.',
+        'error_loading' => 'خطأ في تحميل العناوين.',
     ],
 ];

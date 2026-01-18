@@ -7,7 +7,9 @@ use App\Services\Wallet\WalletService;
 use App\Models\Wallet;
 use App\Models\Customer;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use App\Http\Requests\Admin\ListWalletsRequest;
+use App\Http\Requests\Admin\TopupWalletRequest;
+use App\Http\Requests\Admin\BulkTopupWalletsRequest;
 
 class WalletController extends Controller
 {
@@ -18,30 +20,29 @@ class WalletController extends Controller
   /**
    * Display a listing of wallets
    */
-  public function index(Request $request)
+  public function index(ListWalletsRequest $request)
   {
     $admin = auth('admin')->user();
     $this->authorize('viewAny', Wallet::class);
 
-    $filters = $request->validate([
-      'search' => ['nullable', 'string', 'max:255'],
-      'is_active' => ['nullable', 'boolean'],
-      'balance_min' => ['nullable', 'numeric', 'min:0'],
-      'balance_max' => ['nullable', 'numeric', 'min:0'],
-      'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
-    ]);
+    $filters = $request->validated();
 
     $query = Wallet::with(['customer.user']);
 
     // Search by customer name or phone
     if (!empty($filters['search'])) {
       $search = $filters['search'];
-      $query->whereHas('customer', function ($q) use ($search) {
-        $q->where('phone', 'like', "%{$search}%")
-          ->orWhereHas('user', function ($q2) use ($search) {
-            $q2->where('name->en', 'like', "%{$search}%")
-              ->orWhere('name->ar', 'like', "%{$search}%");
-          });
+      $query->where(function ($q) use ($search) {
+        $q->whereHas('customer', function ($q1) use ($search) {
+          $q1->where('phone', 'like', "%{$search}%")
+            ->orWhereHas('user', function ($q2) use ($search) {
+              $q2->where('name->en', 'like', "%{$search}%")
+                ->orWhere('name->ar', 'like', "%{$search}%");
+            });
+        })
+          ->orWhere('balance', 'like', "%{$search}%")
+          ->orWhere('is_active', $search === 'active' ? 1 : ($search === 'inactive' ? 0 : null))
+          ->orWhere('created_at', 'like', "%{$search}%");
       });
     }
 
@@ -88,16 +89,12 @@ class WalletController extends Controller
   /**
    * Add credit to a specific wallet
    */
-  public function topup(Request $request, Wallet $wallet)
+  public function topup(TopupWalletRequest $request, Wallet $wallet)
   {
     $admin = auth('admin')->user();
     $this->authorize('addCredit', $wallet);
 
-    $data = $request->validate([
-      'amount' => ['required', 'numeric', 'min:0.01'],
-      'reference' => ['nullable', 'string', 'max:255'],
-      'note' => ['nullable', 'string', 'max:500'],
-    ]);
+    $data = $request->validated();
 
     try {
       $tx = $this->walletService->credit(
@@ -113,23 +110,19 @@ class WalletController extends Controller
 
       return back()->with('success', __('wallets.messages.topped_up', ['amount' => $data['amount']]));
     } catch (\Exception $e) {
-      return back()->with('error', $e->getMessage());
+      return back()->with('error', __('messages.failed_operation'));
     }
   }
 
   /**
    * Add credit to all active wallets
    */
-  public function bulkTopup(Request $request)
+  public function bulkTopup(BulkTopupWalletsRequest $request)
   {
     $admin = auth('admin')->user();
     $this->authorize('bulkAddCredit', Wallet::class);
 
-    $data = $request->validate([
-      'amount' => ['required', 'numeric', 'min:0.01'],
-      'reference' => ['nullable', 'string', 'max:255'],
-      'note' => ['nullable', 'string', 'max:500'],
-    ]);
+    $data = $request->validated();
 
     try {
       $count = $this->walletService->bulkCredit(
@@ -144,7 +137,7 @@ class WalletController extends Controller
 
       return back()->with('success', __('wallets.messages.bulk_topped_up', ['count' => $count, 'amount' => $data['amount']]));
     } catch (\Exception $e) {
-      return back()->with('error', $e->getMessage());
+      return back()->with('error', __('messages.failed_operation'));
     }
   }
 
@@ -160,7 +153,7 @@ class WalletController extends Controller
       $this->walletService->activate($wallet);
       return back()->with('success', __('wallets.messages.activated'));
     } catch (\Exception $e) {
-      return back()->with('error', $e->getMessage());
+      return back()->with('error', __('messages.failed_operation'));
     }
   }
 
@@ -176,7 +169,7 @@ class WalletController extends Controller
       $this->walletService->deactivate($wallet);
       return back()->with('success', __('wallets.messages.deactivated'));
     } catch (\Exception $e) {
-      return back()->with('error', $e->getMessage());
+      return back()->with('error', __('messages.failed_operation'));
     }
   }
 }

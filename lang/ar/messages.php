@@ -30,4 +30,9 @@ return [
   'unauthenticated'      => 'غير مصدّق، الرجاء تسجيل الدخول',
   'success_operation' => 'تمت العملية بنجاح',
   'failed_operation' => 'فشلت العملية',
+  'coupon_applied' => 'تم تطبيق الكوبون بنجاح',
+  'coupon_removed' => 'تم حذف الكوبون بنجاح',
+  'wallet_transactions' => 'تم جلب معاملات المحفظة بنجاح',
+  'wallet_details' => 'تم جلب تفاصيل المحفظة بنجاح',
+  'admin_invalid_credentials' => 'بيانات الاعتماد غير صحيحة أو غير مصرح بها',
 ];

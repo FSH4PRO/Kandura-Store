@@ -78,10 +78,13 @@
           <table class="table table-hover mb-0">
             <thead>
               <tr>
-                <th>#</th>
                 <th>{{ __('orders.table.customer') }}</th>
                 <th>{{ __('orders.table.total') }}</th>
+                <th>{{ __('orders.table.discount') }}</th>
                 <th>{{ __('orders.table.status') }}</th>
+                <th>{{ __('orders.table.items_count') }}</th>
+                <th>{{ __('orders.table.payment_method') }}</th>
+                <th>{{ __('orders.table.payment_status') }}</th>
                 <th>{{ __('orders.table.created_at') }}</th>
                 <th class="text-center">{{ __('orders.table.actions') }}</th>
               </tr>
@@ -101,7 +104,6 @@
                   };
                 @endphp
                 <tr>
-                  <td>#{{ $order->id }}</td>
                   <td>{{ $user?->name ?? '-' }}</td>
                   <td>
                     {{ number_format($order->total, 2) }}
@@ -110,8 +112,26 @@
                     @endif
                   </td>
                   <td>
+                    @if ($order->discount_total > 0)
+                      {{ number_format($order->discount_total, 2) }}
+                      @if (!empty($order->currency))
+                        <small class="text-muted">{{ $order->currency }}</small>
+                      @endif
+                    @else
+                      -
+                    @endif
+                  </td>
+                  <td>
                     <span class="badge {{ $statusClass }}">
                       {{ __('orders.statuses.' . $statusValue) }}
+                    </span>
+                  </td>
+                  <td>{{ $order->items->count() }}</td>
+                  <td>{{ __('orders.payment_methods.' . $order->payment_method->value) }}</td>
+                  <td>
+                    <span
+                      class="badge bg-label-{{ $order->payment_status->value === 'paid' ? 'success' : ($order->payment_status->value === 'pending' ? 'warning' : 'secondary') }}">
+                      {{ __('orders.payment_statuses.' . $order->payment_status->value) }}
                     </span>
                   </td>
                   <td>{{ $order->created_at?->format('Y-m-d H:i') }}</td>
@@ -123,7 +143,7 @@
                 </tr>
               @empty
                 <tr>
-                  <td colspan="6" class="text-center text-muted py-4">
+                  <td colspan="9" class="text-center text-muted py-4">
                     {{ __('orders.table.empty') }}
                   </td>
                 </tr>

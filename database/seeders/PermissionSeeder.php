@@ -94,6 +94,13 @@ class PermissionSeeder extends Seeder
             'roles.delete',
         ];
 
+        $permissions_coupons = [
+            'coupons.view',
+            'coupons.create',
+            'coupons.edit',
+            'coupons.delete',
+        ];
+
         $allPermissions = array_merge(
             $permissions_users,
             $permissions_admins,
@@ -105,7 +112,8 @@ class PermissionSeeder extends Seeder
             $permissions_notifications,
             $permissions_system,
             $permissions_dashboard,
-            $permissions_roles
+            $permissions_roles,
+            $permissions_coupons
         );
 
         // ---------------------------------------------------
@@ -209,6 +217,12 @@ class PermissionSeeder extends Seeder
         ]);
 
         $superAdminRole->syncPermissions($allPermissions);
+
+        $role_manage_coupons = Role::firstOrCreate([
+            'name'       => 'manage_coupons',
+            'guard_name' => 'admin',
+        ]);
+        $role_manage_coupons->syncPermissions($permissions_coupons);
 
         // ---------------------------------------------------
         app(PermissionRegistrar::class)->forgetCachedPermissions();

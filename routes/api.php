@@ -1,15 +1,16 @@
 <?php
 
+use App\Models\Order;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\User\AuthController;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\User\OrderController;
 use App\Http\Controllers\User\DesignController;
 use App\Http\Controllers\User\AddressController;
+use App\Http\Controllers\User\CouponController;
 use App\Http\Controllers\Webhook\WebhookController;
+use App\Http\Controllers\User\OrderCouponController;
 use App\Http\Controllers\User\OrderPaymentController;
-use App\Models\Order;
-use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 
 Route::prefix('auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
@@ -60,7 +61,7 @@ Route::middleware('auth:customer')->group(function () {
 Route::middleware('auth:customer')->group(function () {
     Route::post('/orders/{order}/pay', [OrderPaymentController::class, 'pay']);
 });
-Route::post('/stripe/webhook', [WebhookController::class , 'handle']);
+Route::post('/stripe/webhook', [WebhookController::class, 'handle']);
 
 Route::get('/payment/success/{order}', function (Order $order) {
     return response()->json(['message' => 'Payment success', 'order_id' => $order->id]);
@@ -69,6 +70,12 @@ Route::get('/payment/success/{order}', function (Order $order) {
 Route::get('/payment/cancel/{order}', function (Order $order) {
     return response()->json(['message' => 'Payment canceled', 'order_id' => $order->id]);
 })->name('stripe.cancel');
+
+Route::middleware('auth:customer')->group(function () {
+    Route::post('/orders/{order}/coupon', [CouponController::class, 'apply']);
+});
+
+
 
 Route::get('/lang/{locale}', function ($locale) {
     if (! in_array($locale, ['ar', 'en'])) {

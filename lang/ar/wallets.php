@@ -29,7 +29,7 @@ return [
 
   'filters' => [
     'search_label'       => 'بحث',
-    'search_placeholder' => 'البحث باسم العميل أو رقم الهاتف',
+    'search_placeholder' => 'البحث في جميع الأعمدة...',
     'status_label'       => 'الحالة',
     'status_all'         => 'جميع الحالات',
     'status_active'      => 'نشط',

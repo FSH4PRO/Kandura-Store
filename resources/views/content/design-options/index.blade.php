@@ -81,7 +81,6 @@
           <table class="table table-hover mb-0">
             <thead>
               <tr>
-                <th>#</th>
                 <th>{{ __('design_options.table.name') }}</th>
                 <th>{{ __('design_options.table.type') }}</th>
                 <th>{{ __('design_options.table.status') }}</th>
@@ -92,7 +91,6 @@
             <tbody>
               @forelse ($options as $option)
                 <tr>
-                  <td>{{ $option->id }}</td>
                   <td>{{ $option->getTranslation('name', app()->getLocale()) }}</td>
                   <td>{{ __('design_options.types.' . $option->type->value) }}</td>
                   <td>
@@ -131,7 +129,7 @@
                 </tr>
               @empty
                 <tr>
-                  <td colspan="6" class="text-center text-muted py-4">
+                  <td colspan="5" class="text-center text-muted py-4">
                     {{ __('design_options.table.empty') }}
                   </td>
                 </tr>

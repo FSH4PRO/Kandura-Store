@@ -12,7 +12,9 @@ return [
   'design_options' => 'Design Options',
   'designs'        => 'Designs',
   'orders'         => 'Orders',
+  'coupons'        => 'Coupons',
   'wallets'        => 'Wallets',
+  'transactions'   => 'Transactions',
 
   'headers' => [
     'user_management' => 'User Management',

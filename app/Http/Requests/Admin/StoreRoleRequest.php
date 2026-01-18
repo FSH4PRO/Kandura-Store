@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreRoleRequest extends FormRequest
 {
@@ -24,8 +25,8 @@ class StoreRoleRequest extends FormRequest
             'name' => [
                 'required',
                 'string',
-                'max:50',
-                'unique:roles,name',
+                'max:255',
+                Rule::unique('roles', 'name')->where('guard_name', 'admin'),
             ],
 
             'permissions'   => ['nullable', 'array'],

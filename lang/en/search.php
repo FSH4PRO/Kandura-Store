@@ -24,6 +24,7 @@ return [
 
   'table' => [
     'id' => 'ID',
+    'profile_picture' => 'Profile Picture',
     'name' => 'Name',
     'customer' => 'Customer',
     'phone' => 'Phone',

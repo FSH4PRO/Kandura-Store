@@ -8,7 +8,9 @@ use App\Services\Admin\UserService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ListUsersRequest;
 use App\Http\Requests\Admin\StoreAdminRequest;
+use App\Http\Requests\Admin\UpdateAdminRequest;
 use Illuminate\Http\Request;
+use App\Http\Resources\AddressResource;
 
 class UserController extends Controller
 {
@@ -99,7 +101,7 @@ class UserController extends Controller
 
     public function editAdmin(User $user)
     {
-        $this->authorize('createAdmin', User::class); 
+        $this->authorize('createAdmin', User::class);
 
 
         if (! $user->usable instanceof \App\Models\Admin) {
@@ -126,7 +128,7 @@ class UserController extends Controller
     }
 
 
-    public function updateAdmin(Request $request, User $user)
+    public function updateAdmin(UpdateAdminRequest $request, User $user)
     {
 
         $this->authorize('createAdmin', User::class);
@@ -135,10 +137,7 @@ class UserController extends Controller
             abort(404);
         }
 
-        $data = $request->validate([
-            'roles'   => ['nullable', 'array'],
-            'roles.*' => ['string', 'exists:roles,name'],
-        ]);
+        $data = $request->validated();
 
         $roles = $data['roles'] ?? [];
 
@@ -157,5 +156,27 @@ class UserController extends Controller
         $this->service->deleteAdmin($user);
 
         return back()->with('success', __('messages.admin_deleted'));
+    }
+
+    public function getUserAddresses(User $user)
+    {
+        try {
+            $this->authorize('view', $user);
+
+            // Only customers have addresses
+            if ($user->usable_type !== 'App\Models\Customer') {
+                return response()->json(['addresses' => []]);
+            }
+
+            $addresses = $user->usable->addresses()->with('city')->get();
+
+            return response()->json([
+                'addresses' => AddressResource::collection($addresses)
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => __('messages.failed_operation')
+            ], 500);
+        }
     }
 }

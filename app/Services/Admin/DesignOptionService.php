@@ -11,20 +11,25 @@ class DesignOptionService
     {
         $query = DesignOption::query();
 
-       
+
         if (! empty($filters['search'])) {
             $search = $filters['search'];
             $locale = app()->getLocale();
 
-            $query->where("name->{$locale}", 'like', "%{$search}%");
+            $query->where(function ($q) use ($search, $locale) {
+                $q->where("name->{$locale}", 'like', "%{$search}%")
+                    ->orWhere('type', 'like', "%{$search}%")
+                    ->orWhere('is_active', $search === 'active' ? 1 : ($search === 'inactive' ? 0 : null))
+                    ->orWhere('created_at', 'like', "%{$search}%");
+            });
         }
 
-        
+
         if (! empty($filters['type'])) {
             $query->where('type', $filters['type']);
         }
 
-       
+
         if (isset($filters['is_active']) && $filters['is_active'] !== '') {
             if ($filters['is_active'] === '1') {
                 $query->where('is_active', true);
@@ -57,17 +62,17 @@ class DesignOptionService
 
     public function update(DesignOption $option, array $data): DesignOption
     {
-       
+
         if (isset($data['name'])) {
             $this->fillTranslatableName($option, $data);
         }
 
-        
+
         if (isset($data['type'])) {
             $option->type = $data['type'];
         }
 
-       
+
         if (array_key_exists('is_active', $data)) {
             $option->is_active = ! empty($data['is_active']);
         }
@@ -82,10 +87,10 @@ class DesignOptionService
         $option->delete();
     }
 
-    
+
     protected function fillTranslatableName(DesignOption $option, array $data): void
     {
-       
+
         $currentEn = $option->getTranslation('name', 'en', false) ?? '';
         $currentAr = $option->getTranslation('name', 'ar', false) ?? '';
 
@@ -94,12 +99,12 @@ class DesignOptionService
         $en = $currentEn;
         $ar = $currentAr;
 
-       
+
         if (is_array($name)) {
             $en = $name['en'] ?? $currentEn;
             $ar = $name['ar'] ?? $currentAr;
         } else {
-            
+
             if (isset($data['name_en'])) {
                 $en = $data['name_en'];
             }
@@ -108,10 +113,10 @@ class DesignOptionService
             }
         }
 
-        
+
         $translations = [
             'en' => $en,
-            'ar' => $ar ?: $en, 
+            'ar' => $ar ?: $en,
         ];
 
         $option->setTranslations('name', $translations);

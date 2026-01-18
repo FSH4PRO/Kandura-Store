@@ -43,7 +43,7 @@
               </select>
             </div>
 
-            
+
 
             {{-- Submit --}}
             <div class="col-md-2 d-flex gap-2">
@@ -69,7 +69,7 @@
           <table class="table table-hover mb-0">
             <thead>
               <tr>
-                <th>{{ __('users.table.id') }}</th>
+                <th>{{ __('users.table.profile_picture') }}</th>
                 <th>{{ __('users.table.name') }}</th>
                 <th>{{ __('users.table.phone') }}</th>
                 <th>{{ __('users.table.status') }}</th>
@@ -97,8 +97,11 @@
                 @endphp
 
                 <tr>
-                  {{-- ID --}}
-                  <td>{{ $user->id }}</td>
+                  {{-- Profile Picture --}}
+                  <td>
+                    <img src="{{ $user->getFirstMediaUrl('profile_image') ?: asset('images/default-avatar.png') }}"
+                      alt="Profile Picture" class="rounded-circle" width="40" height="40">
+                  </td>
 
                   {{-- Name (من users.name كـ JSON قابل للترجمة) --}}
                   <td>
@@ -108,7 +111,7 @@
                   {{-- Phone من Admin/Customer --}}
                   <td>{{ $phone ?? '-' }}</td>
 
-                 
+
                   {{-- Status --}}
                   <td>
                     @if ($user->is_active)
@@ -130,7 +133,13 @@
                       </button>
 
                       <div class="dropdown-menu dropdown-menu-end">
-                      
+                        <button type="button" class="dropdown-item" data-bs-toggle="modal"
+                          data-bs-target="#addressesModal"
+                          onclick="showUserAddresses({{ $user->id }}, '{{ is_array($user->name) ? $user->name['ar'] ?? ($user->name['en'] ?? '') : $user->name }}')">
+                          <i class="bx bx-map me-2"></i>
+                          {{ __('users.actions.view_addresses') }}
+                        </button>
+
 
                         @can('users.delete')
                           <form action="{{ route('users.destroy', $user->id) }}" method="POST"
@@ -149,7 +158,7 @@
                 </tr>
               @empty
                 <tr>
-                  <td colspan="8" class="text-center text-muted py-4">
+                  <td colspan="6" class="text-center text-muted py-4">
                     {{ __('users.table.empty') }}
                   </td>
                 </tr>
@@ -167,3 +176,105 @@
     </div>
   </div>
 @endsection
+
+{{-- Addresses Modal --}}
+<div class="modal fade" id="addressesModal" tabindex="-1" aria-labelledby="addressesModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addressesModalLabel">{{ __('users.addresses.title') }} - <span
+            id="userName"></span></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="addressesContent">
+          <div class="text-center">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">{{ __('common.loading') }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('common.close') }}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function showUserAddresses(userId, userName) {
+    document.getElementById('userName').textContent = userName;
+    document.getElementById('addressesContent').innerHTML = `
+    <div class="text-center">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">{{ __('common.loading') }}</span>
+      </div>
+    </div>
+  `;
+
+    fetch(`/admin/users/${userId}/addresses`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data.error) {
+          throw new Error(data.error);
+        }
+
+        let html = '';
+
+        if (data.addresses && data.addresses.length > 0) {
+          html = '<div class="row">';
+          data.addresses.forEach(address => {
+            html += `
+            <div class="col-md-6 mb-3">
+              <div class="card h-100">
+                <div class="card-body">
+                  <h6 class="card-title">
+                    ${address.city ? address.city.name : '{{ __('users.addresses.unknown_city') }}'}
+                    ${address.is_default ? '<span class="badge bg-primary ms-2">{{ __('users.addresses.default') }}</span>' : ''}
+                  </h6>
+                  <p class="card-text mb-2">
+                    <strong>{{ __('users.addresses.street') }}:</strong> ${address.street || '{{ __('common.not_specified') }}'}
+                  </p>
+                  <p class="card-text mb-2">
+                    <strong>{{ __('users.addresses.details') }}:</strong> ${address.details || '{{ __('common.not_specified') }}'}
+                  </p>
+                  ${address.latitude && address.longitude ? `
+                    <p class="card-text mb-0">
+                      <strong>{{ __('users.addresses.coordinates') }}:</strong>
+                      ${address.latitude}, ${address.longitude}
+                    </p>
+                  ` : ''}
+                </div>
+              </div>
+            </div>
+          `;
+          });
+          html += '</div>';
+        } else {
+          html = `
+          <div class="text-center text-muted py-4">
+            <i class="bx bx-map display-4 mb-3"></i>
+            <p>{{ __('users.addresses.no_addresses') }}</p>
+          </div>
+        `;
+        }
+
+        document.getElementById('addressesContent').innerHTML = html;
+      })
+      .catch(error => {
+        console.error('Error loading addresses:', error);
+        document.getElementById('addressesContent').innerHTML = `
+        <div class="alert alert-danger">
+          <i class="bx bx-error-circle me-2"></i>
+          {{ __('users.addresses.error_loading') }}: ${error.message}
+        </div>
+      `;
+      });
+  }
+</script>

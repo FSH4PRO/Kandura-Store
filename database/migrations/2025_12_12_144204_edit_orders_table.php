@@ -1,6 +1,6 @@
 <?php
 
-use App\Enums\PaymentMethodEnum;
+use App\Enums\PaymentMethod;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
@@ -13,7 +13,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('orders', function (Blueprint $table) {
-            $table->enum('payment_method', array_column(PaymentMethodEnum::cases(), 'value'))->default(PaymentMethodEnum::Cod->value)->nullable()->change();
+            $table->enum('payment_method', array_column(PaymentMethod::cases(), 'value'))->default(PaymentMethod::COD->value)->nullable()->change();
             $table->timestamp('paid_at')->nullable();
             $table->string('payment_reference')->nullable();
             $table->json('payment_meta')->nullable();
@@ -26,7 +26,16 @@ return new class extends Migration
      * Reverse the migrations.
      */
     public function down(): void
-    {
-        Schema::dropIfExists('orders');
-    }
+{
+    Schema::table('orders', function (Blueprint $table) {
+        $table->dropIndex(['customer_id', 'status']);
+        $table->dropIndex(['payment_method', 'status']);
+
+        $table->dropColumn(['paid_at', 'payment_reference', 'payment_meta']);
+
+        // رجّع payment_method لنوع string
+        $table->string('payment_method')->default('cod')->nullable(false)->change();
+    });
+}
+
 };

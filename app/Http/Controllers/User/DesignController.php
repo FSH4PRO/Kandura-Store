@@ -20,7 +20,7 @@ class DesignController extends Controller
         $this->service = $service;
     }
 
-    
+
     public function index(DesignIndexRequest $request)
     {
         $customer = auth('customer')->user();
@@ -31,11 +31,11 @@ class DesignController extends Controller
 
         return $this->success(
             DesignResource::collection($designs)->response()->getData(),
-            'Designs retrieved successfully'
+            __('messages.design_list')
         );
     }
 
-   
+
     public function store(StoreDesignRequest $request)
     {
         $customer = auth('customer')->user();
@@ -49,7 +49,7 @@ class DesignController extends Controller
         );
     }
 
-    
+
     public function show(Design $design)
     {
         $this->authorize('view', $design);
@@ -60,7 +60,7 @@ class DesignController extends Controller
         );
     }
 
-        public function update(UpdateDesignRequest $request, Design $design)
+    public function update(UpdateDesignRequest $request, Design $design)
     {
         $this->authorize('update', $design);
 
@@ -72,7 +72,7 @@ class DesignController extends Controller
         );
     }
 
-    
+
     public function destroy(Design $design)
     {
         $this->authorize('delete', $design);

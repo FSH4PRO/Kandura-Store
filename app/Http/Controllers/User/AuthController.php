@@ -25,7 +25,7 @@ class AuthController extends Controller
 
         return $this->success(
             new UserResource($user),
-             __('messages.user_registered'),
+            __('messages.user_registered'),
             201
         );
     }
@@ -35,12 +35,12 @@ class AuthController extends Controller
         $user = $this->service->login($request->validated());
 
         if (! $user) {
-            return $this->failed('Invalid credentials', null, 401);
+            return $this->failed(__('messages.invalid_credentials'), null, 401);
         }
 
         return $this->success(
             new UserResource($user),
-             __('messages.user_logged_in'),
+            __('messages.user_logged_in'),
             200
         );
     }
@@ -51,6 +51,4 @@ class AuthController extends Controller
 
         return $this->success(null,  __('messages.user_logged_out'), 200);
     }
-
-   
 }

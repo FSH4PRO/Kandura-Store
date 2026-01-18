@@ -24,6 +24,7 @@ return [
 
   'table' => [
     'id' => 'المعرف',
+    'profile_picture' => 'الصورة الشخصية',
     'name' => 'الاسم',
     'customer' => 'العميل',
     'phone' => 'الهاتف',

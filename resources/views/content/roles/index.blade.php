@@ -33,7 +33,6 @@
           <table class="table table-hover mb-0">
             <thead>
               <tr>
-                <th>{{ __('roles.index.table.id') }}</th>
                 <th>{{ __('roles.index.table.name') }}</th>
                 <th>{{ __('roles.index.table.permissions_count') }}</th>
                 <th>{{ __('roles.index.table.created_at') }}</th>
@@ -43,9 +42,6 @@
             <tbody>
               @forelse ($roles as $role)
                 <tr>
-                  {{-- ID --}}
-                  <td>{{ $role->id }}</td>
-
                   {{-- Role name --}}
                   <td>{{ $role->name }}</td>
 
@@ -83,7 +79,7 @@
                 </tr>
               @empty
                 <tr>
-                  <td colspan="5" class="text-center text-muted py-4">
+                  <td colspan="4" class="text-center text-muted py-4">
                     {{ __('roles.index.table.empty') }}
                   </td>
                 </tr>

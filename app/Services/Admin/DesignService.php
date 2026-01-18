@@ -20,7 +20,9 @@ class DesignService
                 $q->where("name->{$locale}", 'like', "%{$search}%")
                     ->orWhereHas('customer.user', function ($uq) use ($search, $locale) {
                         $uq->where("name->{$locale}", 'like', "%{$search}%");
-                    });
+                    })
+                    ->orWhere('price', 'like', "%{$search}%")
+                    ->orWhere('created_at', 'like', "%{$search}%");
             });
         }
 

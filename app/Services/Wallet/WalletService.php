@@ -25,8 +25,6 @@ class WalletService
         if ($amount <= 0) throw new RuntimeException('Amount must be > 0');
 
         return DB::transaction(function () use ($wallet, $amount, $description, $meta) {
-            $wallet = $wallet->lockForUpdate();
-
             $before = (float) $wallet->balance;
             $after  = $before + (float) $amount;
 

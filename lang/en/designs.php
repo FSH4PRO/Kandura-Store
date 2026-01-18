@@ -15,7 +15,7 @@ return [
   // Filters
   'filters' => [
     'search_label'        => 'Search',
-    'search_placeholder'  => 'Search by name or description...',
+    'search_placeholder'  => 'Search all columns...',
     'size_label'          => 'Size',
     'size_all'            => 'All sizes',
     'price_min'           => 'Min price',

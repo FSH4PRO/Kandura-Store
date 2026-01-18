@@ -18,6 +18,9 @@ return [
     'summary_title'          => 'Order summary',
     'order_id'               => 'Order ID',
     'customer'               => 'Customer',
+    'subtotal'               => 'Subtotal',
+    'discount'               => 'Discount',
+    'coupon'                 => 'Coupon',
     'total'                  => 'Total',
     'status'                 => 'Status',
     'created_at'             => 'Created at',
@@ -30,9 +33,7 @@ return [
 
   'filters' => [
     'search_label'           => 'Search',
-    'search_placeholder'     => 'Search by order ID or customer name',
-    'status_label'           => 'Status',
-    'status_all'             => 'All statuses',
+    'search_placeholder'     => 'Search all columns',
     'total_min'              => 'Min total',
     'total_max'              => 'Max total',
     'submit'                 => 'Filter',
@@ -40,13 +41,17 @@ return [
   ],
 
   'table' => [
-    'customer'   => 'Customer',
-    'total'      => 'Total',
-    'status'     => 'Status',
-    'created_at' => 'Created at',
-    'actions'    => 'Actions',
-    'view'       => 'View',
-    'empty'      => 'No orders found.',
+    'customer'        => 'Customer',
+    'total'           => 'Total',
+    'discount'        => 'Discount',
+    'status'          => 'Status',
+    'items_count'     => 'Items',
+    'payment_method'  => 'Payment Method',
+    'payment_status'  => 'Payment Status',
+    'created_at'      => 'Created at',
+    'actions'         => 'Actions',
+    'view'            => 'View',
+    'empty'           => 'No orders found.',
   ],
 
   'items' => [
@@ -66,7 +71,25 @@ return [
     'paid'      => 'Paid',
   ],
 
+  'payment_methods' => [
+    'cod'    => 'Cash on Delivery',
+    'stripe' => 'Credit Card',
+    'wallet' => 'Wallet',
+  ],
+
+  'payment_statuses' => [
+    'unpaid'   => 'Unpaid',
+    'pending'  => 'Pending',
+    'paid'     => 'Paid',
+    'failed'   => 'Failed',
+    'canceled' => 'Canceled',
+  ],
+
   'messages' => [
     'status_updated' => 'Order status updated successfully.',
+  ],
+
+  'payment' => [
+    'started' => 'Payment started successfully.',
   ],
 ];

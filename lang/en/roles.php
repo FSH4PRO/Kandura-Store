@@ -12,7 +12,7 @@ return [
 
     'filters' => [
       'search_label'       => 'Search',
-      'search_placeholder' => 'Search by role name...',
+      'search_placeholder' => 'Search all columns...',
       'submit'             => 'Filter',
       'reset'              => 'Reset',
     ],

@@ -16,13 +16,26 @@ class OrderResource extends JsonResource
             'id'        => $this->id,
             'status'    => $this->status,
 
-            'subtotal'  => (float) $this->subtotal,
-            'discount'  => (float) $this->discount,
-            'total'     => (float) $this->total,
+            'subtotal'       => (float) $this->subtotal,
+            'discount_total' => (float) $this->discount_total,
+            'total'          => (float) $this->total,
+
+            'payment_method' => $this->payment_method,
+            'payment_status' => $this->payment_status,
+            'paid_at'        => $this->paid_at?->toIso8601String(),
+
+            'coupon' => $this->whenLoaded('coupon', fn() => [
+                'id'     => $this->coupon?->id,
+                'code'   => $this->coupon?->code,
+                'type'   => $this->coupon?->type,
+                'amount' => (float) $this->coupon?->amount,
+            ]),
+
+            'coupon_discount' => (float) ($this->coupon_discount ?? 0),
 
             'customer' => $customer ? [
                 'id'   => $customer->id,
-                'name' => $user?->name, 
+                'name' => $user?->name,
             ] : null,
 
             'items' => ItemResource::collection($this->whenLoaded('items')),

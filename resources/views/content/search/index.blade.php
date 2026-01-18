@@ -77,7 +77,6 @@
                 <table class="table table-hover">
                   <thead>
                     <tr>
-                      <th>{{ __('search.table.id') }}</th>
                       <th>{{ __('search.table.customer') }}</th>
                       <th>{{ __('search.table.total') }}</th>
                       <th>{{ __('search.table.status') }}</th>
@@ -99,7 +98,6 @@
                         };
                       @endphp
                       <tr>
-                        <td>#{{ $order->id }}</td>
                         <td>{{ $user?->name ?? ($customer?->phone ?? '-') }}</td>
                         <td>{{ number_format((float) $order->total_amount, 2) }} {{ $order->currency ?? 'AED' }}</td>
                         <td>
@@ -142,7 +140,7 @@
                 <table class="table table-hover">
                   <thead>
                     <tr>
-                      <th>{{ __('search.table.id') }}</th>
+                      <th>{{ __('search.table.profile_picture') }}</th>
                       <th>{{ __('search.table.name') }}</th>
                       <th>{{ __('search.table.phone') }}</th>
                       <th>{{ __('search.table.actions') }}</th>
@@ -154,7 +152,11 @@
                         $user = $customer->user;
                       @endphp
                       <tr>
-                        <td>#{{ $customer->id }}</td>
+                        <td>
+                          <img
+                            src="{{ $user?->getFirstMediaUrl('profile_image') ?: asset('assets/img/avatars/default.png') }}"
+                            alt="Profile Picture" class="rounded-circle" width="40" height="40">
+                        </td>
                         <td>{{ $user?->name ?? '-' }}</td>
                         <td>{{ $customer->phone }}</td>
                         <td>
@@ -190,7 +192,6 @@
                 <table class="table table-hover">
                   <thead>
                     <tr>
-                      <th>{{ __('search.table.id') }}</th>
                       <th>{{ __('search.table.customer') }}</th>
                       <th>{{ __('search.table.balance') }}</th>
                       <th>{{ __('search.table.status') }}</th>
@@ -204,7 +205,6 @@
                         $user = $customer?->user;
                       @endphp
                       <tr>
-                        <td>#{{ $wallet->id }}</td>
                         <td>{{ $user?->name ?? ($customer?->phone ?? '-') }}</td>
                         <td>{{ number_format((float) $wallet->balance, 2) }} {{ $wallet->currency ?? 'AED' }}</td>
                         <td>
@@ -247,7 +247,6 @@
                 <table class="table table-hover">
                   <thead>
                     <tr>
-                      <th>{{ __('search.table.id') }}</th>
                       <th>{{ __('search.table.name') }}</th>
                       <th>{{ __('search.table.customer') }}</th>
                       <th>{{ __('search.table.price') }}</th>
@@ -265,7 +264,6 @@
                             : $design->name;
                       @endphp
                       <tr>
-                        <td>#{{ $design->id }}</td>
                         <td>{{ $name }}</td>
                         <td>{{ $user?->name ?? ($customer?->phone ?? '-') }}</td>
                         <td>{{ number_format((float) $design->price, 2) }} AED</td>

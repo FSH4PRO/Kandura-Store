@@ -23,7 +23,7 @@ class PaymentService
         // Business logic checks below
 
         // Validate order amount
-        if ((float) $order->total_amount <= 0) {
+        if ((float) $order->total <= 0) {
             throw new \RuntimeException('Order amount must be greater than zero.');
         }
 

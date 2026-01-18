@@ -64,7 +64,7 @@ class User extends Model implements HasMedia
 
     /* ===================== Scopes ===================== */
 
-   
+
 
     public function scopeSearch(Builder $query, ?string $search): Builder
     {
@@ -74,7 +74,16 @@ class User extends Model implements HasMedia
 
         return $query->where(function ($q) use ($search) {
             $q->where('name->en', 'like', "%{$search}%")
-                ->orWhere('name->ar', 'like', "%{$search}%");
+                ->orWhere('name->ar', 'like', "%{$search}%")
+                ->orWhere('is_active', $search === 'active' ? 1 : ($search === 'inactive' ? 0 : null))
+                ->orWhere(function ($uq) use ($search) {
+                    $uq->whereHasMorph('usable', [Admin::class], function ($adminQuery) use ($search) {
+                        $adminQuery->where('email', 'like', "%{$search}%");
+                    })
+                        ->orWhereHasMorph('usable', [Customer::class], function ($customerQuery) use ($search) {
+                            $customerQuery->where('phone', 'like', "%{$search}%");
+                        });
+                });
         });
     }
 
