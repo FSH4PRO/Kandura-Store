@@ -8,8 +8,6 @@ class ListUsersRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        // التحكم مين مسموح يوصل لهالراوت
-        // عم نعمله بالميدل وير (check.role / check.permission)
         return true;
     }
 

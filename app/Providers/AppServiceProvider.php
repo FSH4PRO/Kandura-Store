@@ -2,11 +2,17 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
+use App\Models\Order;
+use App\Models\Design;
+use App\Models\Wallet;
+use App\Models\Customer;
+use App\Observers\OrderObserver;
+use App\Observers\WalletObserver;
+use App\Observers\CustomerObserver;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Session;
-use App\Models\Customer;
-use App\Observers\CustomerObserver;
+use Illuminate\Support\ServiceProvider;
+use App\Observers\DesignObserver;
 
 
 class AppServiceProvider extends ServiceProvider
@@ -28,5 +34,8 @@ class AppServiceProvider extends ServiceProvider
         App::setLocale($locale);
 
         Customer::observe(CustomerObserver::class);
+        Order::observe(OrderObserver::class);
+        Wallet::observe(WalletObserver::class);
+        Design::observe(DesignObserver::class);
     }
 }

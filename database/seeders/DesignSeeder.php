@@ -128,7 +128,9 @@ class DesignSeeder extends Seeder
                         'dome_type'   => ['Classic Button'],
                     ],
                     'image_urls' => [
-                        'https://images.pexels.com/photos/3755706/pexels-photo-3755706.jpeg',
+                        'https://media.istockphoto.com/id/1729542176/photo/arab-middle-eastern-man-wearing-emirati-kandora-traditional-clothing-in-the-city.jpg?b=1&s=612x612&w=0&k=20&c=Vq2oCgtU4SoF9gYS_5hqirs-fGoT_CZymn_pNPhpN8k=',
+                        'https://media.istockphoto.com/id/492789232/photo/content-young-arab-man-in-traditional-clothing.jpg?b=1&s=612x612&w=0&k=20&c=90UcP6fr_AGRATXrLmB5drAGccizrHHjjhuDwDSXgzE=',
+                        'https://media.istockphoto.com/id/1188035233/photo/arabian-man-with-traditional-dress.jpg?b=1&s=612x612&w=0&k=20&c=nAIUDPzImJJ10utrW8NMD6cKjhw1aoeCmBWQGggo6-Y='
                     ],
                 ],
                 [
@@ -149,7 +151,9 @@ class DesignSeeder extends Seeder
                         'dome_type'   => ['Hidden Button'],
                     ],
                     'image_urls' => [
-                        'https://images.pexels.com/photos/6311656/pexels-photo-6311656.jpeg',
+                        'https://media.istockphoto.com/id/474912698/photo/portrait-of-a-black-african-man-in-mosque.jpg?b=1&s=612x612&w=0&k=20&c=O4VeSISDiJa5sYOoIfbzD1lG9z3PbqNO45lTAZL__q4=',
+                        'https://images.pexels.com/photos/30627673/pexels-photo-30627673.jpeg',
+                        'https://images.pexels.com/photos/34171661/pexels-photo-34171661.jpeg',
                     ],
                 ],
                 [
@@ -170,7 +174,9 @@ class DesignSeeder extends Seeder
                         'dome_type'   => ['Classic Button'],
                     ],
                     'image_urls' => [
-                        'https://images.pexels.com/photos/8386964/pexels-photo-8386964.jpeg',
+                        'https://images.pexels.com/photos/31229196/pexels-photo-31229196.jpeg',
+                        'https://images.pexels.com/photos/5416859/pexels-photo-5416859.jpeg',
+                        'https://images.pexels.com/photos/5416863/pexels-photo-5416863.jpeg',
                     ],
                 ],
             ];

@@ -71,4 +71,17 @@ return [
   'coupon_removed_successfully' => 'Coupon removed successfully.',
 
   'allow_all_customers' => 'This coupon can be used by all customers.',
+
+  'order_already_paid' => 'This order is already paid.',
+  'no_coupon_to_remove' => 'There are no coupons to remove.',
+
+  'coupon_applied_successfully' => 'Coupon applied successfully.',
+  'coupon_removed_successfully' => 'Coupon removed successfully.',
+
+  'coupon_created_successfully' => 'Coupon created successfully.',
+  'coupon_updated_successfully' => 'Coupon updated successfully.',
+  'coupon_deleted_successfully' => 'Coupon deleted successfully.',
+  'coupon_status_updated_successfully' => 'Coupon status updated successfully.',
+
+  
 ];

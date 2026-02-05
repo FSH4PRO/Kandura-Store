@@ -53,12 +53,16 @@ class UserService
         if (! empty($filters['role'])) {
             $roleName = $filters['role'];
 
-            $query->whereHas('usable', function ($q) use ($roleName) {
-                $q->whereHas('roles', function ($qr) use ($roleName) {
-                    $qr->where('name', $roleName);
-                });
-            });
-        }
+            $query->whereHasMorph(
+                'usable',
+                [Admin::class],
+                function ($q) use ($roleName) {
+                    $q->whereHas('roles', function ($qr) use ($roleName) {
+                        $qr->where('name', $roleName);
+                    });
+                }
+            );
+        }   
 
         $query
             ->search($filters['search'] ?? null)
@@ -149,4 +153,6 @@ class UserService
             $user->delete();
         });
     }
+
+    
 }

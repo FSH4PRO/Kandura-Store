@@ -128,7 +128,7 @@
                 <div class="col-6 col-md-4 col-lg-3">
                   <a href="{{ $media->getUrl() }}" target="_blank" class="d-block">
                     <div class="ratio ratio-1x1 rounded border overflow-hidden bg-light">
-                      <img src="{{ $media->getUrl('thumb') }}" class="w-100 h-100" style="object-fit: cover;"
+                      <img src="{{ $media->getUrl() }}" class="w-100 h-100" style="object-fit: cover;"
                         alt="design image">
                     </div>
                   </a>

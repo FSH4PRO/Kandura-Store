@@ -21,7 +21,7 @@ class CouponResource extends JsonResource
             'amount' => $this->amount,
             'formatted_amount' => $this->type === 'percent'
                 ? $this->amount . '%'
-                : number_format($this->amount, 2) . ' ' . __('currency'),
+                : number_format($this->amount, 2) . '  AED',
             'starts_at' => $this->starts_at?->format('Y-m-d H:i:s'),
             'ends_at' => $this->ends_at?->format('Y-m-d H:i:s'),
             'max_uses' => $this->max_uses,

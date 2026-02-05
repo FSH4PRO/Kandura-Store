@@ -2,9 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
+use App\Models\User;
 use App\Models\Admin;
 use App\Models\Customer;
+use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 
 class UserSeeder extends Seeder
@@ -66,6 +67,30 @@ class UserSeeder extends Seeder
 
         ]);
 
+        /*
+        |--------------------------------------------------------------------------
+        | 3) ADDITIONAL ADMINS (for display / demo)
+        |--------------------------------------------------------------------------
+        */
+        $additionalAdmins = [
+            ['email' => 'salesadmin@gmail.com', 'name' => ['en' => 'Sales Admin', 'ar' => 'مسؤول المبيعات'], 'roles' => ['manage_orders', 'dashboard_access']],
+            ['email' => 'designadmin@gmail.com', 'name' => ['en' => 'Design Admin', 'ar' => 'مسؤول التصاميم'], 'roles' => ['manage_designs', 'manage_design_options']],
+            ['email' => 'useradmin@gmail.com', 'name' => ['en' => 'User Admin', 'ar' => 'مسؤول المستخدمين'], 'roles' => ['manage_users', 'dashboard_access']],
+        ];
+
+        foreach ($additionalAdmins as $data) {
+            $a = Admin::create([
+                'email' => $data['email'],
+                'password' => bcrypt('12345678'),
+                'super_admin' => false,
+            ]);
+            $u = $a->user()->create([
+                'name' => $data['name'],
+                'is_active' => true,
+            ]);
+            $a->assignRole($data['roles']);
+        }
+
 
 
         /*
@@ -85,5 +110,33 @@ class UserSeeder extends Seeder
         ]);
 
         // لا نعطيه أي role أو permission نهائيًا
+
+
+           /*
+        |--------------------------------------------------------------------------
+        | 4) CUSTOMERS (for display/demo)
+        |--------------------------------------------------------------------------
+        */
+        $demoCustomers = [
+            ['phone'=>'0911111112','name'=>['en'=>'John Doe','ar'=>'جون دو']],
+            ['phone'=>'0911111113','name'=>['en'=>'Jane Smith','ar'=>'جين سميث']],
+            ['phone'=>'0911111114','name'=>['en'=>'Ali Hassan','ar'=>'علي حسن']],
+            ['phone'=>'0911111115','name'=>['en'=>'Fatima Noor','ar'=>'فاطمة نور']],
+        ];
+
+        foreach ($demoCustomers as $data) {
+            $c = Customer::create([
+                'phone' => $data['phone'],
+                'password' => bcrypt('12345678'),
+            ]);
+            $u = $c->user()->create([
+                'name' => $data['name'],
+                'is_active' => true,
+            ]);
+            // لا نعطيه أي role أو permission
+        }
+
+       
+
     }
 }

@@ -31,7 +31,7 @@ class StoreDesignRequest extends FormRequest
             'size_ids'   => ['required', 'array', 'min:1'],
             'size_ids.*' => ['integer', 'exists:sizes,id'],
 
-            // 🟢 design_options: [{ id, value }]
+            // design_options: [{ id, value }]
             'design_options'               => ['nullable', 'array'],
             'design_options.*.id'          => ['required', 'integer', 'exists:design_options,id'],
             'design_options.*.value'       => ['nullable', 'array'],

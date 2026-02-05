@@ -48,7 +48,7 @@ class CouponController extends Controller
             ->route('coupons.index')
             ->with('success', __('coupons.coupon_created_successfully'));
     }
-w
+
     public function show(Coupon $coupon)
     {
         $coupon->loadCount('redemptions')

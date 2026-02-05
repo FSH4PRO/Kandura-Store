@@ -27,7 +27,6 @@ class UpdateDesignRequest extends FormRequest
             'size_ids'   => ['sometimes', 'array', 'min:1'],
             'size_ids.*' => ['integer', 'exists:sizes,id'],
 
-            // 🟢 design_options في التعديل
             'design_options'               => ['nullable', 'array'],
             'design_options.*.id'          => ['required', 'integer', 'exists:design_options,id'],
             'design_options.*.value'       => ['nullable', 'array'],

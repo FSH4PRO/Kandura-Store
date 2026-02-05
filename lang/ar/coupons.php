@@ -73,4 +73,14 @@ return [
   'coupon_removed_successfully' => 'تم حذف الكوبون بنجاح.',
 
   'allow_all_customers' => 'السماح لجميع العملاء باستخدام هذا الكوبون.',
+
+  'order_already_paid' => 'هذا الطلب مدفوع بالفعل.',
+  'no_coupon_to_remove' => 'لا يوجد كوبونات لحذفها.',
+
+  'coupon_created_successfully' => 'تم إنشاء الكوبون بنجاح.',
+  'coupon_updated_successfully' => 'تم تحديث الكوبون بنجاح.',
+  'coupon_deleted_successfully' => 'تم حذف الكوبون بنجاح.',
+  'coupon_status_updated_successfully' => 'تم تحديث حالة الكوبون بنجاح.',
+
+
 ];

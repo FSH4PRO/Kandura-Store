@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests\Admin;
 
+use Illuminate\Validation\Rule;
+use App\Enums\DesignOptionsType;
 use Illuminate\Foundation\Http\FormRequest;
 
 class DesignOptionIndexRequest extends FormRequest
@@ -15,7 +17,7 @@ class DesignOptionIndexRequest extends FormRequest
     {
         return [
             'search'    => ['nullable', 'string', 'max:255'],
-            'type'      => ['nullable', 'in:color,dome_type,fabric_type,sleeve_type'],
+            'type'      => ['nullable', Rule::in(array_column(DesignOptionsType::cases(), 'value'))],
             'is_active' => ['nullable', 'in:0,1'],
             'per_page'  => ['nullable', 'integer', 'min:1', 'max:100'],
             'sort_by'   => ['nullable', 'in:id,name,created_at'],

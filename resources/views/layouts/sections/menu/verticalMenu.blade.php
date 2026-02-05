@@ -1,162 +1,177 @@
 @php
-  use Illuminate\Support\Facades\Route;
+    use Illuminate\Support\Facades\Route;
 
-  $isDashboard = request()->routeIs('dashboard-analytics');
+    $isDashboard = request()->routeIs('dashboard-analytics');
 
-  $isUsers = request()->routeIs('users.index');
-  $isAdmins = request()->routeIs('admins.index');
+    $isUsers = request()->routeIs('users.index');
+    $isAdmins = request()->routeIs('admins.index');
+    $isOrders = request()->routeIs('admin.orders.*');
+    $isInvoices = request()->routeIs('admin.invoices.*');
+    $isNotifications = request()->routeIs('admin.notifications.*');
 @endphp
 
 <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
 
-  <!-- Brand -->
-  <div class="app-brand demo">
-    <a href="{{ url('/') }}" class="app-brand-link">
-      <span class="app-brand-logo demo">@include('_partials.macros')</span>
-      <span class="app-brand-text demo menu-text fw-bold ms-2">
-        {{ config('variables.templateName') }}
-      </span>
-    </a>
-
-    <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
-      <i class="icon-base bx bx-chevron-left icon-sm d-flex align-items-center justify-content-center"></i>
-    </a>
-  </div>
-
-  <div class="menu-divider mt-0"></div>
-  <div class="menu-inner-shadow"></div>
-
-  <ul class="menu-inner py-1">
-
-    {{-- ================= Dashboard ================= --}}
-    <li class="menu-item {{ $isDashboard ? 'active' : '' }}">
-      <a href="{{ route('dashboard-analytics') }}" class="menu-link">
-        <i class="menu-icon icon-base bx bx-home-smile"></i>
-        <div>{{ __('menu.dashboard') }}</div>
-        <div class="badge rounded-pill bg-danger text-uppercase ms-auto">
-          {{ __('menu.dashboard_badge') }}
-        </div>
-      </a>
-    </li>
-
-    {{-- ================= User Management ================= --}}
-    <li class="menu-header small text-uppercase">
-      <span class="menu-header-text">{{ __('menu.headers.user_management') }}</span>
-    </li>
-
-    {{-- Admins list --}}
-    @can('admins.view')
-      <li class="menu-item {{ $isAdmins ? 'active' : '' }}">
-        <a href="{{ route('admins.index') }}" class="menu-link">
-          <i class="menu-icon icon-base bx bx-user-circle"></i>
-          <div>{{ __('menu.admins') }}</div>
+    <!-- Brand -->
+    <div class="app-brand demo">
+        <a href="{{ url('/') }}" class="app-brand-link">
+            <span class="app-brand-logo demo">@include('_partials.macros')</span>
+            <span class="app-brand-text demo menu-text fw-bold ms-2">
+                {{ config('variables.templateName') }}
+            </span>
         </a>
-      </li>
-    @endcan
 
-    {{-- Users list --}}
-    @can('users.view')
-      <li class="menu-item {{ $isUsers ? 'active' : '' }}">
-        <a href="{{ route('users.index') }}" class="menu-link">
-          <i class="menu-icon icon-base bx bx-user"></i>
-          <div>{{ __('menu.users') }}</div>
+        <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
+            <i class="icon-base bx bx-chevron-left icon-sm d-flex align-items-center justify-content-center"></i>
         </a>
-      </li>
-    @endcan
+    </div>
 
-    {{-- ================= Roles & Permissions ================= --}}
-    @can('roles.view')
-      <li class="menu-header small text-uppercase">
-        <span class="menu-header-text">{{ __('menu.headers.access_control') }}</span>
-      </li>
+    <div class="menu-divider mt-0"></div>
+    <div class="menu-inner-shadow"></div>
 
-      <li class="menu-item {{ request()->routeIs('roles.*') ? 'active' : '' }}">
-        <a href="{{ route('roles.index') }}" class="menu-link">
-          <i class="menu-icon icon-base bx bx-shield-quarter"></i>
-          <div>{{ __('menu.roles') }}</div>
-        </a>
-      </li>
-    @endcan
+    <ul class="menu-inner py-1">
 
-    {{-- ================= Design Options & Designs ================= --}}
-    @if (auth('admin')->check())
-      <li class="menu-header small text-uppercase">
-        <span class="menu-header-text">{{ __('menu.headers.designs') }}</span>
-      </li>
-    @endif
+        {{-- ================= Dashboard ================= --}}
+        <li class="menu-item {{ $isDashboard ? 'active' : '' }}">
+            <a href="{{ route('dashboard-analytics') }}" class="menu-link">
+                <i class="menu-icon icon-base bx bx-home-smile"></i>
+                <div>{{ __('menu.dashboard') }}</div>
+                <div class="badge rounded-pill bg-danger text-uppercase ms-auto">
+                    {{ __('menu.dashboard_badge') }}
+                </div>
+            </a>
+        </li>
 
-    {{-- Design Options list --}}
-    @can('design_options.view')
-      <li class="menu-item {{ request()->routeIs('admin.design-options.*') ? 'active' : '' }}">
-        <a href="{{ route('admin.design-options.index') }}" class="menu-link">
-          <i class="menu-icon icon-base bx bx-palette"></i>
-          <div>{{ __('menu.design_options') }}</div>
-        </a>
-      </li>
-    @endcan
+        {{-- ================= User Management ================= --}}
+        <li class="menu-header small text-uppercase">
+            <span class="menu-header-text">{{ __('menu.headers.user_management') }}</span>
+        </li>
 
-    {{-- Designs list --}}
-    @can('designs.view')
-      <li class="menu-item {{ request()->routeIs('admin.designs.*') ? 'active' : '' }}">
-        <a href="{{ route('admin.designs.index') }}" class="menu-link">
-          <i class="menu-icon icon-base bx bx-image"></i>
-          <div>{{ __('menu.designs') }}</div>
-        </a>
-      </li>
-    @endcan
+        {{-- Admins list --}}
+        @can('admins.view')
+            <li class="menu-item {{ $isAdmins ? 'active' : '' }}">
+                <a href="{{ route('admins.index') }}" class="menu-link">
+                    <i class="menu-icon icon-base bx bx-user-circle"></i>
+                    <div>{{ __('menu.admins') }}</div>
+                </a>
+            </li>
+        @endcan
 
-    @if (auth('admin')->check())
-      <li class="menu-header small text-uppercase">
-        <span class="menu-header-text">{{ __('menu.headers.orders') }}</span>
-      </li>
-    @endif
+        {{-- Users list --}}
+        @can('users.view')
+            <li class="menu-item {{ $isUsers ? 'active' : '' }}">
+                <a href="{{ route('users.index') }}" class="menu-link">
+                    <i class="menu-icon icon-base bx bx-user"></i>
+                    <div>{{ __('menu.users') }}</div>
+                </a>
+            </li>
+        @endcan
 
-    {{-- Orders list --}}
-    @can('orders.view')
-      <li class="menu-item {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
-        <a href="{{ route('admin.orders.index') }}" class="menu-link">
-          <i class="menu-icon icon-base bx bx-cart"></i>
-          <div>{{ __('menu.orders') }}</div>
-        </a>
-      </li>
-    @endcan
+        {{-- ================= Roles & Permissions ================= --}}
+        @can('roles.view')
+            <li class="menu-header small text-uppercase">
+                <span class="menu-header-text">{{ __('menu.headers.access_control') }}</span>
+            </li>
 
-    @if (auth('admin')->check())
-      <li class="menu-header small text-uppercase">
-        <span class="menu-header-text">{{ __('menu.headers.financial') }}</span>
-      </li>
-    @endif
+            <li class="menu-item {{ request()->routeIs('roles.*') ? 'active' : '' }}">
+                <a href="{{ route('roles.index') }}" class="menu-link">
+                    <i class="menu-icon icon-base bx bx-shield-quarter"></i>
+                    <div>{{ __('menu.roles') }}</div>
+                </a>
+            </li>
+        @endcan
 
-    {{-- Wallets list --}}
-    @can('wallets.view')
-      <li class="menu-item {{ request()->routeIs('admin.wallets.*') ? 'active' : '' }}">
-        <a href="{{ route('admin.wallets.index') }}" class="menu-link">
-          <i class="menu-icon icon-base bx bx-wallet"></i>
-          <div>{{ __('menu.wallets') }}</div>
-        </a>
-      </li>
-    @endcan
+        {{-- ================= Design Options & Designs ================= --}}
+        @if (auth('admin')->check())
+            <li class="menu-header small text-uppercase">
+                <span class="menu-header-text">{{ __('menu.headers.designs') }}</span>
+            </li>
+        @endif
 
-    {{-- Transactions list --}}
-    @can('transactions.view')
-      <li class="menu-item {{ request()->routeIs('dashboard.transactions.*') ? 'active' : '' }}">
-        <a href="{{ route('dashboard.transactions.index') }}" class="menu-link">
-          <i class="menu-icon icon-base bx bx-transfer"></i>
-          <div>{{ __('menu.transactions') }}</div>
-        </a>
-      </li>
-    @endcan
+        {{-- Design Options list --}}
+        @can('design_options.view')
+            <li class="menu-item {{ request()->routeIs('admin.design-options.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.design-options.index') }}" class="menu-link">
+                    <i class="menu-icon icon-base bx bx-palette"></i>
+                    <div>{{ __('menu.design_options') }}</div>
+                </a>
+            </li>
+        @endcan
 
-    {{-- Coupons list --}}
-    @can('coupons.view')
-      <li class="menu-item {{ request()->routeIs('coupons.*') ? 'active' : '' }}">
-        <a href="{{ route('coupons.index') }}" class="menu-link">
-          <i class="menu-icon icon-base bx bx-gift"></i>
-          <div>{{ __('menu.coupons') }}</div>
-        </a>
-      </li>
-    @endcan
+        {{-- Designs list --}}
+        @can('designs.view')
+            <li class="menu-item {{ request()->routeIs('admin.designs.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.designs.index') }}" class="menu-link">
+                    <i class="menu-icon icon-base bx bx-image"></i>
+                    <div>{{ __('menu.designs') }}</div>
+                </a>
+            </li>
+        @endcan
 
-  </ul>
+        @if (auth('admin')->check())
+            <li class="menu-header small text-uppercase">
+                <span class="menu-header-text">{{ __('menu.headers.orders') }}</span>
+            </li>
+        @endif
+
+        {{-- Orders list --}}
+        @can('orders.view')
+            <li class="menu-item {{ $isOrders ? 'active' : '' }}">
+                <a href="{{ route('admin.orders.index') }}" class="menu-link">
+                    <i class="menu-icon icon-base bx bx-cart"></i>
+                    <div>{{ __('menu.orders') }}</div>
+                </a>
+            </li>
+        @endcan
+
+        {{-- Invoices list --}}
+        @can('invoices.view')
+            <li class="menu-item {{ $isInvoices ? 'active' : '' }}">
+                <a href="{{ route('admin.invoices.index') }}" class="menu-link">
+                    <i class="menu-icon icon-base bx bx-receipt"></i>
+                    <div>{{ __('menu.invoices') }}</div>
+                </a>
+            </li>
+        @endcan
+
+        
+
+        @if (auth('admin')->check())
+            <li class="menu-header small text-uppercase">
+                <span class="menu-header-text">{{ __('menu.headers.financial') }}</span>
+            </li>
+        @endif
+
+        {{-- Wallets list --}}
+        @can('wallets.view')
+            <li class="menu-item {{ request()->routeIs('admin.wallets.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.wallets.index') }}" class="menu-link">
+                    <i class="menu-icon icon-base bx bx-wallet"></i>
+                    <div>{{ __('menu.wallets') }}</div>
+                </a>
+            </li>
+        @endcan
+
+        {{-- Transactions list --}}
+        @can('transactions.view')
+            <li class="menu-item {{ request()->routeIs('dashboard.transactions.*') ? 'active' : '' }}">
+                <a href="{{ route('dashboard.transactions.index') }}" class="menu-link">
+                    <i class="menu-icon icon-base bx bx-transfer"></i>
+                    <div>{{ __('menu.transactions') }}</div>
+                </a>
+            </li>
+        @endcan
+
+        {{-- Coupons list --}}
+        @can('coupons.view')
+            <li class="menu-item {{ request()->routeIs('coupons.*') ? 'active' : '' }}">
+                <a href="{{ route('coupons.index') }}" class="menu-link">
+                    <i class="menu-icon icon-base bx bx-gift"></i>
+                    <div>{{ __('menu.coupons') }}</div>
+                </a>
+            </li>
+        @endcan
+
+    </ul>
 
 </aside>

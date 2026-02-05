@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 class Order extends Model
 {
     protected $fillable = [
+        'serial_number',
         'customer_id',
         'address_id',
 
@@ -59,6 +60,21 @@ class Order extends Model
         return $this->belongsTo(Coupon::class);
     }
 
+    public function invoice()
+    {
+        return $this->hasOne(Invoice::class);
+    }
+
+    public function review()
+    {
+        return $this->hasOne(Review::class);
+    }
+
+    public function address()
+    {
+        return $this->belongsTo(Address::class);
+    }
+
 
     public function isPayable(): bool
     {
@@ -78,4 +94,20 @@ class Order extends Model
 
         $this->save();
     }
+
+
+    protected static function booted()
+{
+    static::created(function ($order) {
+
+        if ($order->serial_number) return;
+
+        $year = now()->year;
+
+        $order->updateQuietly([
+            'serial_number' => 'ORD-' . $year . '-' . str_pad($order->id, 6, '0', STR_PAD_LEFT),
+        ]);
+    });
+}
+
 }

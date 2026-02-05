@@ -7,6 +7,9 @@ return [
     'title'      => 'Roles',
     'heading'    => 'Manage Roles',
     'subheading' => 'View and manage all roles in the admin panel.',
+    'search_placeholder' => 'Search all columns...',
+    'search_button' => 'Search',
+    'reset_button' => 'Reset',
 
     'create_button' => 'Create New Role',
 
@@ -74,5 +77,23 @@ return [
     'updated'       => 'Role updated successfully.',
     'deleted'       => 'Role deleted successfully.',
     'not_deletable' => 'This role cannot be deleted.',
+  ],
+
+  'permission_groups' => [
+    'users'          => 'Users',
+    'admins'         => 'Admins',
+    'addresses'      => 'Addresses',
+    'designs_options'=> 'Design Options',
+    'designs'        => 'Designs',
+    'orders'         => 'Orders',
+    'invoices'       => 'Invoices',
+    'wallets'        => 'Wallets',
+    'notifications'  => 'Notifications',
+    'system'         => 'System',
+    'dashboard'      => 'Dashboard',
+    'roles'          => 'Roles',
+    'coupons'        => 'Coupons',
+    'reviews'        => 'Reviews',
+    'design_options' => 'Design Options',
   ],
 ];

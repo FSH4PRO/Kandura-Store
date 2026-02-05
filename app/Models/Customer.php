@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -63,6 +64,18 @@ class Customer extends Authenticatable
     {
         return $this->hasOne(Wallet::class);
     }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class, 'customer_id');
+    }
+
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class, 'customer_id');
+    }
+
+ 
 
     public function getWalletOrCreate(): Wallet
     {

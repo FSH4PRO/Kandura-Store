@@ -3,14 +3,15 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\User;
+use App\Models\Admin;
+use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use App\Services\Admin\UserService;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\AddressResource;
 use App\Http\Requests\Admin\ListUsersRequest;
 use App\Http\Requests\Admin\StoreAdminRequest;
 use App\Http\Requests\Admin\UpdateAdminRequest;
-use Illuminate\Http\Request;
-use App\Http\Resources\AddressResource;
 
 class UserController extends Controller
 {
@@ -25,6 +26,9 @@ class UserController extends Controller
     public function index(ListUsersRequest $request)
     {
         $admin = auth('admin')->user();
+
+        $this->authorize('viewAny', User::class);
+
         $currentUser = $admin->user ?? null;
 
         $filters = $request->validated();
@@ -47,7 +51,6 @@ class UserController extends Controller
         $filters = $request->validated();
 
         $admins = $this->service->listAdmins($filters);
-
 
         $roles = Role::query()
             ->where('guard_name', 'admin')
@@ -179,4 +182,6 @@ class UserController extends Controller
             ], 500);
         }
     }
+
+   
 }

@@ -12,16 +12,19 @@ class OrderResource extends JsonResource
         $customer = $this->customer;
         $user     = $customer?->user;
 
+
+
         return [
             'id'        => $this->id,
-            'status'    => $this->status,
+            'serial_number' => $this->serial_number,
+            'status' => $this->status?->value ?? (string) $this->status,
 
             'subtotal'       => (float) $this->subtotal,
             'discount_total' => (float) $this->discount_total,
             'total'          => (float) $this->total,
 
-            'payment_method' => $this->payment_method,
-            'payment_status' => $this->payment_status,
+            'payment_method' => $this->payment_method?->value ?? (string) $this->payment_method,
+            'payment_status' => $this->payment_status?->value ?? (string) $this->payment_status,
             'paid_at'        => $this->paid_at?->toIso8601String(),
 
             'coupon' => $this->whenLoaded('coupon', fn() => [
@@ -37,6 +40,10 @@ class OrderResource extends JsonResource
                 'id'   => $customer->id,
                 'name' => $user?->name,
             ] : null,
+
+            'address' => $this->whenLoaded('address', fn() => [
+                'id' => $this->address?->id,
+            ]),
 
             'items' => ItemResource::collection($this->whenLoaded('items')),
 

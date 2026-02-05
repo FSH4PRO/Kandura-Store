@@ -62,11 +62,19 @@ class PermissionSeeder extends Seeder
             'orders.edit',
             'orders.delete',
             'orders.change_status',
+        ];  
+
+        // Invoices management
+        $permissions_invoices = [
+            'invoices.view',
+            'invoices.create',
+            'invoices.edit',
+            'invoices.delete',
         ];
 
         // Wallets
         $permissions_wallets = [
-            'wallets.view',
+            'wallets.view', 
             'wallets.add',
             'wallets.withdraw',
         ];
@@ -101,6 +109,13 @@ class PermissionSeeder extends Seeder
             'coupons.delete',
         ];
 
+        $permissions_reviews = [
+            'reviews.view',
+            'reviews.create',
+            'reviews.edit',
+            'reviews.delete',
+        ];
+
         $allPermissions = array_merge(
             $permissions_users,
             $permissions_admins,
@@ -108,16 +123,18 @@ class PermissionSeeder extends Seeder
             $permissions_designs_options,
             $permissions_designs,
             $permissions_orders,
+            $permissions_invoices,
             $permissions_wallets,
             $permissions_notifications,
             $permissions_system,
             $permissions_dashboard,
             $permissions_roles,
-            $permissions_coupons
+            $permissions_coupons,
+            $permissions_reviews
         );
 
         // ---------------------------------------------------
-        // 2) إنشاء الـ Permissions (guard = user)
+        // 2) إنشاء الـ Permissions (guard = admin)
         // ---------------------------------------------------
 
         foreach ($allPermissions as $perm) {
@@ -174,6 +191,13 @@ class PermissionSeeder extends Seeder
         ]);
         $role_manage_orders->syncPermissions($permissions_orders);
 
+        // manage_invoices
+        $role_manage_invoices = Role::firstOrCreate([
+            'name'       => 'manage_invoices',
+            'guard_name' => 'admin',
+        ]);
+        $role_manage_invoices->syncPermissions($permissions_invoices);
+
         // manage_wallets
         $role_manage_wallets = Role::firstOrCreate([
             'name'       => 'manage_wallets',
@@ -206,6 +230,12 @@ class PermissionSeeder extends Seeder
             'guard_name' => 'admin',
         ]);
         $role_manage_roles->syncPermissions($permissions_roles);
+
+        $role_manage_reviews = Role::firstOrCreate([
+            'name'       => 'manage_reviews',
+            'guard_name' => 'admin',
+        ]);
+        $role_manage_reviews->syncPermissions($permissions_reviews);
 
         // ---------------------------------------------------
         // 4) SUPER ADMIN ROLE (يجمع كل شيء)

@@ -12,6 +12,8 @@ return [
   'design_options' => 'Design Options',
   'designs'        => 'Designs',
   'orders'         => 'Orders',
+  'invoices'       => 'Invoices',
+  'notifications'  => 'Notifications',
   'coupons'        => 'Coupons',
   'wallets'        => 'Wallets',
   'transactions'   => 'Transactions',

@@ -35,6 +35,19 @@ return [
     'manage_orders'    => 'إدارة الطلبات',
     'dashboard_access' => 'صلاحية الدخول للوحة التحكم',
     'none'             => 'لا توجد أدوار',
+    'manage_coupons'    => 'إدارة الكوبونات',
+    'manage_settings'  => 'إدارة الضبط',
+    'manage_design_options' => 'إدارة خيارات التصميم',
+    'manage_designs' => 'إدارة التصاميم',
+    'manage_invoices' => 'إدارة الفواتير',
+    'manage_notifications' => 'إدارة الاشعارات',
+    'manage_system' => 'إدارة الضبط النظام',
+    'manage_roles' => 'إدارة الأدوار',
+    'manage_reviews' => 'إدارة التقييمات',
+    'manage_wallets' => 'إدارة المحافظ',
+
+
+
   ],
 
   'actions' => [
@@ -90,5 +103,6 @@ return [
     'heading'      => 'تعديل الأدمن',
     'subheading'   => 'قم بتحديث معلومات حساب المسؤول.',
     'back_to_list' => 'رجوع لقائمة الأدمنز',
+    'submit' => 'تحديث الأدمن',
   ],
 ];

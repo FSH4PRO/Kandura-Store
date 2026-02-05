@@ -29,7 +29,7 @@ class ListOrdersRequest extends FormRequest
       'total_min'  => ['nullable', 'numeric', 'min:0'],
       'total_max'  => ['nullable', 'numeric', 'min:0'],
       'per_page'   => ['nullable', 'integer', 'min:1', 'max:100'],
-      'sort_by'    => ['nullable', 'in:id,created_at,total_amount'],
+      'sort_by'    => ['nullable', 'in:id,created_at,total'],
       'sort_dir'   => ['nullable', 'in:asc,desc'],
     ];
   }

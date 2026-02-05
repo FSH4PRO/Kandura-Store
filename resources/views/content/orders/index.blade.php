@@ -3,161 +3,285 @@
 @section('title', __('orders.index.title'))
 
 @section('content')
-  {{-- Header --}}
-  <div class="row mb-4">
-    <div class="col-12 d-flex justify-content-between align-items-center flex-wrap gap-3">
-      <div>
-        <h4 class="mb-1">{{ __('orders.index.heading') }}</h4>
-        <p class="mb-0 text-muted">{{ __('orders.index.subheading') }}</p>
-      </div>
-    </div>
-  </div>
-
-  {{-- Filters --}}
-  <div class="row mb-4">
-    <div class="col-12">
-      <div class="card">
-        <div class="card-body">
-          <form method="GET" action="{{ route('admin.orders.index') }}" class="row g-3 align-items-end">
-
-            {{-- Search --}}
-            <div class="col-md-4">
-              <label class="form-label">{{ __('orders.filters.search_label') }}</label>
-              <input type="text" name="search" class="form-control"
-                placeholder="{{ __('orders.filters.search_placeholder') }}" value="{{ $filters['search'] ?? '' }}">
+    {{-- Header --}}
+    <div class="row mb-4">
+        <div class="col-12 d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <h4 class="mb-1">{{ __('orders.index.heading') }}</h4>
+                <p class="mb-0 text-muted">{{ __('orders.index.subheading') }}</p>
             </div>
-
-            {{-- Status --}}
-            <div class="col-md-3">
-              <label class="form-label">{{ __('orders.filters.status_label') }}</label>
-              <select name="status" class="form-select">
-                <option value="">{{ __('orders.filters.status_all') }}</option>
-                @foreach ($statusOptions as $status)
-                  <option value="{{ $status->value }}"
-                    {{ ($filters['status'] ?? '') === $status->value ? 'selected' : '' }}>
-                    {{ __('orders.statuses.' . $status->value) }}
-                  </option>
-                @endforeach
-              </select>
-            </div>
-
-            {{-- Min total --}}
-            <div class="col-md-2">
-              <label class="form-label">{{ __('orders.filters.total_min') }}</label>
-              <input type="number" step="0.01" name="total_min" class="form-control"
-                value="{{ $filters['total_min'] ?? '' }}">
-            </div>
-
-            {{-- Max total --}}
-            <div class="col-md-2">
-              <label class="form-label">{{ __('orders.filters.total_max') }}</label>
-              <input type="number" step="0.01" name="total_max" class="form-control"
-                value="{{ $filters['total_max'] ?? '' }}">
-            </div>
-
-            <div class="col-md-3 d-flex gap-2">
-              <button type="submit" class="btn btn-primary flex-grow-1">
-                {{ __('orders.filters.submit') }}
-              </button>
-              <a href="{{ route('admin.orders.index') }}" class="btn btn-outline-secondary">
-                {{ __('orders.filters.reset') }}
-              </a>
-            </div>
-
-          </form>
         </div>
-      </div>
     </div>
-  </div>
 
-  {{-- Table --}}
-  <div class="row">
-    <div class="col-12">
-      <div class="card">
-        <div class="table-responsive text-nowrap">
-          <table class="table table-hover mb-0">
-            <thead>
-              <tr>
-                <th>{{ __('orders.table.customer') }}</th>
-                <th>{{ __('orders.table.total') }}</th>
-                <th>{{ __('orders.table.discount') }}</th>
-                <th>{{ __('orders.table.status') }}</th>
-                <th>{{ __('orders.table.items_count') }}</th>
-                <th>{{ __('orders.table.payment_method') }}</th>
-                <th>{{ __('orders.table.payment_status') }}</th>
-                <th>{{ __('orders.table.created_at') }}</th>
-                <th class="text-center">{{ __('orders.table.actions') }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              @forelse ($orders as $order)
-                @php
-                  $customer = $order->customer;
-                  $user = $customer?->user;
-                  $statusValue = $order->status->value ?? $order->status;
-                  $statusClass = match ($statusValue) {
-                      'pending' => 'bg-label-warning',
-                      'accepted' => 'bg-label-info',
-                      'paid' => 'bg-label-success',
-                      'rejected', 'canceled' => 'bg-label-danger',
-                      default => 'bg-label-secondary',
-                  };
-                @endphp
-                <tr>
-                  <td>{{ $user?->name ?? '-' }}</td>
-                  <td>
-                    {{ number_format($order->total, 2) }}
-                    @if (!empty($order->currency))
-                      <small class="text-muted">{{ $order->currency }}</small>
-                    @endif
-                  </td>
-                  <td>
-                    @if ($order->discount_total > 0)
-                      {{ number_format($order->discount_total, 2) }}
-                      @if (!empty($order->currency))
-                        <small class="text-muted">{{ $order->currency }}</small>
-                      @endif
-                    @else
-                      -
-                    @endif
-                  </td>
-                  <td>
-                    <span class="badge {{ $statusClass }}">
-                      {{ __('orders.statuses.' . $statusValue) }}
-                    </span>
-                  </td>
-                  <td>{{ $order->items->count() }}</td>
-                  <td>{{ __('orders.payment_methods.' . $order->payment_method->value) }}</td>
-                  <td>
-                    <span
-                      class="badge bg-label-{{ $order->payment_status->value === 'paid' ? 'success' : ($order->payment_status->value === 'pending' ? 'warning' : 'secondary') }}">
-                      {{ __('orders.payment_statuses.' . $order->payment_status->value) }}
-                    </span>
-                  </td>
-                  <td>{{ $order->created_at?->format('Y-m-d H:i') }}</td>
-                  <td class="text-center">
-                    <a href="{{ route('admin.orders.show', $order->id) }}" class="btn btn-sm btn-outline-primary">
-                      {{ __('orders.table.view') }}
-                    </a>
-                  </td>
-                </tr>
-              @empty
-                <tr>
-                  <td colspan="9" class="text-center text-muted py-4">
-                    {{ __('orders.table.empty') }}
-                  </td>
-                </tr>
-              @endforelse
-            </tbody>
-          </table>
+    @if (session('status'))
+        <div class="row">
+            <div class="col-12">
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ session('status') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            </div>
         </div>
+    @endif
 
-        @if ($orders instanceof \Illuminate\Contracts\Pagination\Paginator)
-          <div class="card-footer">
-            {{ $orders->links() }}
-          </div>
-        @endif
-      </div>
+    @if (session('error'))
+        <div class="row">
+            <div class="col-12">
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ session('error') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    {{-- Filters --}}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <form method="GET" action="{{ route('admin.orders.index') }}" class="row g-3 align-items-end">
+
+                        {{-- Search --}}
+                        <div class="col-md-4">
+                            <label class="form-label">{{ __('orders.filters.search_label') }}</label>
+                            <input type="text" name="search" class="form-control"
+                                placeholder="{{ __('orders.filters.search_placeholder') }}"
+                                value="{{ $filters['search'] ?? '' }}">
+                        </div>
+
+                        {{-- Status --}}
+                        <div class="col-md-3">
+                            <label class="form-label">{{ __('orders.filters.status_label') }}</label>
+                            <select name="status" class="form-select">
+                                <option value="">{{ __('orders.filters.status_all') }}</option>
+                                @foreach ($statusOptions as $status)
+                                    <option value="{{ $status->value }}"
+                                        {{ ($filters['status'] ?? '') === $status->value ? 'selected' : '' }}>
+                                        {{ __('orders.statuses.' . $status->value) }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        {{-- Min total --}}
+                        <div class="col-md-2">
+                            <label class="form-label">{{ __('orders.filters.total_min') }}</label>
+                            <input type="number" step="0.01" name="total_min" class="form-control"
+                                value="{{ $filters['total_min'] ?? '' }}">
+                        </div>
+
+                        {{-- Max total --}}
+                        <div class="col-md-2">
+                            <label class="form-label">{{ __('orders.filters.total_max') }}</label>
+                            <input type="number" step="0.01" name="total_max" class="form-control"
+                                value="{{ $filters['total_max'] ?? '' }}">
+                        </div>
+
+                        <div class="col-md-3 d-flex gap-2">
+                            <button type="submit" class="btn btn-primary flex-grow-1">
+                                {{ __('orders.filters.submit') }}
+                            </button>
+                            <a href="{{ route('admin.orders.index') }}" class="btn btn-outline-secondary">
+                                {{ __('orders.filters.reset') }}
+                            </a>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
+
+    {{-- Table --}}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="table-responsive text-nowrap">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>{{ __('orders.table.serial_number') }}</th> 
+                                <th>{{ __('orders.table.customer') }}</th>
+                                <th>{{ __('orders.table.total') }}</th>
+                                <th>{{ __('orders.table.discount') }}</th>
+                                <th>{{ __('orders.table.status') }}</th>
+                                <th>{{ __('orders.table.items_count') }}</th>
+                                <th>{{ __('orders.table.payment_method') }}</th>
+                                <th>{{ __('orders.table.payment_status') }}</th>
+                                <th>{{ __('orders.table.created_at') }}</th>
+                                <th width="140px">{{ __('orders.table.rating') }}</th>
+                                <th class="text-center">{{ __('orders.table.actions') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($orders as $order)
+                                @php
+                                    $customer = $order->customer;
+                                    $user = $customer?->user;
+                                    $statusValue = $order->status->value ?? $order->status;
+                                    $statusClass = match ($statusValue) {
+                                        'pending' => 'bg-label-warning',
+                                        'accepted' => 'bg-label-info',
+                                        'paid' => 'bg-label-success',
+                                        'rejected', 'canceled' => 'bg-label-danger',
+                                        default => 'bg-label-secondary',
+                                    };
+                                @endphp
+                                <tr>
+                                    <td>{{ $order->serial_number }}</td>
+                                    <td>{{ $user?->name ?? '-' }}</td>
+                                    <td>
+                                        {{ number_format($order->total, 2) }}
+                                        @if (!empty($order->currency))
+                                            <small class="text-muted">{{ $order->currency }}</small>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if ($order->discount_total > 0)
+                                            {{ number_format($order->discount_total, 2) }}
+                                            @if (!empty($order->currency))
+                                                <small class="text-muted">{{ $order->currency }}</small>
+                                            @endif
+                                        @else
+                                            -
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <span class="badge {{ $statusClass }}">
+                                            {{ __('orders.statuses.' . $statusValue) }}
+                                        </span>
+                                    </td>
+                                    <td>{{ $order->items->count() }}</td>
+                                    <td>{{ __('orders.payment_methods.' . $order->payment_method->value) }}</td>
+                                    <td>
+                                        <span
+                                            class="badge bg-label-{{ $order->payment_status->value === 'paid' ? 'success' : ($order->payment_status->value === 'pending' ? 'warning' : 'secondary') }}">
+                                            {{ __('orders.payment_statuses.' . $order->payment_status->value) }}
+                                        </span>
+                                    </td>
+                                    <td>{{ $order->created_at?->format('Y-m-d H:i') }}</td>
+                                    <td>
+                                        @if ($order->review)
+                                            @php
+                                                $rating = (int) $order->review->rating;
+                                                $modalId = 'reviewModalOrder' . $order->id;
+                                            @endphp
+
+                                            <button type="button"
+                                                class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1"
+                                                data-bs-toggle="modal" data-bs-target="#{{ $modalId }}"
+                                                title="{{ __('orders.table.view_review') }}">
+
+                                                {{-- Stars --}}
+                                                <span class="text-warning">
+                                                    @for ($i = 1; $i <= $rating; $i++)
+                                                        @if ($i <= $rating)
+                                                            ★
+                                                        @else
+                                                            <span class="text-muted">★</span>
+                                                        @endif
+                                                    @endfor
+                                                </span>
+
+                                              
+                                            </button>
+
+                                            {{-- Modal --}}
+                                            <div class="modal fade" id="{{ $modalId }}" tabindex="-1"
+                                                aria-hidden="true">
+                                                <div class="modal-dialog modal-dialog-centered modal-sm">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title">{{ __('orders.review.title') }}</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                                aria-label="Close"></button>
+                                                        </div>
+
+                                                        <div class="modal-body">
+                                                            <div class="mb-3">
+                                                                <div
+                                                                    class="d-flex justify-content-between align-items-center">
+                                                                    <span
+                                                                        class="text-muted">{{ __('orders.review.order') }}</span>
+                                                                    <span
+                                                                        class="fw-semibold">#{{ $order->serial_number ?? $order->id }}</span>
+                                                                </div>
+                                                                <div
+                                                                    class="d-flex justify-content-between align-items-center mt-2">
+                                                                    <span
+                                                                        class="text-muted">{{ __('orders.review.customer') }}</span>
+                                                                    <span
+                                                                        class="fw-semibold">{{ $user?->name ?? '-' }}</span>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="mb-3">
+                                                                <div class="text-muted mb-1">
+                                                                    {{ __('orders.review.rating') }}</div>
+                                                                <div class="fs-5 text-warning">
+                                                                    @for ($i = 1; $i <= $rating; $i++)
+                                                                        @if ($i <= $rating)
+                                                                            ★
+                                                                        @else
+                                                                            <span class="text-muted">★</span>
+                                                                        @endif
+                                                                    @endfor
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="mb-3">
+                                                                <div class="text-muted mb-1">
+                                                                    {{ __('orders.review.comment') }}</div>
+                                                                <div class="border rounded p-2 bg-light">
+                                                                    {{ $order->review->comment ?: __('orders.review.no_comment') }}
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="text-muted small">
+                                                                {{ __('orders.review.created_at') }}:
+                                                                {{ $order->review->created_at?->format('Y-m-d H:i') }}
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-outline-secondary btn-sm"
+                                                                data-bs-dismiss="modal">
+                                                                {{ __('common.close') }}
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @else
+                                            <span class="text-muted">-</span>
+                                        @endif
+                                    </td>
+
+                                    <td class="text-center">
+                                        <a href="{{ route('admin.orders.show', $order->id) }}"
+                                            class="btn btn-sm btn-outline-primary">
+                                            {{ __('orders.table.view') }}
+                                        </a>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="11" class="text-center text-muted py-4">
+                                        {{ __('orders.table.empty') }}
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+
+                @if ($orders instanceof \Illuminate\Contracts\Pagination\Paginator)
+                    <div class="card-footer">
+                        {{ $orders->links() }}
+                    </div>
+                @endif
+            </div>
+        </div>
+    </div>
 @endsection

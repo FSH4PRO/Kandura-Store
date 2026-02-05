@@ -37,7 +37,7 @@ class WalletPaymentStrategy implements PaymentStrategy
         $amount = (float) $order->total;
 
         // Validate amount
-        if ($amount <= 0) {
+        if ($amount < 0) {
           throw new \RuntimeException('Invalid order amount.');
         }
 
@@ -65,7 +65,7 @@ class WalletPaymentStrategy implements PaymentStrategy
         $order->update([
           'payment_method'    => PaymentMethod::Wallet,
           'payment_status'    => PaymentStatus::Paid,
-          'status' => OrderStatus::Paid,
+          'status' => OrderStatus::Processing,
           'paid_at'           => now(),
           'payment_reference' => 'wallet:' . $wallet->id,
           'payment_meta'      => ['wallet_id' => $wallet->id],

@@ -62,7 +62,7 @@ class WebhookController
 
                 // Perhaps also update order status if needed
                 if ($order->status === OrderStatus::Accepted) {
-                    $order->update(['status' => OrderStatus::Paid]);
+                    $order->update(['status' => OrderStatus::Processing]);
                 }
             } elseif ($session->payment_status === 'unpaid') {
                 // Payment was not completed

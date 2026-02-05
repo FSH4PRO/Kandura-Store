@@ -12,8 +12,7 @@ class WalletPolicy
      */
     public function viewAny(Admin $admin): bool
     {
-        return $admin->hasRole(['super_admin', 'manage_wallets'])
-            || $admin->can('wallets.view');
+        return  $admin->can('wallets.view');
     }
 
     /**
@@ -21,8 +20,7 @@ class WalletPolicy
      */
     public function view(Admin $admin, Wallet $wallet): bool
     {
-        return $admin->hasRole(['super_admin', 'manage_wallets'])
-            || $admin->can('wallets.view');
+        return  $admin->can('wallets.view');
     }
 
     /**
@@ -30,8 +28,7 @@ class WalletPolicy
      */
     public function addCredit(Admin $admin, Wallet $wallet): bool
     {
-        return $admin->hasRole(['super_admin', 'manage_wallets'])
-            || $admin->can('wallets.add');
+        return $admin->can('wallets.add');
     }
 
     /**
@@ -39,8 +36,7 @@ class WalletPolicy
      */
     public function manageStatus(Admin $admin, Wallet $wallet): bool
     {
-        return $admin->hasRole(['super_admin', 'manage_wallets'])
-            || $admin->can('wallets.view');
+        return $admin->can('wallets.view');
     }
 
     /**
@@ -48,7 +44,6 @@ class WalletPolicy
      */
     public function bulkAddCredit(Admin $admin): bool
     {
-        return $admin->hasRole(['super_admin', 'manage_wallets'])
-            || $admin->can('wallets.add');
+        return $admin->can('wallets.add');
     }
 }

@@ -2,14 +2,6 @@
 
 @section('title', __('coupons.coupons_management'))
 
-@section('vendor-style')
-  @vite(['resources/assets/vendor/libs/datatables-bs5/datatables.bootstrap5.scss', 'resources/assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.scss'])
-@endsection
-
-@section('vendor-script')
-  @vite(['resources/assets/vendor/libs/moment/moment.js', 'resources/assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js'])
-@endsection
-
 @section('content')
   <div class="row">
     <div class="col-12">
@@ -23,6 +15,20 @@
             </a>
           @endcan
         </div>
+
+        {{-- messages   --}}
+        @if (session('success'))
+          <div class="alert alert-success alert-dismissible" role="alert">
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        @endif
+        @if (session('error'))
+          <div class="alert alert-danger alert-dismissible" role="alert">
+            {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        @endif
 
         <div class="card-datatable table-responsive">
           <table class="datatables-coupons table">

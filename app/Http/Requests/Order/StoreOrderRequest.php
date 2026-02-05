@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Order;
 
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreOrderRequest extends FormRequest
@@ -17,12 +18,29 @@ class StoreOrderRequest extends FormRequest
             'items' => ['required', 'array', 'min:1'],
 
             'items.*.design_id' => ['required', 'integer', 'exists:designs,id'],
-            'items.*.size_id'   => ['required', 'integer', 'exists:sizes,id'],
+            'items.*.size_id'   => ['nullable', 'integer', 'exists:sizes,id'],
             'items.*.quantity'  => ['required', 'integer', 'min:1'],
 
             'items.*.options'   => ['nullable', 'array'],
-            'items.*.options.*.option_id' => ['required_with:items.*.options', 'integer', 'exists:design_options,id'],
-            'items.*.options.*.value'     => ['nullable', 'string'],
+            //option only if they are exists in the design options table and they are related to the design
+            'items.*.options.*.option_id' => [
+                'required',
+                'integer',
+                Rule::exists('design_options', 'id')->where(function ($query) {
+                    $query->where('id', request()->input('items.*.design_id'));
+                }),
+            ],
+            'items.*.options.*.value'     => ['nullable'],
+
+            'address_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('addresses', 'id')->where(
+                    'customer_id',
+                    auth('customer')->user()?->id
+                ),
+            ],
+
         ];
     }
 }

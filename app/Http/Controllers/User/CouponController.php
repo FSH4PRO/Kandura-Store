@@ -30,4 +30,15 @@ class CouponController extends Controller
 
         return $this->success(new OrderResource($order));
     }
+
+    public function remove(Order $order)
+    {
+        $this->authorize('removeCoupon', $order);
+
+        $customer = auth('customer')->user();
+
+        $order = $this->service->remove($customer, $order);
+
+        return $this->success(new OrderResource($order));
+    }
 }

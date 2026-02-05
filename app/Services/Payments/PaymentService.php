@@ -19,11 +19,8 @@ class PaymentService
 
     public function pay(Customer $customer, Order $order, PayOrderData $data): array
     {
-        // Authorization is handled by the policy in the controller
-        // Business logic checks below
-
         // Validate order amount
-        if ((float) $order->total <= 0) {
+        if ((float) $order->total < 0) {
             throw new \RuntimeException('Order amount must be greater than zero.');
         }
 

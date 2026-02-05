@@ -103,7 +103,7 @@ class DesignService
             }
 
 
-            if (array_key_exists('design_options', $data)) {
+            if (isset($data['design_options'])) {
                 $this->syncDesignOptions($design, $data['design_options'] ?? []);
             }
 

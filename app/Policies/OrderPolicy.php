@@ -56,6 +56,7 @@ class OrderPolicy
             PaymentStatus::Pending,
             PaymentStatus::Failed,
             PaymentStatus::Canceled,
+            
         ], true);
     }
 
@@ -97,8 +98,7 @@ class OrderPolicy
     public function viewAny(Admin $admin): bool
     {
         // Admins with order management permissions can view all orders
-        return $admin->hasRole(['super_admin', 'manage_orders'])
-            || $admin->can('orders.view');
+        return $admin->can('orders.view');
     }
 
     /**
@@ -107,8 +107,7 @@ class OrderPolicy
     public function viewAsAdmin(Admin $admin, Order $order): bool
     {
         // Admins with order management permissions can view any order
-        return $admin->hasRole(['super_admin', 'manage_orders'])
-            || $admin->can('orders.view');
+        return $admin->can('orders.view');
     }
 
     /**

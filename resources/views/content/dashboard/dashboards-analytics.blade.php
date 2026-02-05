@@ -166,8 +166,7 @@
           </div>
           <div class="card-info mt-3">
             <h6 class="mb-1">{{ __('dashboard.metrics.total_wallet_balance') }}</h6>
-            <h4 class="mb-0">{{ number_format($totalWalletBalance, 2) }} <small
-                class="text-muted">{{ __('currency.sar') }}</small></h4>
+            <h4 class="mb-0">{{ number_format($totalWalletBalance, 2) }} AED</h4>
             <small class="text-warning fw-medium">
               {{ $activeWallets }} {{ __('dashboard.metrics.active_wallets') }}
             </small>
@@ -176,40 +175,7 @@
       </div>
     </div>
   </div>
-
-  <!-- Charts Row -->
-  <div class="row mb-6">
-    <!-- User Growth Chart -->
-    <div class="col-xl-6 mb-4">
-      <div class="card h-100">
-        <div class="card-header d-flex justify-content-between align-items-center">
-          <div>
-            <h5 class="card-title mb-1">{{ __('dashboard.charts.user_growth') }}</h5>
-            <p class="card-subtitle mb-0">{{ __('dashboard.charts.last_12_months') }}</p>
-          </div>
-        </div>
-        <div class="card-body">
-          <div id="userGrowthChart" data-user-growth="{{ json_encode($userGrowth) }}"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Order Growth Chart -->
-    <div class="col-xl-6 mb-4">
-      <div class="card h-100">
-        <div class="card-header d-flex justify-content-between align-items-center">
-          <div>
-            <h5 class="card-title mb-1">{{ __('dashboard.charts.order_growth') }}</h5>
-            <p class="card-subtitle mb-0">{{ __('dashboard.charts.last_12_months') }}</p>
-          </div>
-        </div>
-        <div class="card-body">
-          <div id="orderGrowthChart" data-order-growth="{{ json_encode($orderGrowth) }}"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
+  
   <!-- Bottom Row -->
   <div class="row">
     <!-- Recent Transactions -->
@@ -217,7 +183,7 @@
       <div class="card h-100">
         <div class="card-header d-flex justify-content-between align-items-center">
           <h5 class="card-title mb-0">{{ __('dashboard.recent_transactions.title') }}</h5>
-          <a href="{{ route('dashboard.transactions.index') }}" class="btn btn-sm btn-outline-primary">
+          <a href="{{ route('admin.wallets.index') }}" class="btn btn-sm btn-outline-primary">
             {{ __('dashboard.actions.view_all') }}
           </a>
         </div>

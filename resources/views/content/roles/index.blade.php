@@ -23,8 +23,43 @@
           </a>
         @endcan
       </div>
-    </div>
   </div>
+  </div>
+  {{-- messages --}}
+  @if (session('success'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      {{ session('success') }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  @endif
+  @if (session('error'))
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      {{ session('error') }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  @endif
+
+  {{-- searching --}}
+  <div class="row mb-4">
+    <div class="col-12 col-md-6">
+      <form action="{{ route('roles.index') }}" method="GET" class="d-flex">
+        <input type="text" name="search" class="form-control me-2" placeholder="{{ __('roles.index.search_placeholder') }}"
+          value="{{ request('search') }}">
+        <button type="submit" class="btn btn-outline-primary">
+          {{ __('roles.index.search_button') }}
+        </button>
+      </form>
+    </div>
+   {{-- reset searching --}}
+    <div class="col-3 col-md-6">
+      <form action="{{ route('roles.index') }}" method="GET" class="d-flex justify-content-end">
+        <button type="submit" class="btn btn-outline-primary">
+          {{ __('roles.index.reset_button') }}
+        </button>
+      </form>
+    </div>
+   
+
 
   <div class="row">
     <div class="col-12">

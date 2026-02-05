@@ -78,7 +78,7 @@
           </form>
 
         </div>
-      </div>w
+      </div>
     </div>
   </div>
 

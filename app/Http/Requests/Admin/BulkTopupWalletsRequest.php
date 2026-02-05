@@ -11,7 +11,7 @@ class BulkTopupWalletsRequest extends FormRequest
    */
   public function authorize(): bool
   {
-    return auth('admin')->check() && auth('admin')->user()->can('wallets.bulk_topup');
+    return auth('admin')->check() && auth('admin')->user()->can('wallets.add');
   }
 
   /**

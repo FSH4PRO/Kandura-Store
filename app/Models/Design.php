@@ -60,6 +60,8 @@ class Design extends Model implements HasMedia
         );
     }
 
+    
+
     /* ========== Media ========== */
 
     public function registerMediaCollections(): void
@@ -140,4 +142,6 @@ class Design extends Model implements HasMedia
     {
         return $query->where('customer_id', $customer->id);
     }
+
+    
 }

@@ -6,19 +6,20 @@ use App\Models\Order;
 use App\Models\Coupon;
 use App\Models\Customer;
 use App\Models\CouponRedemption;
+use App\Enums\CouponType;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class CouponService
 {
-   
+
     public function apply(Customer $customer, Order $order, string $code): Order
     {
         return DB::transaction(function () use ($customer, $order, $code) {
 
-        if($order->payment_status === 'paid'){
-            throw ValidationException::withMessages(['code' => __('coupons.order_already_paid')]);
-        }
+            if ($order->payment_status === 'paid') {
+                throw ValidationException::withMessages(['code' => __('coupons.order_already_paid')]);
+            }
 
             $coupon = Coupon::where('code', strtoupper(trim($code)))
                 ->lockForUpdate()
@@ -63,17 +64,16 @@ class CouponService
             // Per customer once
             if (CouponRedemption::where('coupon_id', $coupon->id)
                 ->where('customer_id', $customer->id)
-                ->exists()) {
+                ->exists()
+            ) {
                 throw ValidationException::withMessages(['code' => __('coupons.already_used')]);
             }
 
-            $subtotal = (float) $order->subtotal;
+            $subtotal = (float) $order->total;
 
-            $discount = $coupon->type === 'percent'
-                ? round($subtotal * ($coupon->amount / 100), 2)
-                : round($coupon->amount, 2);
+            $discount = $coupon->computeDiscount($subtotal);
 
-            if ($coupon->type === 'fixed' && $subtotal < $discount) {
+            if ($coupon->type === CouponType::Fixed && $subtotal < $discount) {
                 throw ValidationException::withMessages([
                     'code' => __('coupons.fixed_requires_min_subtotal'),
                 ]);
@@ -95,6 +95,35 @@ class CouponService
             ]);
 
             return $order->fresh('coupon');
+        });
+    }
+
+
+    public function remove(Customer $customer, Order $order): Order
+    {
+        return DB::transaction(function () use ($customer, $order) {
+            if ($order->payment_status === 'paid') {
+                throw ValidationException::withMessages(['code' => __('coupons.order_already_paid')]);
+            }
+
+            if (! $order->coupon_id) {
+                throw ValidationException::withMessages(['code' => __('coupons.no_coupon_to_remove')]);
+            }
+
+            $redemption = CouponRedemption::where('order_id', $order->id)->first();
+
+            if ($redemption) {
+                $redemption->delete();
+            }
+
+            $order->update([
+                'coupon_id' => null,
+                'coupon_discount' => 0,
+                'discount_total' => max(0, $order->discount_total - $order->coupon_discount),
+                'total' => max(0, $order->total + $order->coupon_discount),
+            ]);
+
+            return $order->fresh();
         });
     }
 }

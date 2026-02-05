@@ -35,6 +35,17 @@ return [
     'manage_orders'    => 'Manage Orders',
     'dashboard_access' => 'Dashboard Access',
     'none'             => 'No roles',
+    'manage_coupons'    => 'Manage Coupons',
+    'manage_settings'  => 'Manage Settings',
+    'manage_design_options' => 'Manage Design Options',
+    'manage_designs' => 'Manage Designs',
+    'manage_invoices' => 'Manage Invoices',
+    'manage_notifications' => 'Manage Notifications',
+    'manage_system' => 'Manage System Settings',
+    'manage_roles' => 'Manage Roles',
+    'manage_reviews' => 'Manage Reviews',
+    'manage_wallets' => 'Manage Wallets',
+    
   ],
 
   'actions' => [
@@ -89,6 +100,7 @@ return [
     'heading'      => 'Edit Admin',
     'subheading'   => 'Update the administrator account information.',
     'back_to_list' => 'Back to admins list',
+    'submit' => 'Update Admin'
   ],
 
 ];

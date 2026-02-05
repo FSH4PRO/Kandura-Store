@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests\Admin;
 
+use Illuminate\Validation\Rule;
+use App\Enums\DesignOptionsType;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateDesignOptionRequest extends FormRequest
@@ -18,7 +20,7 @@ class UpdateDesignOptionRequest extends FormRequest
             'name.en'   => ['sometimes', 'string', 'max:255'],
             'name.ar'   => ['sometimes', 'string', 'max:255'],
 
-            'type'      => ['sometimes', 'in:color,dome_type,fabric_type,sleeve_type'],
+            'type'      => ['sometimes', Rule::in(array_column(DesignOptionsType::cases(), 'value'))],
 
             'is_active' => ['sometimes', 'boolean'],
         ];

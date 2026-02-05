@@ -97,7 +97,7 @@ class WalletController extends Controller
     $data = $request->validated();
 
     try {
-      $tx = $this->walletService->credit(
+      $this->walletService->credit(
         $wallet,
         (float) $data['amount'],
         'Admin top-up',

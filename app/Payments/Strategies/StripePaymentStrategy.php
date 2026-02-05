@@ -18,12 +18,8 @@ class StripePaymentStrategy implements PaymentStrategy
   public function pay(Customer $customer, Order $order, PayOrderData $data): array
   {
     try {
-      if ((float) $order->total <= 0) {
+      if ((float) $order->total < 0) {
         throw new \RuntimeException('Invalid order amount.');
-      }
-
-      if (empty($customer->email)) {
-        throw new \RuntimeException('Customer email is required for payment.');
       }
 
       Stripe::setApiKey(config('services.stripe.secret'));

@@ -11,7 +11,9 @@ class OrderService
     public function list(array $filters = []): LengthAwarePaginator
     {
         $query = Order::query()
-            ->with(['customer.user', 'items.design']);
+            ->with(['customer.user','review'])
+            ->withCount('items');
+
         if (!empty($filters['search'])) {
             $search = $filters['search'];
 
@@ -28,6 +30,7 @@ class OrderService
                 })
                     ->orWhere('status', 'like', "%{$search}%")
                     ->orWhere('payment_method', 'like', "%{$search}%")
+                    ->orWhere('serial_number', 'like', "%{$search}%")
                     ->orWhere('payment_status', 'like', "%{$search}%");
             });
         }
@@ -42,18 +45,18 @@ class OrderService
 
 
         if (!empty($filters['total_min'])) {
-            $query->where('total_amount', '>=', (float) $filters['total_min']);
+            $query->where('total', '>=', (float) $filters['total_min']);
         }
 
         if (!empty($filters['total_max'])) {
-            $query->where('total_amount', '<=', (float) $filters['total_max']);
+            $query->where('total', '<=', (float) $filters['total_max']);
         }
 
 
         $sortBy  = $filters['sort_by'] ?? 'created_at';
         $sortDir = $filters['sort_dir'] ?? 'desc';
 
-        if (! in_array($sortBy, ['id', 'created_at', 'total_amount'], true)) {
+        if (! in_array($sortBy, ['id', 'created_at', 'total'], true)) {
             $sortBy = 'created_at';
         }
 

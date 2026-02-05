@@ -13,6 +13,8 @@ return [
   'design_options' => 'خيارات التصميم',
   'designs'        => 'التصاميم',
   'orders'         => 'الطلبات',
+  'invoices'       => 'الفواتير',
+  'notifications'  => 'الإشعارات',
   'coupons'        => 'الكوبونات',
   'wallets'        => 'المحافظ',
   'transactions'   => 'المعاملات',

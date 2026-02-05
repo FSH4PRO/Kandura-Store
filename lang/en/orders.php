@@ -29,6 +29,7 @@ return [
     'change_status_button'   => 'Update status',
     'items_title'            => 'Order items',
     'items_empty'            => 'No items in this order.',
+    'serial_number'           => 'Serial Number',
   ],
 
   'filters' => [
@@ -38,6 +39,8 @@ return [
     'total_max'              => 'Max total',
     'submit'                 => 'Filter',
     'reset'                  => 'Reset',
+    'status_all'             => 'All statuses',
+    'status_label'           => 'Status',
   ],
 
   'table' => [
@@ -52,6 +55,22 @@ return [
     'actions'         => 'Actions',
     'view'            => 'View',
     'empty'           => 'No orders found.',
+    'serial_number'   => 'Serial Number',
+    'rating'          => 'Rating',
+    'view_review' => 'View review',
+
+  ],
+
+  'review' => [
+    'title' => 'Review Details',
+    'order' => 'Order',
+    'customer' => 'Customer',
+    'rating' => 'Rating',
+    'comment' => 'Comment',
+    'no_comment' => 'No comment provided.',
+    'created_at' => 'Created at',
+    'view' => 'View Review',
+    'no_review' => 'No review for this order.',
   ],
 
   'items' => [
@@ -69,6 +88,12 @@ return [
     'rejected'  => 'Rejected',
     'canceled'  => 'Canceled',
     'paid'      => 'Paid',
+    'completed' => 'Completed',
+    'failed'    => 'Failed',
+    'delivered' => 'Delivered',
+    'received'  => 'Received',
+    'shipped'   => 'Shipped',
+    'processing' => 'Processing',
   ],
 
   'payment_methods' => [

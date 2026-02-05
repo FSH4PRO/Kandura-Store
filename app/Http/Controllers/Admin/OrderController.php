@@ -17,19 +17,13 @@ class OrderController extends Controller
     public function __construct(OrderService $service)
     {
         $this->service = $service;
-
-        // لو عندك ميدلوير للصلاحيات ضيفه هنا
-        // $this->middleware('check.role:manage_orders,super_admin');
     }
 
-    /**
-     * Orders index (admin side)
-     */
+
     public function index(ListOrdersRequest $request)
     {
         $admin = auth('admin')->user();
 
-        // Authorize using policy
         $this->authorize('viewAny', Order::class);
 
         $filters = $request->validated();
@@ -44,17 +38,14 @@ class OrderController extends Controller
         ]);
     }
 
-    /**
-     * Show single order
-     */
     public function show(Order $order)
     {
         $admin = auth('admin')->user();
 
-        // Authorize using policy
+
         $this->authorize('viewAsAdmin', $order);
 
-        $order->load(['customer.user', 'items.design', 'items.size', 'items.options.option', 'coupon']);
+        $order->load(['customer.user', 'items.design', 'items.size', 'items.options.option', 'coupon', 'review']);
 
         $statusOptions = OrderStatus::cases();
 
@@ -64,14 +55,11 @@ class OrderController extends Controller
         ]);
     }
 
-    /**
-     * Update order status
-     */
+
     public function updateStatus(UpdateOrderStatusRequest $request, Order $order)
     {
         $admin = auth('admin')->user();
 
-        // Authorize using policy
         $this->authorize('updateStatus', $order);
 
         $data = $request->validated();

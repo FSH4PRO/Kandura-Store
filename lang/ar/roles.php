@@ -7,6 +7,9 @@ return [
     'title'      => 'الأدوار',
     'heading'    => 'إدارة الأدوار',
     'subheading' => 'عرض وإدارة جميع الأدوار في لوحة التحكم.',
+    'search_placeholder' => 'ابحث في جميع الأعمدة...',
+    'search_button' => 'بحث',
+    'reset_button' => 'إعادة تعيين',
 
     'create_button' => 'إضافة دور جديد',
 
@@ -76,5 +79,25 @@ return [
     'updated'       => 'تم تحديث الدور بنجاح.',
     'deleted'       => 'تم حذف الدور بنجاح.',
     'not_deletable' => 'لا يمكن حذف هذا الدور.',
+  ],
+
+  'permission_groups' => [
+    
+      'users'            => 'المستخدمون',
+      'admins'           => 'المسؤولون',
+      'addresses'        => 'العناوين',
+      'designs_options'  => 'خيارات التصميم',
+      'designs'          => 'التصاميم',
+      'orders'           => 'الطلبات',
+      'invoices'         => 'الفواتير',
+      'wallets'          => 'المحافظ',
+      'notifications'    => 'الإشعارات',
+      'system'           => 'إعدادات النظام',
+      'dashboard'        => 'لوحة التحكم',
+      'roles'            => 'الأدوار',
+      'coupons'          => 'الكوبونات',
+      'reviews'          => 'التقييمات',
+      'design_options'  => 'خيارات التصميم',
+    
   ],
 ];

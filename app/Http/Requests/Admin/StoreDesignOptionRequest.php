@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Admin;
 
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
+use App\Enums\DesignOptionsType;
 
 class StoreDesignOptionRequest extends FormRequest
 {
@@ -18,7 +20,7 @@ class StoreDesignOptionRequest extends FormRequest
             'name.en'   => ['required', 'string', 'max:255'],
             'name.ar'   => ['nullable', 'string', 'max:255'],
 
-            'type'      => ['required', 'in:color,dome_type,fabric_type,sleeve_type'],
+            'type'      => ['required', Rule::in(array_column(DesignOptionsType::cases(), 'value'))],
 
             'is_active' => ['sometimes', 'boolean'],
         ];

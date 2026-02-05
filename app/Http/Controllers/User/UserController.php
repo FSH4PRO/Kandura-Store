@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\User;
 
-use App\Models\User;
-use Illuminate\Http\Request;
 use App\Services\User\UserService;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
@@ -18,7 +16,7 @@ class UserController extends Controller
         $this->service = $service;
     }
 
-    public function profile(Request $request)
+    public function profile()
     {
         $customer = auth('customer')->user();
         $user = $this->service->getProfile($customer->user);

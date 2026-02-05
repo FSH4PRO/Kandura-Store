@@ -29,6 +29,7 @@ return [
     'change_status_button'   => 'تحديث الحالة',
     'items_title'            => 'عناصر الطلب',
     'items_empty'            => 'لا توجد عناصر في هذا الطلب.',
+    'serial_number'           => 'الرقم التسلسلي',
   ],
 
   'filters' => [
@@ -54,6 +55,20 @@ return [
     'actions'         => 'الإجراءات',
     'view'            => 'عرض',
     'empty'           => 'لا توجد طلبات.',
+    'serial_number'   => 'الرقم التسلسلي',
+    'rating'          => 'التقييم',
+    'view_review' => 'عرض التقييم',
+  ],
+  'review' => [
+    'title' => 'تفاصيل التقييم',
+    'order' => 'الطلب',
+    'customer' => 'العميل',
+    'rating' => 'التقييم',
+    'comment' => 'التعليق',
+    'no_comment' => 'لا يوجد تعليق.',
+    'created_at' => 'تاريخ التقييم',
+    'view' => 'عرض التقييم',
+    'no_review' => 'لا يوجد تقييم لهذا الطلب.',
   ],
 
   'items' => [
@@ -71,6 +86,15 @@ return [
     'rejected'  => 'مرفوض',
     'canceled'  => 'ملغى',
     'paid'      => 'مكتمل (مدفوع)',
+    'completed' => 'مكتمل',
+    'failed'    => 'فاشل',
+    'delivered' => 'تم التوصيل',
+    'received'  => 'تم الاستلام',
+    'shipped'   => 'تم الشحن',
+    'delivered' => 'تم التوصيل',
+    'received'  => 'تم الاستلام',
+    'processing' => 'قيد المعالجة',
+
   ],
 
   'payment_methods' => [

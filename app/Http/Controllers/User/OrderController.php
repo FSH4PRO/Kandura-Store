@@ -38,6 +38,8 @@ class OrderController extends Controller
 
         $order = $this->service->createOrder($customer, $request->validated());
 
+        
+
         return $this->success(
             new OrderResource($order),
             __('messages.order_created'),

@@ -32,9 +32,9 @@ class OrderService
                 'subtotal'        => 0,
                 'discount_total'  => 0,
                 'total'           => 0,
-                // optional defaults if you want:
-                // 'status' => \App\Enums\OrderStatus::Pending,
-                // 'payment_status' => \App\Enums\PaymentStatus::Unpaid,
+                'address_id'      => $data['address_id'] ?? null,
+                'status' => \App\Enums\OrderStatus::Pending,
+                'payment_status' => \App\Enums\PaymentStatus::Unpaid,
             ]);
 
             foreach ($data['items'] as $itemData) {
@@ -52,6 +52,7 @@ class OrderService
                     'quantity'   => $qty,
                     'unit_price' => $unitPrice,
                     'line_total' => $lineTotal,
+
                 ]);
 
                 if (! empty($itemData['options'] ?? [])) {
@@ -62,21 +63,24 @@ class OrderService
                         ]);
                     }
                 }
+
             }
 
-            $discountTotal = 0.0; // خليها لاحقًا كوبون/خصم
+
 
             $order->update([
                 'subtotal'       => $subtotal,
-                'discount_total' => $discountTotal,
-                'total'          => $subtotal - $discountTotal,
+                'total'          => $subtotal
             ]);
 
             return $order->load([
                 'items.design',
                 'items.size',
                 'items.options.option',
+                'coupon',
+                'address',
             ]);
+            
         });
     }
 }

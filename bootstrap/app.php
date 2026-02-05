@@ -4,6 +4,7 @@
 use App\Http\Middleware\SetLocale;
 use Illuminate\Foundation\Application;
 use App\Http\Middleware\CheckAuthenticated;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Spatie\Permission\Middleware\PermissionMiddleware;
@@ -15,6 +16,11 @@ return Application::configure(basePath: dirname(__DIR__))
     commands: __DIR__ . '/../routes/console.php',
     health: '/up',
   )
+  
+  ->withSchedule(function (Schedule $schedule) {
+    $schedule->command('orders:cancel-expired')->dailyAt('01:00');
+  })
+
   ->withMiddleware(function (Middleware $middleware) {
     $middleware->alias([
       'check.authenticated' => CheckAuthenticated::class,
@@ -28,3 +34,4 @@ return Application::configure(basePath: dirname(__DIR__))
   ->withExceptions(function (Exceptions $exceptions) {
     //
   })->create();
+  

@@ -129,6 +129,7 @@ return [
     'gallery' => 'Gallery',
     'description' => 'Description',
     'no_sizes' => 'No sizes specified for this design.',
+    'no_images'  => 'No images available for this design.',
 
     'customer_info' => [
       'title' => 'Designer Information',

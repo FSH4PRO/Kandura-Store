@@ -18,12 +18,18 @@ class Admin extends Authenticatable
         'email',
         'password',
         'super_admin',
+        'fcm_token',
     ];
 
     protected $hidden = [
         'password',
         'remember_token',
     ];
+
+    public function routeNotificationForFcm()
+    {
+        return $this->fcm_token? $this->fcm_token : null;
+    }
 
     protected function casts(): array
     {

@@ -26,7 +26,7 @@ class StoreCouponRequest extends FormRequest
             'code' => 'required|string|unique:coupons,code|max:50|regex:/^[A-Z0-9_-]+$/i',
             'type' => 'required|in:' . implode(',', array_column(CouponType::cases(), 'value')),
             'amount' => 'required|numeric|min:0',
-            'starts_at' => 'nullable|date|after_or_equal:now',
+            'starts_at' => 'nullable|date',
             'ends_at' => 'nullable|date|after:starts_at',
             'max_uses' => 'nullable|integer|min:1',
             'is_active' => 'boolean',

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User;
 use App\Models\Order;
 use App\Enums\PaymentMethod;
 use App\DTO\Payments\PayOrderData;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Services\Payments\PaymentService;
 use App\Http\Requests\Order\ConfirmOrderRequest;
@@ -35,7 +36,13 @@ class OrderPaymentController extends Controller
         } catch (\RuntimeException $e) {
             return $this->failed($e->getMessage(), null, 422);
         } catch (\Exception $e) {
-            return $this->failed('Payment processing failed. Please try again.', null, 500);
+            Log::error('Payment error', [
+                'order_id' => $order->id,
+                'customer_id' => $customer->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return $this->failed($e->getMessage(), null, 500);
         }
     }
 }

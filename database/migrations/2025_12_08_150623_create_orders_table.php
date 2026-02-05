@@ -7,19 +7,32 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::table('orders', function (Blueprint $table) {
-            $table->foreignId('coupon_id')->nullable()->constrained('coupons')->nullOnDelete();
-            $table->decimal('coupon_discount', 12, 2)->default(0);
-            $table->index(['coupon_id']);
+        Schema::create('orders', function (Blueprint $table) {
+            $table->id();
+
+            $table->foreignId('customer_id')
+                ->constrained('customers')
+                ->onDelete('cascade');
+
+            $table->foreignId('address_id')
+                ->nullable()
+                ->constrained('addresses')
+                ->nullOnDelete();
+
+            // Totals
+            $table->decimal('subtotal', 10, 2);
+            $table->decimal('discount_total', 10, 2)->default(0);
+            $table->decimal('total', 10, 2);
+
+            $table->string('payment_method')->default('cod');
+            $table->string('status')->default('pending');
+
+            $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::table('orders', function (Blueprint $table) {
-            $table->dropIndex(['coupon_id']);
-            $table->dropConstrainedForeignId('coupon_id');
-            $table->dropColumn('coupon_discount');
-        });
+        Schema::dropIfExists('orders');
     }
 };
