@@ -61,7 +61,7 @@ class WalletController extends Controller
     }
 
     $perPage = $filters['per_page'] ?? 15;
-    $wallets = $query->orderBy('created_at', 'desc')->paginate($perPage);
+    $wallets = $query->with(['customer', 'transactions'])->orderBy('created_at', 'desc')->paginate($perPage);
 
     return view('content.wallets.index', [
       'wallets' => $wallets,

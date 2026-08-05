@@ -13,7 +13,6 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('orders', function (Blueprint $table) {
-            //use OrderStatus enum instead of string
              $table->enum('status', array_column(OrderStatus::cases(), 'value'))->default(OrderStatus::Pending->value)->change();});
     }
 

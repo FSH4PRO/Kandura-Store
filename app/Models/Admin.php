@@ -20,7 +20,7 @@ class Admin extends Authenticatable
         'super_admin',
         'fcm_token',
     ];
-
+    
     protected $hidden = [
         'password',
         'remember_token',

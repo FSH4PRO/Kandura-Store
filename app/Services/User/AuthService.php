@@ -5,7 +5,7 @@ namespace App\Services\User;
 use App\Services\Global\AuthService as GlobalAuthService;
 use Illuminate\Support\Facades\DB;
 
-class AuthService
+class  AuthService
 {
     protected GlobalAuthService $service;
 

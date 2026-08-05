@@ -27,10 +27,10 @@ return new class extends Migration
 
             $table->timestamps();
 
-            // ✅ Order has only one review
+           
             $table->unique('order_id');
 
-            // ✅ Customer can write only one review per order
+            
             $table->unique(['customer_id', 'order_id']);
         });
     }
