@@ -1,0 +1,30 @@
+// ===================================================================================================================
+// Kandura Store — luxury theme overrides
+// Palette: deep slate/navy darks, crisp whites, subtle gold/sand accent.
+// This file is loaded before Bootstrap's own !default variables (see
+// _bootstrap-extended/_include.scss), so every value set here cascades
+// through buttons, links, badges, form focus states, etc. app-wide.
+// ===================================================================================================================
+
+// Brand accent — refined gold, replaces the stock purple primary.
+$primary: #b8923f !default;
+$secondary: #5b6472 !default;
+$success: #2f8f5b !default;
+$info: #3b6ea5 !default;
+$warning: #c9a227 !default;
+$danger: #b3413a !default;
+
+// Crisp, warm-white content background instead of the stock light-purple tint.
+$body-bg: #f7f7f5 !default;
+$body-color: #1f2430 !default;
+
+// Softer, more modern rounded corners.
+$border-radius: .625rem !default;
+$border-radius-sm: .375rem !default;
+$border-radius-lg: .875rem !default;
+$border-radius-xl: 1rem !default;
+
+// Diffused, subtle elevation instead of the stock harsh shadow.
+$box-shadow: 0 .25rem 1rem rgba(15, 23, 42, .06) !default;
+$box-shadow-sm: 0 .125rem .5rem rgba(15, 23, 42, .05) !default;
+$box-shadow-lg: 0 .5rem 2rem rgba(15, 23, 42, .10) !default;

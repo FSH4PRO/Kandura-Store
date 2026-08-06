@@ -1,0 +1,31 @@
+<?php
+
+return [
+  'loading' => 'Loading...',
+  'not_specified' => 'Not specified',
+  'close' => 'Close',
+  'save' => 'Save',
+  'cancel' => 'Cancel',
+  'delete' => 'Delete',
+  'edit' => 'Edit',
+  'view' => 'View',
+  'search' => 'Search',
+  'filter' => 'Filter',
+  'reset' => 'Reset',
+  'submit' => 'Submit',
+  'back' => 'Back',
+  'next' => 'Next',
+  'previous' => 'Previous',
+  'yes' => 'Yes',
+  'no' => 'No',
+  'confirm' => 'Confirm',
+  'success' => 'Success',
+  'error' => 'Error',
+  'warning' => 'Warning',
+  'info' => 'Info',
+  'currency' => [
+    'sar' => 'SAR',
+    'usd' => 'USD',
+    'aed' => 'AED',
+  ],
+];

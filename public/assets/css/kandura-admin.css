@@ -1,0 +1,35 @@
+/**
+ * Kandura Store — admin panel polish overrides.
+ * Loaded as a plain static stylesheet (no Vite build step required) so it
+ * can never break `npm run build`. Complements the SCSS variable overrides
+ * in resources/assets/vendor/scss/_custom-variables/*.scss.
+ */
+
+/* Navy gradient hero banner (replaces the flat "bg-primary" gold block —
+   full gold would be overwhelming as a full-width surface; gold works
+   best as an accent, not a background). */
+.kandura-hero {
+  background: linear-gradient(135deg, #10141f 0%, #1c2333 55%, #2a3350 100%) !important;
+  border: none;
+}
+.kandura-hero .card-title,
+.kandura-hero p {
+  color: #f5f1e6 !important;
+}
+
+/* Slightly crisper card edges to match the softer border-radius palette. */
+.card {
+  border: 1px solid rgba(15, 23, 42, .06);
+}
+
+/* Gold-accented "active"/"brand" badges used for KPI icons. */
+.avatar-initial.bg-label-brand {
+  background-color: rgba(184, 146, 63, .16);
+  color: #97742c;
+}
+
+/* App brand mark in the sidebar header */
+.app-brand .app-brand-text {
+  color: #f5f1e6 !important;
+  letter-spacing: .02em;
+}
