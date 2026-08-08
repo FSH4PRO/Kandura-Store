@@ -3,6 +3,9 @@
 return [
     'paths' => ['api/*', 'sanctum/csrf-cookie'],
     'allowed_methods' => ['*'],
+    'allowed_origins' => ['*'], // We will restrict this to your Vercel URL later
+    'allowed_headers' => ['*'],
+    'supports_credentials' => true,
 
     // Comma-separated list of allowed frontend origins, e.g.
     //   FRONTEND_URLS=https://app.kandurastore.com,https://admin.kandurastore.com
@@ -10,14 +13,14 @@ return [
     // local development keeps working out of the box. This was previously
     // hardcoded to only localhost:5173/5174, which silently dropped every
     // request from a deployed frontend origin (production CORS failure).
-    'allowed_origins' => array_values(array_filter(array_map(
-        'trim',
-        explode(',', env('FRONTEND_URLS', 'http://localhost:5173,http://localhost:5174'))
-    ))),
+    // 'allowed_origins' => array_values(array_filter(array_map(
+    //     'trim',
+    //     explode(',', env('FRONTEND_URLS', 'http://localhost:5173,http://localhost:5174'))
+    // ))),
 
     'allowed_origins_patterns' => [],
-    'allowed_headers' => ['*'],
+    // 'allowed_headers' => ['*'],
     'exposed_headers' => [],
     'max_age' => 0,
-    'supports_credentials' => true,
+    // 'supports_credentials' => true,
 ];
