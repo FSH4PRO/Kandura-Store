@@ -31,7 +31,6 @@ RUN composer install --no-dev --optimize-autoloader
 
 # Frontend dependencies + Vite build
 RUN npm install
-RUN npm run ci
 RUN npm run build
 
 # Laravel storage
