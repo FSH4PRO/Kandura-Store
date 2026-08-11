@@ -9,6 +9,8 @@ RUN apt-get update && apt-get install -y \
     unzip \
     git \
     curl \
+    nodejs \
+    npm \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install \
         pdo_pgsql \
@@ -24,8 +26,14 @@ WORKDIR /var/www
 
 COPY . .
 
+# PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
 
+# Frontend dependencies + Vite build
+RUN npm install
+RUN npm run build
+
+# Laravel storage
 RUN php artisan storage:link || true
 
 EXPOSE 8000
