@@ -393,8 +393,9 @@
 
 
     Route::get('/test-cookie', function () {
-        return response('COOKIE TEST', 200, [
-            'Set-Cookie' => 'test_cookie=hello; Path=/; Secure; HttpOnly; SameSite=Lax',
+    return response('COOKIE TEST')
+        ->withHeaders([
             'X-Cookie-Test' => 'YES',
+            'Set-Cookie' => 'test_cookie=hello; Path=/; Secure; HttpOnly; SameSite=Lax',
         ]);
-    });
+});
