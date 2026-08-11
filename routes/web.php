@@ -368,4 +368,12 @@
     })->name('switch.lang');
 
 
-    //
+
+    Route::get('/test-session', function () {
+        session(['test' => 'hello']);
+
+        return response()->json([
+            'session_id' => session()->getId(),
+            'session_value' => session('test'),
+        ]);
+    });
