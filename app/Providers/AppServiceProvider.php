@@ -2,18 +2,19 @@
 
 namespace App\Providers;
 
-use App\Models\Order;
-use App\Models\Design;
-use App\Models\Wallet;
 use App\Models\Customer;
+use App\Models\Design;
+use App\Models\Order;
+use App\Models\Wallet;
+use App\Observers\CustomerObserver;
+use App\Observers\DesignObserver;
 use App\Observers\OrderObserver;
 use App\Observers\WalletObserver;
-use App\Observers\CustomerObserver;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
-use App\Observers\DesignObserver;
 use Laravel\Passport\Passport;
 
 
@@ -49,5 +50,6 @@ class AppServiceProvider extends ServiceProvider
         Passport::personalAccessTokensExpireIn(Date::now()->addDays(30));
         Passport::refreshTokensExpireIn(Date::now()->addDays(60));
         Passport::tokensExpireIn(Date::now()->addDays(30));
+        URL::forceScheme('https');
     }
 }

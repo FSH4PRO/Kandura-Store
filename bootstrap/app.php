@@ -1,16 +1,17 @@
 <?php
 
 
-use App\Http\Middleware\SetLocale;
-use Illuminate\Foundation\Application;
 use App\Http\Middleware\CheckAuthenticated;
+use App\Http\Middleware\SetLocale;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Validation\ValidationException;
-use Illuminate\Auth\AuthenticationException;
 use Spatie\Permission\Middleware\PermissionMiddleware;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -20,24 +21,25 @@ return Application::configure(basePath: dirname(__DIR__))
     commands: __DIR__ . '/../routes/console.php',
     health: '/up',
   )
-  
+
   ->withSchedule(function (Schedule $schedule) {
     $schedule->command('orders:cancel-expired')->dailyAt('01:00');
   })
 
   ->withMiddleware(function (Middleware $middleware) {
-    $middleware->trustProxies(at: '*');
+    
 
     $middleware->alias([
-        'check.authenticated' => CheckAuthenticated::class,
-        'permission' => PermissionMiddleware::class,
+      'check.authenticated' => CheckAuthenticated::class,
+      'permission' => PermissionMiddleware::class,
     ]);
 
     $middleware->web(append: [
-        SetLocale::class,
+      StartSession::class,
+      SetLocale::class,
     ]);
-})
-   
+  })
+
   ->withExceptions(function (Exceptions $exceptions) {
     // Guarantee JSON error responses for every /api/* request regardless
     // of the client's Accept header. Previously this relied entirely on
@@ -46,7 +48,7 @@ return Application::configure(basePath: dirname(__DIR__))
     // webhook retry tool, etc.) could be served an HTML error page
     // instead of the JSON the API doc promises.
     $exceptions->shouldRenderJsonWhen(function ($request, \Throwable $e) {
-        return $request->is('api/*') || $request->expectsJson();
+      return $request->is('api/*') || $request->expectsJson();
     });
 
     // Laravel's default ModelNotFoundException message leaks the
@@ -55,11 +57,11 @@ return Application::configure(basePath: dirname(__DIR__))
     // 404 for API requests — the shape (single `message` key) is
     // unchanged, so existing clients don't need to change anything.
     $exceptions->render(function (ModelNotFoundException $e, $request) {
-        if ($request->is('api/*') || $request->expectsJson()) {
-            return response()->json([
-                'message' => 'The requested resource was not found.',
-            ], 404);
-        }
+      if ($request->is('api/*') || $request->expectsJson()) {
+        return response()->json([
+          'message' => 'The requested resource was not found.',
+        ], 404);
+      }
     });
 
     // ValidationException, AuthenticationException, and
@@ -70,4 +72,3 @@ return Application::configure(basePath: dirname(__DIR__))
     // frontend already relies on. shouldRenderJsonWhen() above is what
     // ensures they always come back as JSON instead of HTML.
   })->create();
-
