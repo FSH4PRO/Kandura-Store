@@ -3,6 +3,7 @@
 
 use App\Http\Middleware\CheckAuthenticated;
 use App\Http\Middleware\SetLocale;
+use App\Http\Middleware\TestCookie;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Console\Scheduling\Schedule;
@@ -29,18 +30,19 @@ return Application::configure(basePath: dirname(__DIR__))
   ->withMiddleware(function (Middleware $middleware) {
 
     $middleware->trustProxies(
-        at: '*',
+      at: '*',
     );
 
     $middleware->alias([
-        'check.authenticated' => CheckAuthenticated::class,
-        'permission' => PermissionMiddleware::class,
+      'check.authenticated' => CheckAuthenticated::class,
+      'permission' => PermissionMiddleware::class,
+      'test.cookie' => TestCookie::class
     ]);
 
     $middleware->web(append: [
-        SetLocale::class,
+      SetLocale::class,
     ]);
-})
+  })
 
   ->withExceptions(function (Exceptions $exceptions) {
     // Guarantee JSON error responses for every /api/* request regardless
