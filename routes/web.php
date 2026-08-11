@@ -369,12 +369,16 @@
 
 
 
-    Route::get('/test-session', function () {
+    Route::get('/test-session', function (Illuminate\Http\Request $request) {
+
         session(['test' => 'hello']);
 
-        return response()
-            ->json([
-                'session_id' => session()->getId(),
-                'session_value' => session('test'),
-            ]);
+        return response()->json([
+            'session_id' => session()->getId(),
+            'session_value' => session('test'),
+            'url' => $request->url(),
+            'secure' => $request->secure(),
+            'scheme' => $request->getScheme(),
+            'https_header' => $request->header('X-Forwarded-Proto'),
+        ]);
     });
