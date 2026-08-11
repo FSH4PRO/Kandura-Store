@@ -393,23 +393,7 @@
 
 
     Route::get('/test-cookie', function () {
-        $response = response('COOKIE TEST')
-            ->withCookie(
-                cookie(
-                    'test_cookie',
-                    'hello',
-                    120,
-                    '/',
-                    null,
-                    true,
-                    true,
-                    false,
-                    'lax'
-                )
-            );
-
-        return response()->json([
-            'headers' => $response->headers->all(),
-            'cookies' => $response->headers->getCookies(),
-        ]);
-    });
+    return response('COOKIE TEST')
+        ->header('Set-Cookie', 'test_cookie=hello; Max-Age=7200; Path=/; Secure; HttpOnly; SameSite=Lax')
+        ->header('Cache-Control', 'no-store');
+});
