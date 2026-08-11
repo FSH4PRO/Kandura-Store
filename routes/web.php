@@ -393,7 +393,7 @@
 
 
     Route::get('/test-cookie', function () {
-    return response('COOKIE TEST')
-        ->header('Set-Cookie', 'test_cookie=hello; Max-Age=7200; Path=/; Secure; HttpOnly; SameSite=Lax')
-        ->header('Cache-Control', 'no-store');
+    header('Set-Cookie: test_cookie=hello; Max-Age=7200; Path=/; Secure; HttpOnly; SameSite=Lax');
+
+    return 'COOKIE TEST';
 });
