@@ -26,15 +26,11 @@ WORKDIR /var/www
 
 COPY . .
 
-# PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# Frontend dependencies + Vite build
 RUN npm install
 RUN npm run build
-RUN ls -la public/build
 
-# Laravel storage
 RUN php artisan storage:link || true
 
 EXPOSE 8000
@@ -44,4 +40,3 @@ CMD php artisan migrate --force && \
     php artisan route:clear && \
     php artisan view:clear && \
     php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
-
