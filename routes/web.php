@@ -372,17 +372,20 @@
     Route::get('/test-session', function (Request $request) {
         $request->session()->put('test', 'hello');
 
-        return response()->json([
-            'session_id' => $request->session()->getId(),
-            'session_value' => $request->session()->get('test'),
-            'cookies' => $request->cookies->all(),
-            'config' => [
-                'driver' => config('session.driver'),
-                'cookie' => config('session.cookie'),
-                'secure' => config('session.secure'),
-                'domain' => config('session.domain'),
-                'path' => config('session.path'),
-                'same_site' => config('session.same_site'),
-            ],
-        ]);
+        return response()
+            ->json([
+                'session_id' => $request->session()->getId(),
+                'session_value' => $request->session()->get('test'),
+            ])
+            ->withCookie(cookie(
+                'test_cookie',
+                'hello',
+                120,
+                '/',
+                null,
+                true,
+                true,
+                false,
+                'lax'
+            ));
     })->middleware('web');
