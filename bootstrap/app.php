@@ -4,6 +4,7 @@
 use App\Http\Middleware\CheckAuthenticated;
 use App\Http\Middleware\SetLocale;
 use App\Http\Middleware\TestCookie;
+use App\Http\Middleware\TrustProxies;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Console\Scheduling\Schedule;
@@ -42,6 +43,8 @@ return Application::configure(basePath: dirname(__DIR__))
     $middleware->web(append: [
       SetLocale::class,
     ]);
+
+    $middleware->append(TrustProxies::class);
   })
 
   ->withExceptions(function (Exceptions $exceptions) {
