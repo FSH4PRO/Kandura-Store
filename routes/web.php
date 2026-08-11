@@ -393,7 +393,9 @@
 
 
     Route::get('/test-cookie', function () {
-        return response()->json([
-            'test' => 'VERSION-999',
+    return response('COOKIE TEST')
+        ->withHeaders([
+            'X-Test-Cookie' => 'YES',
+            'Set-Cookie' => 'test_cookie=hello; Path=/; Secure; HttpOnly; SameSite=Lax',
         ]);
-    })->middleware('test.cookie');
+});
