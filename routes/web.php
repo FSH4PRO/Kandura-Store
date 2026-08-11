@@ -389,3 +389,20 @@
                 'lax'
             ));
     })->middleware('web');
+
+
+
+    Route::get('/test-cookie', function () {
+    return response('COOKIE TEST')
+        ->cookie(
+            'test_cookie',
+            'hello',
+            120,
+            '/',
+            null,
+            true,
+            true,
+            false,
+            'lax'
+        );
+});
