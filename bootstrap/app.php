@@ -26,15 +26,18 @@ return Application::configure(basePath: dirname(__DIR__))
   })
 
   ->withMiddleware(function (Middleware $middleware) {
-    $middleware->alias([
-      'check.authenticated' => CheckAuthenticated::class,
-      'permission' => PermissionMiddleware::class,
+    $middleware->trustProxies(at: '*');
 
+    $middleware->alias([
+        'check.authenticated' => CheckAuthenticated::class,
+        'permission' => PermissionMiddleware::class,
     ]);
+
     $middleware->web(append: [
-      SetLocale::class,
+        SetLocale::class,
     ]);
-  })
+})
+   
   ->withExceptions(function (Exceptions $exceptions) {
     // Guarantee JSON error responses for every /api/* request regardless
     // of the client's Accept header. Previously this relied entirely on
