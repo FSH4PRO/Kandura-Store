@@ -37,6 +37,11 @@ RUN ls -la public/build
 # Laravel storage
 RUN php artisan storage:link || true
 
+RUN php artisan config:clear
+RUN php artisan cache:clear
+RUN php artisan route:clear
+RUN php artisan view:clear
+
 EXPOSE 8000
 
 CMD php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
