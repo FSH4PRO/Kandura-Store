@@ -392,10 +392,9 @@
 
 
 
-   Route::get('/test-cookie', function () {
-    return response('COOKIE TEST')
-        ->header(
-            'Set-Cookie',
-            'test_cookie=hello; Path=/; Max-Age=7200; Secure; HttpOnly; SameSite=Lax'
-        );
-});
+    Route::get('/test-cookie', function () {
+        return response('COOKIE TEST', 200, [
+            'Set-Cookie' => 'test_cookie=hello; Path=/; Secure; HttpOnly; SameSite=Lax',
+            'X-Cookie-Test' => 'YES',
+        ]);
+    });
