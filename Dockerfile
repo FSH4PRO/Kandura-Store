@@ -1,24 +1,33 @@
-FROM php:8.2-fpm
+FROM php:8.3-cli
 
-# Install system dependencies
 RUN apt-get update && apt-get install -y \
-    git curl libpng-dev libonig-dev libxml2-dev zip unzip nginx libpq-dev
+    libpq-dev \
+    libpng-dev \
+    libjpeg62-turbo-dev \
+    libfreetype6-dev \
+    libonig-dev \
+    unzip \
+    git \
+    curl \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install \
+        pdo_pgsql \
+        mbstring \
+        exif \
+        bcmath \
+        gd \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install PHP extensions for MySQL and PostgreSQL
-RUN docker-php-ext-install pdo_mysql pdo_pgsql mbstring exim bcmath gd
-
-# Get latest Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www
 
-COPY . /var/www
+COPY . .
 
 RUN composer install --no-dev --optimize-autoloader
 
-# Set permissions
-RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
+RUN php artisan storage:link || true
 
-EXPOSE 80
+EXPOSE 8000
 
-CMD php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=80
+CMD php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
