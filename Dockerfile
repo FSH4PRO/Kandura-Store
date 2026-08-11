@@ -39,4 +39,4 @@ RUN php artisan storage:link || true
 
 EXPOSE 8000
 
-CMD php artisan migrate:fresh --seed --force && php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
+CMD php artisan migrate:fresh --force &&php artisan db:seed && php artisan serve --host=0.0.0.0 --port=${PORT:-8000}

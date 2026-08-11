@@ -18,10 +18,10 @@ class DatabaseSeeder extends Seeder
             PermissionSeeder::class,
             UserSeeder::class,
             CitySeeder::class,
-            AddressSeeder::class,
+            // AddressSeeder::class,
             SizeSeeder::class,
             DesignOptionsSeeder::class,
-            DesignSeeder::class,
+            // DesignSeeder::class,
         ]);
     }
 }
