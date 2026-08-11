@@ -369,16 +369,20 @@
 
 
 
-    Route::get('/test-session', function (Illuminate\Http\Request $request) {
-
-        session(['test' => 'hello']);
+    Route::get('/test-session', function (Request $request) {
+        $request->session()->put('test', 'hello');
 
         return response()->json([
-            'session_id' => session()->getId(),
-            'session_value' => session('test'),
-            'url' => $request->url(),
-            'secure' => $request->secure(),
-            'scheme' => $request->getScheme(),
-            'https_header' => $request->header('X-Forwarded-Proto'),
+            'session_id' => $request->session()->getId(),
+            'session_value' => $request->session()->get('test'),
+            'cookies' => $request->cookies->all(),
+            'config' => [
+                'driver' => config('session.driver'),
+                'cookie' => config('session.cookie'),
+                'secure' => config('session.secure'),
+                'domain' => config('session.domain'),
+                'path' => config('session.path'),
+                'same_site' => config('session.same_site'),
+            ],
         ]);
-    });
+    })->middleware('web');
