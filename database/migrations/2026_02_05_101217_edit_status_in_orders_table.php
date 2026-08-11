@@ -12,8 +12,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('orders', function (Blueprint $table) {
-             $table->enum('status', array_column(OrderStatus::cases(), 'value'))->default(OrderStatus::Pending->value)->change();});
+        // status constraint is already enforced by 2025_12_10_233048
     }
 
     /**

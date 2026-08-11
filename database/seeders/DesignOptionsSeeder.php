@@ -61,13 +61,21 @@ class DesignOptionsSeeder extends Seeder
 
             foreach ($group['items'] as $item) {
 
-                DesignOption::firstOrCreate([
+                $exists = DesignOption::query()
+                    ->where('type', $group['type'])
+                    ->where('name->en', $item['en'])
+                    ->exists();
+
+                if ($exists) {
+                    continue;
+                }
+
+                DesignOption::create([
                     'type' => $group['type'],
                     'name' => [
                         'en' => $item['en'],
                         'ar' => $item['ar'],
                     ],
-                ], [
                     'is_active' => true,
                 ]);
             }

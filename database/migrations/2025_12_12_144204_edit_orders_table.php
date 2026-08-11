@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\PaymentMethod;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
@@ -13,13 +14,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('orders', function (Blueprint $table) {
-            $table->enum('payment_method', array_column(PaymentMethod::cases(), 'value'))->default(PaymentMethod::COD->value)->nullable()->change();
+            $table->string('payment_method')->default(PaymentMethod::COD->value)->nullable()->change();
             $table->timestamp('paid_at')->nullable();
             $table->string('payment_reference')->nullable();
             $table->json('payment_meta')->nullable();
             $table->index(['customer_id', 'status']);
             $table->index(['payment_method', 'status']);
         });
+
+        DB::statement('ALTER TABLE orders DROP CONSTRAINT IF EXISTS orders_payment_method_check');
+        DB::statement('ALTER TABLE orders ADD CONSTRAINT orders_payment_method_check CHECK (payment_method IN (' . "'cod', 'stripe', 'wallet'" . '))');
     }
 
     /**
