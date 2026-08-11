@@ -1,4 +1,4 @@
-FROM php:8.3-cli
+FROM php:8.3-apache
 
 RUN apt-get update && apt-get install -y \
     libpq-dev \
@@ -18,6 +18,7 @@ RUN apt-get update && apt-get install -y \
         exif \
         bcmath \
         gd \
+    && a2enmod rewrite \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
@@ -33,6 +34,16 @@ RUN npm run build
 
 RUN php artisan storage:link || true
 
-EXPOSE 8000
+RUN chown -R www-data:www-data storage bootstrap/cache
 
-CMD php artisan migrate --force && php -S 0.0.0.0:${PORT:-8000} -t public
+RUN printf '<VirtualHost *:80>\n\
+    DocumentRoot /var/www/public\n\
+    <Directory /var/www/public>\n\
+        AllowOverride All\n\
+        Require all granted\n\
+    </Directory>\n\
+</VirtualHost>\n' > /etc/apache2/sites-available/000-default.conf
+
+EXPOSE 80
+
+CMD ["apache2-foreground"]
