@@ -1,5 +1,4 @@
     <?php
-
     use Illuminate\Http\Request;
     use Illuminate\Support\Facades\App;
     use Illuminate\Support\Facades\Route;
@@ -350,8 +349,6 @@
         });
 
 
-
-
     // ========================
     // Locale Switch
     // ========================
@@ -366,7 +363,6 @@
         }
         return redirect()->back();
     })->name('switch.lang');
-
 
 
     Route::get('/test-session', function (Request $request) {
@@ -389,8 +385,6 @@
                 'lax'
             ));
     })->middleware('web');
-
-
 
     Route::get('/test-cookie', function () {
     header('Set-Cookie: test_cookie=hello; Max-Age=7200; Path=/; Secure; HttpOnly; SameSite=Lax');
