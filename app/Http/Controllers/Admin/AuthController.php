@@ -22,23 +22,27 @@ class AuthController extends Controller
     {
         $validated = $request->validated();
 
-        $remember = isset($validated['remember']) && (bool) $validated['remember'];
+        $remember = isset($validated['remember'])
+            && (bool) $validated['remember'];
 
         $admin = $this->service->login([
-            'email'    => $validated['email'],
+            'email' => $validated['email'],
             'password' => $validated['password'],
         ], $remember);
 
         if (! $admin) {
             return back()
-                ->withErrors(['email' => __('messages.admin_invalid_credentials')])
+                ->withErrors([
+                    'email' => __('messages.admin_invalid_credentials'),
+                ])
                 ->withInput($request->only('email', 'remember'));
         }
 
-        // Prevent session fixation
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard-analytics'));
+        return redirect()->intended(
+            route('dashboard-analytics')
+        );
     }
 
     public function showLogin()
@@ -48,7 +52,6 @@ class AuthController extends Controller
 
     public function logout(Request $request): RedirectResponse
     {
-
         Auth::guard('admin')->logout();
 
         $request->session()->invalidate();
