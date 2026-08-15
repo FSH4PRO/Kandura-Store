@@ -36,6 +36,9 @@ RUN php artisan storage:link || true
 
 RUN chown -R www-data:www-data storage bootstrap/cache
 
+COPY docker-start.sh /var/www/docker-start.sh
+RUN chmod +x /var/www/docker-start.sh
+
 RUN printf '<VirtualHost *:80>\n\
     DocumentRoot /var/www/public\n\
     <Directory /var/www/public>\n\
@@ -46,4 +49,4 @@ RUN printf '<VirtualHost *:80>\n\
 
 EXPOSE 80
 
-CMD ["apache2-foreground"]
+CMD ["/var/www/docker-start.sh"]
