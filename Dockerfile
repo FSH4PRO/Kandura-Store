@@ -1,5 +1,9 @@
 FROM php:8.3-apache
 
+# ---------------------------------------------------------
+# System dependencies + PHP extensions
+# ---------------------------------------------------------
+
 RUN apt-get update && apt-get install -y \
     libpq-dev \
     libpng-dev \
@@ -21,23 +25,53 @@ RUN apt-get update && apt-get install -y \
     && a2enmod rewrite \
     && rm -rf /var/lib/apt/lists/*
 
+# ---------------------------------------------------------
+# Composer
+# ---------------------------------------------------------
+
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www
 
+# ---------------------------------------------------------
+# Laravel application
+# ---------------------------------------------------------
+
 COPY . .
 
-RUN composer install --no-dev --optimize-autoloader
+# ---------------------------------------------------------
+# PHP dependencies
+# ---------------------------------------------------------
+
+RUN composer install \
+    --no-dev \
+    --optimize-autoloader \
+    --no-interaction
+
+# ---------------------------------------------------------
+# Frontend
+# ---------------------------------------------------------
 
 RUN npm install
 RUN npm run build
 
+# ---------------------------------------------------------
+# Laravel storage
+# ---------------------------------------------------------
+
 RUN php artisan storage:link || true
 
-RUN chown -R www-data:www-data storage bootstrap/cache
+# ---------------------------------------------------------
+# Permissions
+# ---------------------------------------------------------
 
-COPY docker-start.sh /var/www/docker-start.sh
-RUN chmod +x /var/www/docker-start.sh
+RUN chown -R www-data:www-data \
+    storage \
+    bootstrap/cache
+
+# ---------------------------------------------------------
+# Apache
+# ---------------------------------------------------------
 
 RUN printf '<VirtualHost *:80>\n\
     DocumentRoot /var/www/public\n\
@@ -46,6 +80,14 @@ RUN printf '<VirtualHost *:80>\n\
         Require all granted\n\
     </Directory>\n\
 </VirtualHost>\n' > /etc/apache2/sites-available/000-default.conf
+
+# ---------------------------------------------------------
+# Startup script
+# ---------------------------------------------------------
+
+COPY docker-start.sh /var/www/docker-start.sh
+
+RUN chmod +x /var/www/docker-start.sh
 
 EXPOSE 80
 

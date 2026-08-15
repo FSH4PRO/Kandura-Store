@@ -1,35 +1,85 @@
 #!/bin/sh
+
 set -e
 
 cd /var/www
 
-# Clear all cached config/routes/views/events so fresh env vars take effect
+echo "========================================"
+echo "Starting Kandura Store..."
+echo "========================================"
+
+# ---------------------------------------------------------
+# Clear old Laravel caches
+# ---------------------------------------------------------
+
+echo "Clearing Laravel caches..."
+
 php artisan config:clear || true
 php artisan route:clear || true
 php artisan view:clear || true
 php artisan event:clear || true
 php artisan cache:clear || true
 
-# Ensure directories are writable
-chmod -R 775 storage bootstrap/cache
+# ---------------------------------------------------------
+# Ensure Laravel directories are writable
+# ---------------------------------------------------------
+
+echo "Setting permissions..."
+
+chmod -R 775 storage bootstrap/cache || true
+
 chown -R www-data:www-data storage bootstrap/cache || true
 
-# Rebuild optimized caches for production
-if [ "$APP_ENV" = "production" ]; then
-    php artisan config:cache || true
-    php artisan route:cache || true
-    php artisan view:cache || true
+# ---------------------------------------------------------
+# Database migrations
+# ---------------------------------------------------------
+
+echo "Running database migrations..."
+
+php artisan migrate --force
+
+# ---------------------------------------------------------
+# Database seeding
+# ---------------------------------------------------------
+
+if [ "${RUN_SEEDER:-false}" = "true" ]; then
+
+    echo "========================================"
+    echo "RUN_SEEDER=true"
+    echo "Running database seeders..."
+    echo "========================================"
+
+    php artisan db:seed --force
+
+    echo "Database seeding completed."
+
+else
+
+    echo "RUN_SEEDER is not enabled."
+    echo "Skipping database seeding."
+
 fi
 
-# Apply database migrations on every start so schema is always up to date
-php artisan migrate --force || true
+# ---------------------------------------------------------
+# Production caches
+# ---------------------------------------------------------
 
-# Seed only when the database is empty (first deploy). Re-running seeders that
-# use Admin::create()/Customer::create() would hit unique constraints and fail,
-# so guard seeding behind an emptiness check to keep deploys idempotent.
-if [ "$(php artisan tinker --execute='echo App\\Models\\User::query()->count();' 2>/dev/null || echo 0)" = "0" ]; then
-    php artisan db:seed --force || true
+if [ "${APP_ENV:-production}" = "production" ]; then
+
+    echo "Building production caches..."
+
+    php artisan config:cache
+    php artisan route:cache
+    php artisan view:cache
+
 fi
 
-# Start Apache in the foreground
+# ---------------------------------------------------------
+# Start Apache
+# ---------------------------------------------------------
+
+echo "========================================"
+echo "Starting Apache..."
+echo "========================================"
+
 exec apache2-foreground

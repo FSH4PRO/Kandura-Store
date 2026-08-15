@@ -3,32 +3,49 @@
 namespace Database\Seeders;
 
 use App\Models\Address;
+use App\Models\City;
 use App\Models\Customer;
 use Illuminate\Database\Seeder;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Faker\Factory as Faker;
 
 class AddressSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        $faker = \Faker\Factory::create('ar_SA'); // أو 'en_US' حسب الحاجة
+        $faker = Faker::create('ar_SA');
 
         $customers = Customer::all();
+        $cities = City::pluck('id')->all();
+
+        if ($customers->isEmpty()) {
+            return;
+        }
+
+        if (empty($cities)) {
+            return;
+        }
 
         foreach ($customers as $customer) {
-            // لكل customer نعمل بين 1 و 3 عناوين
+
+            // Don't duplicate addresses every time the seeder runs
+            if ($customer->addresses()->exists()) {
+                continue;
+            }
+
             $numAddresses = rand(1, 3);
 
             for ($i = 0; $i < $numAddresses; $i++) {
                 Address::create([
                     'customer_id' => $customer->id,
-                    'city_id' => rand(1, 12), // Assuming there are 12 cities in the database
+
+                    'city_id' => $cities[array_rand($cities)],
+
                     'street' => $faker->streetAddress,
+
                     'latitude' => $faker->latitude,
+
                     'longitude' => $faker->longitude,
+
                     'details' => $faker->optional()->sentence,
                 ]);
             }

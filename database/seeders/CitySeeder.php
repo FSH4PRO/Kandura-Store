@@ -10,35 +10,33 @@ class CitySeeder extends Seeder
     public function run(): void
     {
         $cities = [
-            // UAE
-            ['en' => 'Dubai',        'ar' => 'دبي'],
-            ['en' => 'Abu Dhabi',    'ar' => 'أبو ظبي'],
-            ['en' => 'Sharjah',      'ar' => 'الشارقة'],
-            ['en' => 'Ajman',        'ar' => 'عجمان'],
+            ['en' => 'Dubai', 'ar' => 'دبي'],
+            ['en' => 'Abu Dhabi', 'ar' => 'أبو ظبي'],
+            ['en' => 'Sharjah', 'ar' => 'الشارقة'],
+            ['en' => 'Ajman', 'ar' => 'عجمان'],
             ['en' => 'Ras Al Khaimah', 'ar' => 'رأس الخيمة'],
 
-            // Saudi
-            ['en' => 'Riyadh',       'ar' => 'الرياض'],
-            ['en' => 'Jeddah',       'ar' => 'جدة'],
-            ['en' => 'Dammam',       'ar' => 'الدمام'],
+            ['en' => 'Riyadh', 'ar' => 'الرياض'],
+            ['en' => 'Jeddah', 'ar' => 'جدة'],
+            ['en' => 'Dammam', 'ar' => 'الدمام'],
 
-            // Qatar
-            ['en' => 'Doha',         'ar' => 'الدوحة'],
+            ['en' => 'Doha', 'ar' => 'الدوحة'],
 
-            // Kuwait
-            ['en' => 'Kuwait City',  'ar' => 'مدينة الكويت'],
+            ['en' => 'Kuwait City', 'ar' => 'مدينة الكويت'],
 
-            // Bahrain
-            ['en' => 'Manama',       'ar' => 'المنامة'],
+            ['en' => 'Manama', 'ar' => 'المنامة'],
 
-            // Oman
-            ['en' => 'Muscat',       'ar' => 'مسقط'],
+            ['en' => 'Muscat', 'ar' => 'مسقط'],
         ];
 
         foreach ($cities as $city) {
-            City::firstOrCreate(
-                ['name->en' => $city['en']], 
-                ['name' => $city]            
+            City::updateOrCreate(
+                [
+                    'name->en' => $city['en'],
+                ],
+                [
+                    'name' => $city,
+                ]
             );
         }
     }

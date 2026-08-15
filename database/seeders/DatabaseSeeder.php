@@ -2,9 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\Address;
-use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -17,10 +14,15 @@ class DatabaseSeeder extends Seeder
         $this->call([
             PermissionSeeder::class,
             UserSeeder::class,
+
+            // Must run before AddressSeeder
             CitySeeder::class,
-            // AddressSeeder::class,
+
             SizeSeeder::class,
             DesignOptionsSeeder::class,
+
+            // Depends on Customer + City + Size + DesignOptions
+            AddressSeeder::class,
             // DesignSeeder::class,
         ]);
     }
