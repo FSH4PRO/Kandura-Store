@@ -4,32 +4,13 @@ set -e
 
 cd /var/www
 
-echo "=========================================="
-echo "      Starting Kandura Store"
-echo "=========================================="
+echo "========================================="
+echo "Starting Kandura..."
+echo "========================================="
 
-
-# =========================================================
-# Environment validation
-# =========================================================
-
-echo "Checking environment..."
-
-if [ -z "$APP_KEY" ]; then
-    echo "ERROR: APP_KEY is not configured."
-    exit 1
-fi
-
-if [ -z "$APP_ENV" ]; then
-    export APP_ENV=production
-fi
-
-
-# =========================================================
-# Permissions
-# =========================================================
-
-echo "Preparing Laravel directories..."
+# --------------------------------------------------
+# 1. Permissions
+# --------------------------------------------------
 
 mkdir -p storage/framework/cache
 mkdir -p storage/framework/sessions
@@ -37,20 +18,25 @@ mkdir -p storage/framework/views
 mkdir -p storage/logs
 mkdir -p bootstrap/cache
 
-chown -R www-data:www-data \
-    storage \
-    bootstrap/cache
+chown -R www-data:www-data storage bootstrap/cache
 
-chmod -R 775 \
-    storage \
-    bootstrap/cache
+chmod -R 775 storage bootstrap/cache
+
+# Passport keys need restrictive permissions
+if [ -f storage/oauth-private.key ]; then
+    chmod 600 storage/oauth-private.key
+fi
+
+if [ -f storage/oauth-public.key ]; then
+    chmod 600 storage/oauth-public.key
+fi
 
 
-# =========================================================
-# Clear old Laravel caches
-# =========================================================
+# --------------------------------------------------
+# 2. Clear old Laravel caches
+# --------------------------------------------------
 
-echo "Clearing old Laravel caches..."
+echo "Clearing Laravel caches..."
 
 php artisan config:clear || true
 php artisan route:clear || true
@@ -59,96 +45,92 @@ php artisan event:clear || true
 php artisan cache:clear || true
 
 
-# =========================================================
-# Database migrations
-# =========================================================
+# --------------------------------------------------
+# 3. Database migrations
+# --------------------------------------------------
 
-echo "Running database migrations..."
+echo "Running migrations..."
 
 php artisan migrate --force
 
 
-# =========================================================
-# Passport
-# =========================================================
+# --------------------------------------------------
+# 4. Passport keys
+# --------------------------------------------------
 
 echo "Checking Passport keys..."
 
-if [ ! -f "storage/oauth-private.key" ] || [ ! -f "storage/oauth-public.key" ]; then
+if [ ! -f storage/oauth-private.key ] || [ ! -f storage/oauth-public.key ]; then
 
-    echo "Passport keys not found."
-    echo "Generating Passport keys..."
+    echo "Passport keys not found. Generating..."
 
     php artisan passport:keys --force
 
-else
-
-    echo "Passport keys already exist."
-    echo "Skipping Passport key generation."
-
 fi
 
+# Fix permissions AFTER generating keys
+chmod 600 storage/oauth-private.key
+chmod 600 storage/oauth-public.key
 
-# =========================================================
-# Passport Personal Access Client
-# =========================================================
+chown www-data:www-data storage/oauth-private.key
+chown www-data:www-data storage/oauth-public.key
 
-echo "Checking Passport Personal Access Client..."
 
-PERSONAL_CLIENT_COUNT=$(php artisan tinker --execute="
-echo DB::table('oauth_clients')
+# --------------------------------------------------
+# 5. Passport Personal Access Client
+# --------------------------------------------------
+
+echo "Checking Passport personal access client..."
+
+CLIENT_EXISTS=$(php artisan tinker --execute="
+use Laravel\Passport\Client;
+
+echo Client::where('provider', 'customers')
     ->where('personal_access_client', true)
-    ->count();
-" 2>/dev/null || echo "0")
+    ->exists() ? 'yes' : 'no';
+" 2>/dev/null || echo "no")
 
+if [ "$CLIENT_EXISTS" != "yes" ]; then
 
-if [ "$PERSONAL_CLIENT_COUNT" = "0" ]; then
-
-    echo "No Personal Access Client found."
+    echo "Creating Customer Personal Access Client..."
 
     php artisan passport:client \
         --personal \
-        --name="Kandura Personal Access Client" \
         --provider=customers \
-        --no-interaction \
-        || true
+        --name="Kandura Customer Personal Access Client" \
+        --no-interaction
 
 else
 
-    echo "Personal Access Client already exists."
+    echo "Customer Personal Access Client already exists."
 
 fi
 
 
-# =========================================================
-# Database seeding
-# =========================================================
+# --------------------------------------------------
+# 6. Seed database only when completely empty
+# --------------------------------------------------
 
-echo "Checking database seed status..."
-
-ADMIN_COUNT=$(php artisan tinker --execute="
-echo App\\\\Models\\\\Admin::query()->count();
+USER_COUNT=$(php artisan tinker --execute="
+echo App\Models\User::count();
 " 2>/dev/null || echo "0")
 
+if [ "$USER_COUNT" = "0" ]; then
 
-if [ "$ADMIN_COUNT" = "0" ]; then
-
-    echo "No admins found."
-    echo "Running database seeders..."
+    echo "Database appears empty. Running seeders..."
 
     php artisan db:seed --force
 
 else
 
-    echo "Admins already exist."
-    echo "Skipping database seed."
+    echo "Database already contains users. Skipping seeders."
 
 fi
 
 
-# =========================================================
-# Production cache
-# =========================================================
+# --------------------------------------------------
+# 7. Production caches
+# --------------------------------------------------
 
 if [ "$APP_ENV" = "production" ]; then
 
@@ -161,37 +143,23 @@ if [ "$APP_ENV" = "production" ]; then
 fi
 
 
-# =========================================================
-# Final permissions
-# =========================================================
+# --------------------------------------------------
+# 8. Final Passport permissions
+# --------------------------------------------------
 
-echo "Applying final permissions..."
+chmod 600 storage/oauth-private.key
+chmod 600 storage/oauth-public.key
 
-chown -R www-data:www-data \
-    storage \
-    bootstrap/cache
-
-chmod -R 775 \
-    storage \
-    bootstrap/cache
-
-# Passport key permissions
-if [ -f storage/oauth-private.key ]; then
-    chmod 600 storage/oauth-private.key
-fi
-
-if [ -f storage/oauth-public.key ]; then
-    chmod 600 storage/oauth-public.key
-fi
+chown www-data:www-data storage/oauth-private.key
+chown www-data:www-data storage/oauth-public.key
 
 
-# =========================================================
-# Start Supervisor
-# =========================================================
-echo "=========================================="
-echo "Kandura Store is ready!"
-echo "Starting Apache + Queue Worker..."
-echo "=========================================="
+# --------------------------------------------------
+# 9. Start Apache
+# --------------------------------------------------
 
-exec /usr/bin/supervisord \
-    -c /etc/supervisor/conf.d/kandura.conf
+echo "========================================="
+echo "Kandura is ready!"
+echo "========================================="
+
+exec apache2-foreground

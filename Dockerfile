@@ -1,8 +1,8 @@
 FROM php:8.3-apache
 
-# =========================================================
+# --------------------------------------------------
 # System dependencies
-# =========================================================
+# --------------------------------------------------
 
 RUN apt-get update && apt-get install -y \
     libpq-dev \
@@ -15,7 +15,6 @@ RUN apt-get update && apt-get install -y \
     curl \
     nodejs \
     npm \
-    supervisor \
     && docker-php-ext-configure gd \
         --with-freetype \
         --with-jpeg \
@@ -29,82 +28,51 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 
-# =========================================================
+# --------------------------------------------------
 # Composer
-# =========================================================
+# --------------------------------------------------
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 
-# =========================================================
-# Application
-# =========================================================
+# --------------------------------------------------
+# Laravel
+# --------------------------------------------------
 
 WORKDIR /var/www
 
 COPY . .
 
 
-# =========================================================
+# --------------------------------------------------
 # PHP dependencies
-# =========================================================
+# --------------------------------------------------
 
 RUN composer install \
     --no-dev \
     --optimize-autoloader \
-    --no-interaction \
-    --prefer-dist
+    --no-interaction
 
 
-# =========================================================
+# --------------------------------------------------
 # Frontend
-# =========================================================
+# --------------------------------------------------
 
 RUN npm install
 
 RUN npm run build
 
 
-# =========================================================
+# --------------------------------------------------
 # Laravel storage
-# =========================================================
+# --------------------------------------------------
 
 RUN php artisan storage:link || true
 
 
-# =========================================================
-# Apache configuration
-# =========================================================
-
-RUN printf '<VirtualHost *:80>\n\
-    DocumentRoot /var/www/public\n\
-    <Directory /var/www/public>\n\
-        AllowOverride All\n\
-        Require all granted\n\
-    </Directory>\n\
-</VirtualHost>\n' \
-> /etc/apache2/sites-available/000-default.conf
-
-
-# =========================================================
-# Supervisor configuration
-# =========================================================
-
-COPY docker/supervisord.conf /etc/supervisor/conf.d/kandura.conf
-
-
-# =========================================================
-# Startup script
-# =========================================================
-
-COPY docker-start.sh /var/www/docker-start.sh
-
-RUN chmod +x /var/www/docker-start.sh
-
-
-# =========================================================
+# --------------------------------------------------
 # Permissions
-# =========================================================
+# --------------------------------------------------
 
 RUN mkdir -p \
     storage/framework/cache \
@@ -117,16 +85,47 @@ RUN chown -R www-data:www-data \
     storage \
     bootstrap/cache
 
+RUN chmod -R 775 \
+    storage \
+    bootstrap/cache
 
-# =========================================================
+
+# --------------------------------------------------
+# Apache configuration
+# --------------------------------------------------
+
+RUN printf '<VirtualHost *:80>\n\
+    DocumentRoot /var/www/public\n\
+\n\
+    <Directory /var/www/public>\n\
+        AllowOverride All\n\
+        Require all granted\n\
+    </Directory>\n\
+\n\
+    ErrorLog ${APACHE_LOG_DIR}/error.log\n\
+    CustomLog ${APACHE_LOG_DIR}/access.log combined\n\
+</VirtualHost>\n' \
+> /etc/apache2/sites-available/000-default.conf
+
+
+# --------------------------------------------------
+# Startup script
+# --------------------------------------------------
+
+COPY docker-start.sh /var/www/docker-start.sh
+
+RUN chmod +x /var/www/docker-start.sh
+
+
+# --------------------------------------------------
 # Port
-# =========================================================
+# --------------------------------------------------
 
 EXPOSE 80
 
 
-# =========================================================
+# --------------------------------------------------
 # Start
-# =========================================================
+# --------------------------------------------------
 
 CMD ["/var/www/docker-start.sh"]
