@@ -24,5 +24,12 @@ fi
 # Apply database migrations on every start so schema is always up to date
 php artisan migrate --force || true
 
+# Seed only when the database is empty (first deploy). Re-running seeders that
+# use Admin::create()/Customer::create() would hit unique constraints and fail,
+# so guard seeding behind an emptiness check to keep deploys idempotent.
+if [ "$(php artisan tinker --execute='echo App\\Models\\User::query()->count();' 2>/dev/null || echo 0)" = "0" ]; then
+    php artisan db:seed --force || true
+fi
+
 # Start Apache in the foreground
 exec apache2-foreground
