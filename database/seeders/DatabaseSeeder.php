@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
             DesignOptionsSeeder::class,
 
             // Depends on Customer + City + Size + DesignOptions
-            AddressSeeder::class,
+            // AddressSeeder::class,
             // DesignSeeder::class,
         ]);
     }
