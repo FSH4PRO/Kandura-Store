@@ -175,6 +175,15 @@ chmod -R 775 \
     storage \
     bootstrap/cache
 
+# Passport key permissions
+if [ -f storage/oauth-private.key ]; then
+    chmod 600 storage/oauth-private.key
+fi
+
+if [ -f storage/oauth-public.key ]; then
+    chmod 600 storage/oauth-public.key
+fi
+
 
 # =========================================================
 # Start Supervisor
