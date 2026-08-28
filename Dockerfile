@@ -48,11 +48,11 @@ COPY . .
 # PHP dependencies
 # --------------------------------------------------
 
- RUN composer install
- 
-#     --no-dev \
-#     --optimize-autoloader \
-#     --no-interaction
+RUN COMPOSER_MEMORY_LIMIT=-1 composer install \
+    --no-dev \
+    --no-interaction \
+    --no-scripts \
+    -vvv
 
 
 # --------------------------------------------------
