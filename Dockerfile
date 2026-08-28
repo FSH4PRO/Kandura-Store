@@ -1,7 +1,7 @@
 FROM php:8.3-apache
 
 # --------------------------------------------------
-# System dependencies
+# System dependencies & PHP Extensions
 # --------------------------------------------------
 
 RUN apt-get update && apt-get install -y \
@@ -10,6 +10,7 @@ RUN apt-get update && apt-get install -y \
     libjpeg62-turbo-dev \
     libfreetype6-dev \
     libonig-dev \
+    libzip-dev \
     unzip \
     git \
     curl \
@@ -20,13 +21,14 @@ RUN apt-get update && apt-get install -y \
         --with-jpeg \
     && docker-php-ext-install \
         pdo_pgsql \
+        pdo_mysql \
         mbstring \
         exif \
         bcmath \
         gd \
+        zip \
     && a2enmod rewrite \
     && rm -rf /var/lib/apt/lists/*
-
 
 # --------------------------------------------------
 # Composer
@@ -34,98 +36,24 @@ RUN apt-get update && apt-get install -y \
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-
 # --------------------------------------------------
-# Laravel
+# PHP dependencies (Optimized Docker Layering)
 # --------------------------------------------------
 
 WORKDIR /var/www
 
-COPY . .
+# Copy only dependency definitions first to utilize layer caching
+COPY composer.json composer.lock ./
 
-
-# --------------------------------------------------
-# PHP dependencies
-# --------------------------------------------------
-
-RUN composer install \
+# Pass high memory limit to avoid out-of-memory errors on autoloader optimization
+RUN COMPOSER_MEMORY_LIMIT=-1 composer install \
     --no-dev \
     --optimize-autoloader \
-    --no-interaction
+    --no-interaction \
+    --no-scripts
 
+# Copy the rest of the application code
+COPY . .
 
-# --------------------------------------------------
-# Frontend
-# --------------------------------------------------
-
-RUN npm install
-
-RUN npm run build
-
-
-# --------------------------------------------------
-# Laravel storage
-# --------------------------------------------------
-
-RUN php artisan storage:link || true
-
-
-# --------------------------------------------------
-# Permissions
-# --------------------------------------------------
-
-RUN mkdir -p \
-    storage/framework/cache \
-    storage/framework/sessions \
-    storage/framework/views \
-    storage/logs \
-    bootstrap/cache
-
-RUN chown -R www-data:www-data \
-    storage \
-    bootstrap/cache
-
-RUN chmod -R 775 \
-    storage \
-    bootstrap/cache
-
-
-# --------------------------------------------------
-# Apache configuration
-# --------------------------------------------------
-
-RUN printf '<VirtualHost *:80>\n\
-    DocumentRoot /var/www/public\n\
-\n\
-    <Directory /var/www/public>\n\
-        AllowOverride All\n\
-        Require all granted\n\
-    </Directory>\n\
-\n\
-    ErrorLog ${APACHE_LOG_DIR}/error.log\n\
-    CustomLog ${APACHE_LOG_DIR}/access.log combined\n\
-</VirtualHost>\n' \
-> /etc/apache2/sites-available/000-default.conf
-
-
-# --------------------------------------------------
-# Startup script
-# --------------------------------------------------
-
-COPY docker-start.sh /var/www/docker-start.sh
-
-RUN chmod +x /var/www/docker-start.sh
-
-
-# --------------------------------------------------
-# Port
-# --------------------------------------------------
-
-EXPOSE 80
-
-
-# --------------------------------------------------
-# Start
-# --------------------------------------------------
-
-CMD ["/var/www/docker-start.sh"]
+# Run scripts that depend on project source files post-copy
+RUN composer dump-autoload --optimize --no-dev
