@@ -1,0 +1,11 @@
+.git
+vendor
+node_modules
+storage/logs/*
+storage/framework/cache/data/*
+storage/framework/sessions/*
+storage/framework/views/*
+*.log
+.env
+bootstrap/cache/*.php
+.DS_Store

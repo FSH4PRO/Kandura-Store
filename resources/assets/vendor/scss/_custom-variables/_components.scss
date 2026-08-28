@@ -1,0 +1,13 @@
+// ===================================================================================================================
+// Kandura Store — sidebar / menu theme overrides
+// Forces a deep navy/slate sidebar with a gold active state, independent
+// of the light/dark content skin toggle, per the luxury brand palette.
+// ===================================================================================================================
+
+$menu-bg: #10141f !default;
+$menu-color: #aab2c5 !default;
+$menu-hover-color: #ffffff !default;
+$menu-active-bg: rgba(184, 146, 63, .16) !default;
+$menu-active-color: #d8b46a !default;
+$menu-active-toggle-bg: #d8b46a !default;
+$menu-divider-color: rgba(255, 255, 255, .08) !default;
